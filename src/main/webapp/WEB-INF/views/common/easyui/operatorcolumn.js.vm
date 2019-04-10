@@ -1,0 +1,25 @@
+#@script()
+<script>
+//行内操作的方法，编辑和修改
+var _datagrid = $("#dg");
+var _toolbar = $("#tb");
+var _btnEdit = $("[iconCls='icon-edit']",_toolbar);
+var _btnDelete = $("[iconCls='icon-remove']",_toolbar);
+
+function operaterFormatter(value,row,index){
+    return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html();
+}
+function getRowIdByDom(dom){
+    var tr =$(dom).parent().parent().parent();
+    return tr.attr("datagrid-row-index");
+}
+function delRow(index){
+    _datagrid.datagrid("selectRow",index);
+    _btnDelete.click();
+}
+function editRow(index){
+    _datagrid.datagrid("selectRow",index);
+    _btnEdit.click();
+}
+</script>
+#end

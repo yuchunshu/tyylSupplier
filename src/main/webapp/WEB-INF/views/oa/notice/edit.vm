@@ -1,0 +1,197 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input id="creatorId" name="creatorId" type="hidden" #if($notice) value="$!{notice.creatorId}" #else value="$!{currUser.id}" #end/>
+                <input name="id" type="hidden" id="id" value="$!{notice.id}"/>
+                <input id="status" name="status" type="hidden" value="$!{notice.status}"/>
+                <table class="table-edit" title="公告编辑">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>标题</td>
+                      <td class="bg-white" colspan="3">
+                        <input style="width:100%;" id="title" name="title" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{esc.html($!{notice.title})}"/>
+                      </td>
+##                      <td class="bg-grey"><span><font color=red>*</font></span>密级</td>
+##                      <td class="bg-white">
+##                        #formradio("miji" "$!notice.miji" $dict.mijitype "1")
+##                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>发布范围</td>
+                      <td class="bg-white">
+                        <label><input type="radio" class="easyui-validatebox" checked #if('0' == $!{notice.publishType.key}) checked #end data-options="required:true" name="publishType" value="0"/>单位公告&nbsp;</label>
+                        <label><input type="radio" class="easyui-validatebox" #if('1' == $!{notice.publishType.key}) checked #end data-options="required:true" name="publishType" value="1"/>部门公告</label>
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>显示方式</td>
+                      <td class="bg-white">
+                        <label><input type="radio" name="displayType" value="0" checked #if('0' == $!{notice.displayType.key}) checked #end/>普通&nbsp;</label>
+                        <label><input type="radio" name="displayType" value="1" #if('1' == $!{notice.displayType.key}) checked #end/>置顶</label>
+                      </td>
+                    </tr>
+                    <tr id="publishDepTr">
+                      <td class="bg-grey"><span><font color=red>*</font></span>接收部门</td>
+                      <td class="bg-white" colspan="3">
+                        <input id="publishDepId" name="publishDepId" type="hidden" #if('' == "$!{notice.publishDept.id}") value="$!{currUser.department.id}" #else value="$!{notice.publishDept.id}" #end />
+                        <input id="department" name="department" data-options="required:true" style="width:300px;" class="easyui-textbox" readonly #if('' == "$!{notice.publishDept.deptName}") value="$!{esc.html($!{currUser.department.deptName})}" #else value="$!{esc.html($!{notice.publishDept.deptName})}" #end />
+                        <a id="selectDepDialog" href="javascript:;" iconcls="icon-search" plain="true"
+                            callback=fnSelectDepCallback class="easyui-linkbutton" select-dialog="$link.getContextURL()/select/Dep/selectDepTree"></a>
+                      </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-grey">内容</td>
+                        <td colSpan="3" class="bg-white"  valign="top"  >
+                        <input id="content" name="content" type="hidden" />
+                        <textarea class="ckeditor" id="noticeContent" name="noticeContent" cols="" style="resize:none;width:99%;">$!{notice.content}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">录入时间</td>
+                      <td class="bg-white">
+                        <input id="createDate" name="createDate" type="hidden" value="$!{notice.createDate}"/>
+                        #if ($notice)
+                        $!date.format('yyyy-MM-dd HH:mm',$!notice.createDate)
+                        #else
+                        $!date.format('yyyy-MM-dd HH:mm',$!createTime)
+                        #end
+                      </td>
+                      <td class="bg-grey">发布时间</td>
+                      <td class="bg-white"  class="bg-white" >
+                        <input id="publishDate" name="publishDate" type="hidden" value="$!{notice.publishDate}"/>
+                        $!date.format('yyyy-MM-dd HH:mm',$!notice.publishDate)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">附件</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{notice.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$notice.id")},"#defaultDownloadUrl('noticeattach')", true, "#defaultUploadUrl('noticeattach')",true)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    #if($power.checkShowMenu("公告暂存","/oa/notice/saveTemp.json"))<li><a onclick="saveTemp()" class="new-but">暂存</a></li>#end
+                    #if($power.checkShowMenu("公告发布","/oa/notice/save.json"))<li><a onclick="publish()" class="new-but">发布</a></li>#end
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+
+        CKEDITOR.replace('noticeContent', { height: '300px'});
+
+        #if('1' != $!{notice.publishType.key})
+        $("#publishDepTr").hide();
+        #end
+
+        $('#department').textbox('disableValidation');
+
+        // 绑定发布范围的选择
+        $(':radio[name="publishType"]').on('change', function (e) {
+            var chkVal = $(':radio[name="publishType"]:checked').val();
+            if (chkVal == "0") {// 单位公告
+                $("#publishDepTr").hide();
+                $('#department').textbox('disableValidation');
+                //$('#department').textbox('setValue', '');
+                //$('#publishDepId').val('');
+            } else if (chkVal == "1") {// 部门公告
+                $("#publishDepTr").show();
+                $('#department').textbox('enableValidation');
+            }
+        });
+    })
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'公告管理',url:'$link.getContextURL()/oa/notice/list'});
+        top.CC.closeTab('公告编辑');
+    }
+
+    function publish(){
+        var value = CKEDITOR.instances.noticeContent.getData();
+        $('#content').val(value);
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/oa/notice/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'发布成功！'
+                    });
+                    top.CC.addTab({title:'公告管理',url:'$link.getContextURL()/oa/notice/list'});
+                    top.CC.closeTab('公告编辑');
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+    //暂存
+    function saveTemp(){
+        var value = CKEDITOR.instances.noticeContent.getData();
+        $('#content').val(value);
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/oa/notice/saveTemp.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id != ""){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'暂存成功！'
+                    });
+                      back();
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepCallback(obj){
+        $("#department").textbox('setValue',obj.text);
+        $("#publishDepId").val(obj.id);
+    }
+</script>
+##<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+##<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end

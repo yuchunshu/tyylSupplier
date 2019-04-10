@@ -1,0 +1,145 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+               <table class="table-edit" title="查看邮件" width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr align="center" id="et1">
+                      <td class="bg-grey" align="right" width="120">发件人</td>
+                      <td align="left" class="bg-white" width="90%">
+                        <input type="hidden" name="mailId" id="mailId" value="$!obj.mail.id" />
+                        <input type="hidden" name="incId" id="incId" value="$!obj.id" />
+                        $!obj.mail.sender.userName
+                      </td>
+                    </tr>
+                    <tr align="center" id="et1">
+                      <td class="bg-grey" align="right">收件人</td>
+                      <td align="left" class="bg-white">
+                        $!obj.incepter.userName
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">标题</td>
+                      <td align="left" class="bg-white">
+                       $!{esc.html($!{obj.mail.title})}
+                      </td>
+                    </tr>
+                    <tr align="center">
+                        <td class="bg-grey" align="right">内容</td>
+                        <td valign="top" class="bg-white">
+                        <textarea class="ckeditor" id="mailContent" name="mailContent" cols="" style="resize:none;width:95%;">$!{obj.mail.content}</textarea>
+                        <script>
+                            CKEDITOR.on('instanceReady', function(ev) {
+                                ev.editor.setReadOnly(true);
+                            });
+                        </script>
+                        </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">附件</td>
+                      <td align="left" attachId="$!obj.id" class="bg-white">
+                        #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$obj.mail.id")},"#defaultDownloadUrl('emAttach')", false, "#defaultUploadUrl('emAttach')",false)
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+            <div data-options="region:'south'" class="bottom-h">
+                <div class="bottom-but">
+                    <ul>
+                      <li><a id="replay" onclick="replay()" class="new-but">回复</a></li>
+                      <li><a id="forwarding" onclick="forwarding()" class="new-but">转发</a></li>
+                      <li><a id="archive" onclick="archive()" class="new-but">存档</a></li>
+                      <li><a id="trash" onclick="trash()" class="new-but">移到垃圾箱</a></li>
+                      <li><a id="back" onclick="top.CC.closeCurTab()"  class="new-but" >关闭</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+    $(function(){
+        CKEDITOR.replace('mailContent', { height: '340px'});
+    });
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.closeCurTab();
+    }
+
+    //回复
+    function replay(){
+        var emailId = $('#mailId').val();
+        top.CC.addTab({title:'回复邮件',url:'$link.getContextURL()/oa/mail/inbox/dealReplay?emailId='+emailId});
+    }
+
+    //转发
+    function forwarding(){
+        var emailId = $('#mailId').val();
+        top.CC.addTab({title:'转发邮件',url:'$link.getContextURL()/oa/mail/dealForwarding?emailId='+emailId});
+    }
+
+    //垃圾箱
+    function trash(){
+        if($("#editForm").form('validate')) {
+            var mailId = $('#mailId').val();
+            $.messager.confirm('确认','您确认想要将邮件移动到垃圾箱吗？',function(r){
+                if (r){
+                    $.post("$link.getContextURL()/oa/mail/inbox/dealTrash.json",{mailIds:mailId},function(result){
+                          if(result.id){
+                            $('#id').val(result.id);
+                            top.CC.messager({
+                                title:'提示',
+                                msg:'该邮件已移到到垃圾箱！'
+                            });
+                            top.CC.addTab({title:'收件箱',url:'$link.getContextURL()/oa/mail/inbox/list'});
+                            top.CC.closeTab('查看邮件');
+                          }else{
+                            top.CC.messager({
+                                title:'提示',
+                                msg:'服务器连接不上'
+                            });
+                          }
+                    });
+                }
+            });
+        }
+    }
+
+    //存档
+    function archive(){
+        if($("#editForm").form('validate')) {
+            $.messager.confirm('确认','您确认想要将邮件存档吗？',function(r){
+                if (r){
+                    var incId = $('#incId').val();
+                    $.post("$link.getContextURL()/oa/mail/inbox/dealArchive.json",{incIds:incId},function(result){
+                          if(result.id){
+                            $('#id').val(result.id);
+                            top.CC.messager({
+                                title:'提示',
+                                msg:'存档成功！'
+                            });
+                            top.CC.addTab({title:'收件箱',url:'$link.getContextURL()/oa/mail/inbox/list'});
+                            top.CC.closeTab('查看邮件');
+                          }else{
+                            top.CC.messager({
+                                title:'提示',
+                                msg:'服务器连接不上'
+                            });
+                          }
+                    });
+                }
+            });
+        }
+    }
+</script>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end
+<style>.cke_top{display:none !important;}</style>

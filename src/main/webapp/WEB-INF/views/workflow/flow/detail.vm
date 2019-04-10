@@ -1,0 +1,36 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+  <div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center',border:false" class="mynoborder">
+      <form id="editForm" method="post">
+        <input type="hidden" name="id" value="$!{obj.id}"/>
+        <input type="hidden" name="flowStatus" #if($obj.id) value="$!{obj.flowStatus.key}" #else value="$!{flowStatus.key}" #end/>
+        <table class="table-edit">
+          <tr>
+            <td class="fix_td_title">&nbsp;</td>
+            <td class="fix_td_data">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="bg-grey">工作流名称</td>
+            <td class="bg-white">$esc.html($!{obj.flowName})
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-grey">工作流状态</td>
+            <td class="bg-white">$!{obj.flowStatus.value}</td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <div data-options="region:'south'" class="bottom-h">
+      <div class="bottom-but">
+        <ul>
+          <li><a onclick="$('#editWindow').window('close')" class="new-but">关闭</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+#@script()
+<script type="text/javascript">
+</script>
+#end

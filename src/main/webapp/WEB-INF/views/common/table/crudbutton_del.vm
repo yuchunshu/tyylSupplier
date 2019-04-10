@@ -1,0 +1,1 @@
+<a class="btn $!__class" href=#if($__url)$!{__url}#{else}"${link.directory()}del?ids=$!{__id}"#{end}>$!__title</a>

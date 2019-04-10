@@ -1,0 +1,95 @@
+
+###########################
+
+
+#macro(defaultIdForName $__name)${__name}_id#{end}
+
+#macro(defaultUploadUrl $__appid)$!{link.getContextPath()}/$!{__appid}/plupload/upload.json#{end}
+#macro(defaultDownloadUrl $__appid)$!{link.getContextPath()}/$!{__appid}/download#{end}
+
+#macro(filterId $__name $__id)
+#if(!$__id || $__id.isEmpty())#defaultIdForName($__name)#{else}$!{__id}#end
+#end
+
+#macro(useTabPlugin)
+#if(!$__customscripttplist)
+#set($__customscripttplist={})
+#end
+#end
+
+###########################
+###  使用本宏可以将vm文件中的脚本内容放置到布局文件中的#localhtmlscript()所在的位置
+###     例如：
+###      #@script()
+###           <script type="text/javascript">
+###               alert('hi');
+###           </script>
+###      #end
+###
+###########################
+#macro(script)
+#if(!$__localcustomscripttplist)
+#set($__localcustomscripttplist={})
+#end
+#set($__dummy=$__localcustomscripttplist.put("$!bodyContent", ""))
+#end
+
+#**
+ * getLimitDateByWorkDay
+ *
+ * 将工作日转换成具体的办理时限日期。
+ *
+ * @param limitDayId 工作日文本框ID
+ * @param limitDateId 限办日期隐藏域ID
+ * @param limitDaySpan 限办日期Span
+ * @param baseDate 基础日期
+ *
+*#
+#macro(getLimitDateByWorkDay $limitDayId $limitDateId $limitDaySpan $baseDate)
+    ##将工作日转换成具体的办理时限日期
+    $("#${limitDayId}").keyup(function(e) {
+        var day =$("#${limitDayId}").val();
+        ##替换非数字
+        day=day.replace(/\D/g,"");
+        $("#${limitDayId}").val(day);
+        if (day== ""|| day =="0") {
+            $("#${limitDayId}").val("");
+            $("#${limitDaySpan}").text("");
+            $("#${limitDateId}").val("");
+            return false;
+        }
+            jQuery.ajax({
+                url:"$link.getContextURL()/doc/receivefile/getNewLimitTime.json",
+                data:{
+                    limitDay: day,
+                    baseDate: baseDate
+                },
+                type:"post",
+                async:false,
+                dataType:"text",
+                success:function(data) {
+                    $("#${limitDateId}").val(data);
+                    var value = data.substr(0, data.indexOf(' ')).split("-");
+                    var displayLimitTime = "";
+                    displayLimitTime = value[0] + "年" + value[1] + "月" + value[2] + "日";
+                    $("#${limitDaySpan}").text(" 至  " + displayLimitTime);
+                }
+            });
+
+    });
+#end
+
+#**
+ * goldgrid2009
+ *
+ * 将工作日转换成具体的办理时限日期。
+ *
+ * @param limitDayId 工作日文本框ID
+ * @param limitDateId 限办日期隐藏域ID
+ * @param limitDaySpan 限办日期Span
+ * @param baseDate 基础日期
+ *
+*#
+#macro(goldgrid2009 $__readOnly $__file $__editType)
+#parse("/goldgrid/edit2009.vm")
+#end

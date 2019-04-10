@@ -1,0 +1,2 @@
+<th data-options="field:'groupName',width:250">群组名称</th>
+<th data-options="field:'memberNames',width:300">群组成员</th>

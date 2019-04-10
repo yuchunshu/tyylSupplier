@@ -1,0 +1,113 @@
+#set($layout = "/layout/empty.vm")
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="$link.getContextURL()/lib/goldgrid/WebOffice.js"></script>
+        <script>
+        function test(){
+            alert();
+        }
+        var testxx = 123;
+        var WebOffice = new WebOffice2015();
+##        $(function(){
+##            WebOffice.setObj(document.getElementById('WebOffice2015'));//给2015对象赋值
+##            Load();
+##        });
+        window.load=function(){
+            WebOffice.setObj(document.getElementById('WebOffice2015'));//给2015对象赋值
+            Load();
+        }
+        function Load(){
+            WebOffice.setObj(document.getElementById('WebOffice2015'));//给2015对象赋值
+              try{
+                    WebOffice.WebUrl="$link.getContextURL()/OfficeServer2015.jsp";             //WebUrl:系统服务器路径，与服务器文件交互操作，如保存、打开文档，重要文件
+                    WebOffice.FileType=".doc";            //FileType:文档类型  .doc  .xls
+                    WebOffice.UserName="$user.getCurrentUserName()";            //UserName:操作用户名，痕迹保留需要
+                    WebOffice.AppendMenu("1","打开本地文件(&L)");    //多次给文件菜单添加
+                    WebOffice.AppendMenu("2","保存本地文件(&S)");
+                    WebOffice.AppendMenu("3","-");
+                    WebOffice.AppendMenu("4","打印预览(&C)");
+                    WebOffice.AppendMenu("5","退出打印预览(&E)");
+                    WebOffice.AddCustomMenu();                       //一次性多次添加包含二次菜单
+                    WebOffice.Skin('purple');                        //设置皮肤
+                    WebOffice.HookEnabled();
+                    WebOffice.SetCaption();
+                    WebOffice.SetUser("$user.getCurrentUserName()");
+                    if(WebOffice.WebOpen()){                             //打开该文档    交互OfficeServer  调出文档OPTION="LOADFILE"
+                        WebOffice.VBASetUserName(WebOffice.UserName);    //设置用户名
+                        getEditVersion();//判断是否是永中office
+                        WebOffice.AddToolbar();//打开文档时显示手写签批工具栏
+                        WebOffice.ShowCustomToolbar(false);//隐藏手写签批工具栏
+                        StatusMsg(WebOffice.Status);
+                    }
+              }catch(e){
+                 alert(e.description);
+              }
+            }
+
+        function newfile(){
+            WebOffice.WebOpen();
+        }
+
+        function savefile(){
+           WebOffice.WebSave();
+        }
+        </script>
+
+    </head>
+<body>
+<script>
+    var str = '';
+    var copyright = "金格科技iWebOffice2015智能文档中间件[演示版];V5.0S0xGAAEAAAAAAAAAEAAAAG4BAABwAQAALAAAACRMjL8EEB30GKfgBdV5QBd174nAiygzmBLzZyLiwD5H5kNqbnEfine68UfE9xDiuc9xwFj2MV1e922BAyY1dtuo2ichZj/AKL/C6X8yUTMR4OavFt3zEb7JUyAmBmKEvwbFHIocqxFTYoyByK9jaXhX/hKM2RCCboOpAZBJCh6pdfkEqAiflhiaicLEMCl8UWDTXK0NJqShtyCsFrsk9UZs2BFv2rNeakzkDehf920LvJwUioAgjNTTuTqUH2PLphmqNrex0smvTg0xx0VTQkMQIcynMG61pd92BfwDBso+4OKq3Vt/1D3X2RVxZIuAhbnEHrGvzOG0lWgY9vWdgNXGn2wcOAw1sr3s98GxsGCuc5/5r5BYhUX5mp9tX73CtQ/CdB6AO8A7hHirG8sHNAvqfQatDLtpjauN/EWNemPFMVVm/aq78DbG1HtU+sY+saSAq0ldq9j9WdepJbUy9Tj/cF+n1hSpEQNUmsMATFyCjbQmDWLSJuEEViBAuZ7EOg==";
+    str += '<object id="WebOffice2015" ';
+    str += ' width="100%"';
+    str += ' height="100%"';
+    if ((window.ActiveXObject != undefined) || (window.ActiveXObject != null) || "ActiveXObject" in window) {
+        str += ' CLASSID="CLSID:D89F482C-5045-4DB5-8C53-D2C9EE71D025"  codebase="$link.getContextURL()/lib/goldgrid/iWebOffice2015.cab#version=12,2,0,374"';
+        str += '>';
+        str += '<param name="Copyright" value="' + copyright + '">';
+    } else {
+        str += ' progid="Kinggrid.iWebOffice"';
+        str += ' type="application/iwebplugin"';
+        str += ' OnCommand="OnCommand"';
+        str += ' OnReady="OnReady"';
+        str += ' OnOLECommand="OnOLECommand"';
+        str += ' OnExecuteScripted="OnExecuteScripted"';
+        str += ' OnQuit="OnQuit"';
+        str += ' OnSendStart="OnSendStart"';
+        str += ' OnSending="OnSending"';
+        str += ' OnSendEnd="OnSendEnd"';
+        str += ' OnRecvStart="OnRecvStart"';
+        str += ' OnRecving="OnRecving"';
+        str += ' OnRecvEnd="OnRecvEnd"';
+        str += ' OnRightClickedWhenAnnotate="OnRightClickedWhenAnnotate"';
+        str += ' OnFullSizeBefore="OnFullSizeBefore"';
+        str += ' OnFullSizeAfter="OnFullSizeAfter"';
+        str += ' Copyright="' + copyright + '"';
+        str += '>';
+    }
+    str += '</object>';
+    document.write(str);
+</script>
+
+<script language="javascript">
+ self.moveTo(0,0);
+ self.resizeTo(screen.availWidth,screen.availHeight);
+ init();
+ function init(){
+   document.getElementById('WebOffice2015').height =document.documentElement.clientHeight-15+"px";
+}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

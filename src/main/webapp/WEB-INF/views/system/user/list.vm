@@ -1,0 +1,260 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div class="cc-tableWrap" data-options="region:'west',split:false,collapsible:false" style="width:280px;border: 1px solid #E0E0E0;height:98%;background-color: #F4F4F4;">
+            <div >
+                <ul id="menutree"
+                    data-options="url:'$link.getContextURL()/system/dept/treeLazyDep.json',method:'post',fit:true,lines:true"></ul>
+            </div>
+        </div>
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <div id="button" style="display:none">
+                <a  class="easyui-linkbutton" plain="true" onclick="newPage()" iconCls="icon-add" >添加</a>
+            </div>
+            <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+                    plain="true" onclick='edit()'>修改</a>
+            <a  href='javascript:;' class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+                    plain="true" onclick='del()'>删除</a>
+            <i></i>
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+                class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg" style="width:100%;">
+                <thead>
+                <tr>
+                    <th data-options="field:'userName',width:15">姓名</th>
+                    <th data-options="field:'deptName',width:20">部门名称</th>
+                    <th data-options="field:'duty',width:14">职务</th>
+                    <th data-options="field:'account',width:15">登录账号</th>
+                    <th data-options="field:'email',width:15">电子信箱</th>
+                    <th data-options="field:'miji',width:8">密级</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+        <div  id="searchDialog" class="easyui-dialog  dialog-tc  query-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+             style="width:450px;height:180px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+            <form id="queryForm">
+                <input id="depId" name="$qc.equal('department.id')" type="hidden" />
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td style="text-align: right">姓名：</td>
+                        <td><input id="userName" style="width:350px;" name="$qc.like('userName')" class="easyui-textbox" /></td>
+                    </tr>
+##                    <tr>
+##                        <td style="text-align: right">所属部门：</td>
+##                        <td>
+##                            <input class="easyui-textbox" id="dep" name="$qc.like('department.deptName')" style="width:350px" />
+##                        </td>
+##                    </tr>
+                </table>
+            </form>
+            <div id="bnts" style="top:0px; height:25px; width:auto;">
+                <a class="new-but" onclick="formSerach()">确定</a>
+                <a class="new-but" onclick="reset()">重置</a>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function () { // 给查询dialog中的input 绑定回车事件
+        $('#userName').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+
+    function formDepSearch() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function formSerach() {
+        $('#depId').val("");
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+        $('#menutree').find('.tree-node-selected').removeClass('tree-node-selected'); ##取消树选中
+        $('#button').hide(); ##隐藏添加按钮, 只有选中部门才能添加
+    }
+
+    function reset(){
+        var depId = $("#depId").val();
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+        $("#depId").val(depId);
+    }
+
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/system/user/list.json';
+    var _delJsonUrl = '/system/user/delete.json';
+
+     function newPage(){
+        var depId = $('#depId').val();
+        var url = "$link.getContextURL()/system/user/new?depId=" + depId;
+        top.CC.addTab({title:'人员编辑',url:url});
+    }
+
+    function edit(){
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+            var url = "$link.getContextURL()/system/user/edit?id="+row.id;
+            top.CC.addTab({title:'人员编辑',url:url});
+        } else {
+            top.CC.messager({
+                title: '提示',
+                msg: '请先选择一条数据。'
+            });
+        }
+    }
+
+    function del(){
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+            $.messager.confirm('警告','确定删除该用户吗?',function(r){
+                if (r){
+                    $.post(_baseUrl + (_delJsonUrl || '/delete.json'),{id:row.id},function(result){
+                        if (result.success){
+                            $('#dg').datagrid('reload'); // reload the user data
+                            top.CC.messager({ // show error message
+                                title: '提示',
+                                msg: '删除成功！'
+                            });
+                        } else {
+                            top.CC.messager({ // show error message
+                                title: '错误',
+                                msg: result.errorMsg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        } else {
+            top.CC.messager({
+                title: '提示',
+                msg: '请先选择一条数据。'
+            });
+        }
+    }
+
+
+    function fnDemoSelectDepCallback(obj){
+        $("#dep").textbox("setValue",obj.depName);
+    }
+
+     var _oneFlag = true;
+     $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var depId = $("#depId").val();
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+            $("#depId").val(depId);
+        }
+
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            loadFilter: datagridHtmlEncode, // 防js注入
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+
+
+        $('#menutree').tree({
+            // 绑定部门树单击节点事件
+            onSelect:function(node){
+                // 点击树文字展开树节点
+                if ($(this).tree('getSelected').state=='closed') {
+                    $(this).tree('expand',node.target);
+                }
+                $("#userName").textbox('setValue', '');
+                $('#depId').val(node.id);
+                formSerach();
+                $('#button').css('display','inline');
+            },
+            onLoadSuccess:function(node, data){
+                if (_oneFlag) {  // 只在根节点生效
+                    var rootNode = $(this).tree('find', data[0].id);
+                    _oneFlag = false;
+                    $(this).tree('expandAll', rootNode.target);
+                }
+                #if ($depId)
+                var node = $(this).tree('find', '$!{depId}');
+                if (node) {
+                    $(this).tree('expandTo', node.target);
+                    $(this).tree('select', node.target);
+                    $('#button').css('display','inline');
+                }
+                #end
+            }
+        });
+    });
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepQueryCallback(obj){
+        $('#dep').textbox('setValue',obj.id);
+        $('#dep').textbox('setText',obj.text);
+    }
+</script>
+#end

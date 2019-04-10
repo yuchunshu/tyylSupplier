@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+>
+    <description>日志拦截的Url</description>
+
+    <bean id="logUrlMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+        <property name="sourceMap">
+           <map>
+                <entry key="/workmail/xyj/sendMail" value="内部邮件发送邮件"/>
+                <entry key="/workmail/fjx/sendMail" value="内部邮件发送邮件"/>
+                <entry key="/workmail/sjx/sendMail" value="内部邮件发送邮件"/>
+                <entry key="/workmail/cgx/sendMail" value="内部邮件发送邮件"/>
+
+                <entry key="/workmail/xyj/saveDraft" value="内部邮件存草稿"/>
+                <entry key="/workmail/fjx/saveDraft" value="内部邮件存草稿"/>
+                <entry key="/workmail/cgx/saveDraft" value="内部邮件存草稿"/>
+          </map>
+        </property>
+    </bean>
+
+    <bean id="logIgnoreMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+        <property name="sourceMap">
+           <map>
+               <entry key="/workmail/xyj/edit" value="进入写邮件"/>
+          </map>
+        </property>
+    </bean>
+</beans>

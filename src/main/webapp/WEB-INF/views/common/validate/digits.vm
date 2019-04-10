@@ -1,0 +1,1 @@
+ data-bv-digits="true" #if($!{__message}) data-bv-digits-message="$!{__message}" #end

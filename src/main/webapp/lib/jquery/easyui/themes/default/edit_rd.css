@@ -1,0 +1,15 @@
+@CHARSET "UTF-8";
+/*该文件是在easyui.css的基础上进行重置和覆盖样式，如需还原，请删除样式文件。*/
+.textbox {
+    -webkit-border-radius: 3px 3px 3px 3px;
+     border-radius: 3px 3px 3px 3px;
+}
+.l-btn {
+-webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
+
+}
+.l-btn:hover {
+-webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
+}

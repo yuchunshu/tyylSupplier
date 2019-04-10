@@ -1,0 +1,199 @@
+<style type="text/css">
+.datagrid-cell,
+.datagrid-cell-group,
+.datagrid-header-rownumber,
+.datagrid-cell-rownumber {
+  line-height: 30px;
+}
+</style>
+
+#set($bodyattr="class='easyui-layout' style='border:0px;width:770px;height:500px;margin-left:5px;margin-right:5px;margin-top:5px; padding:0 5px 3px 0;'")
+<div class="cc-tableWrap" data-options="region:'center',border:true,collapsible:false">
+    <table id="wordTable" style="width:100%;height:100%;"
+        data-options="border:false,pageList:[10,20,30],pageSize:10,toolbar:'#queryForm',rownumbers:true, singleSelect:true,pagination:true,collapsible:false,toolbar:'#tb'">
+        <thead>
+            <tr>
+                <th style="width:60%" data-options="field:'url',editor:{type:'textbox',options:{id:'wordEditor',required:true}}">URL</th>
+				<th style="width:10%" data-options="field:'operate',formatter:translate">属性</th>
+				<th style="width:20%" data-options="field:'module'">模块</th>
+				<th style="width:6%" data-options="field:'del',formatter:del">操作</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+    <form id="queryForm">
+		URL:<input name="url" id="url" type="text" style="width:432px;" class="easyui-textbox" prompt="请输入要查询或添加的URL"/>
+		##属性:<input name="operate" id="operate" type="text" style="width:70px;" class="easyui-textbox"/>
+		<select id="module" name="module" class="easyui-combobox" data-options="editable:false" panelheight="auto" style="width:100px;">
+            <option selected value="" selected>--模块--</option>
+			#foreach($name in $!{moduleNames})
+			<option value="$!{name}">$!{name}</option>
+			#end
+        </select>
+        <a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="formSearch()">查询</a>
+		<a  class="easyui-linkbutton" plain="true" onclick="doAdd()" iconCls="icon-add" >新增</a>
+    </form>
+</div>
+<div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="back" onclick="doclose()" class="new-but">关闭</a></li>
+        </ul>
+    </div>
+</div>
+#@script()
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script>
+	
+	 $(function () {
+	 	//绑定回车事件
+	 	$("input").each(function(){
+			$(this).keydown(function (e) {
+                if (e.keyCode == 13) {
+                   formSearch();
+                }
+            });
+		});
+		//下拉框事件
+		$("#module").combobox({
+			onChange:function(newVal, oldVal){
+				formSearch();
+			}
+		});
+    })
+
+    // 设置dialog标题
+    $(document).ready(function() {
+        if (top.setSelectDialogFrameDialogTitle) {
+            top.setSelectDialogFrameDialogTitle("$!{selectDialogTitle}");
+        }
+    });
+
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+
+    String.prototype.trim=function(){
+        return this.replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+    // 最后编辑的索引
+    var _lastIndex = "";
+
+
+    function editRow() {
+        var dg = $('#wordTable');
+        var row = dg.datagrid('getSelected');
+        if (row) {
+            var index = dg.datagrid('getRowIndex', row);
+            dg.datagrid('beginEdit', index);
+            _lastIndex = index;
+            var target = $(dg.datagrid('getEditors', index)[0].target);
+            editorBlur(target, row);
+            $(target).textbox('textbox').focus();
+        }
+    }
+
+    function doDel() {
+        $.messager.confirm('确认对话框', '您确认要删除该权限吗？', function(r){
+            if (r){
+                var row = $('#wordTable').datagrid('getSelected');
+                if (row) {
+					$.ajax({
+                        type :"post",
+                        url : "$link.getContextURL()/system/power/deleteDetailPower.json?roleId=$!{roleId}",
+                		contentType :"application/json;charset=utf-8", 
+                    	data :JSON.stringify(row),
+                		success: function(result){
+                			if (result.success){
+                                $('#wordTable').datagrid('reload');
+                            }else{
+								top.CC.messager({ title:'错误', msg: result.error });
+							}
+                		}
+                    });
+                }
+            }
+        });
+    }
+
+
+    function formSearch() {
+        $('#wordTable').datagrid('reload');
+    }
+    var _isCheckFlag = false;
+    var _oneFlag = true;
+    $(document).ready(function(){
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var _querForm = $("#queryForm");
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        $('#wordTable').datagrid({
+            // 单选
+            onClickRow:function(rowIndex,rowData){
+                $(this).datagrid('selectRow',rowIndex);
+            },
+            url:'$link.getContextURL()/system/power/detailModule.json?roleId=$!{roleId}',
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+
+    });
+
+    function doAdd() {
+        var urlText = $('#url').textbox('getValue');
+        if ($.trim(urlText)!=="") {
+            $.post( '$link.getContextURL()/system/power/saveDetailPower.json',
+					{roleId:'$!{roleId}',
+					 url:urlText
+					}, 
+					function(result) {
+                        if (result.success) {
+                            $('#url').textbox('setValue','');
+        					$('#module').combobox('select','');
+                            $('#wordTable').datagrid('reload');
+                        } else {
+                            top.CC.messager({ title:'提示', msg:result.error });
+                        }
+            		});
+        } else {
+            top.CC.messager({ title:'提示', msg: '请输入要添加的url' });
+        }
+    }
+
+
+	function del(value,row,index){
+		var btn = '<a class="easyui-linkbutton l-btn-plain-remove l-btn l-btn-small l-btn-plain" plain="true" onclick="doDel();"'+
+				  ' iconcls="icon-remove"><span class="l-btn-left l-btn-icon-left">'+
+				  '<span class="l-btn-text"></span><span class="l-btn-icon icon-remove">&nbsp;</span></span></a>';
+		return btn;
+	}
+	var map = {};
+	#foreach($key in $!{operateMap.keySet()})
+	map["$key"] = "$!{operateMap.get("$key")}"
+	#end
+	
+	function translate(value,row,index){
+		return map[value];
+	}
+	
+</script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

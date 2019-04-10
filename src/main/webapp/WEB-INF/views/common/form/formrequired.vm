@@ -1,0 +1,1 @@
+#if($__formrequiredmap.get($__name))<span>&nbsp;&nbsp;<font color="#CC0000">*</font></span>#end

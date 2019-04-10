@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tools>
+    <data type="boolean" key="CUSTOM_TOOLS_AVAILABLE" value="true" />
+
+    <data type="string" key="__headtitle" value="行政办公系统-广西东盟食品药品安全检验检测中心"/>
+
+    <toolbox scope="application" createSession="false" >
+        <tool class="cn.com.chaochuang.common.security.util.UserTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.PowerTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.DictionaryTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.QueryConditionTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.LookUpTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.StringTool" />
+        <tool class="cn.com.chaochuang.common.velocity.StrTools" />
+        <tool class="cn.com.chaochuang.common.velocity.SyncDict" />
+        <tool class="cn.com.chaochuang.common.velocity.HtmlTools"/>
+    </toolbox>
+
+    <toolbox scope="request" createSession="false" >
+        <tool class="cn.com.chaochuang.common.velocity.view.LinkTool" />
+    </toolbox>
+
+</tools>

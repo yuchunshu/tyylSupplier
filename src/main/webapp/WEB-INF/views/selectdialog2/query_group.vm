@@ -1,0 +1,2 @@
+<th>群组名称</th>
+<td><input name="$qc.like('groupName')" class="easyui-textbox" type="text"/></td>

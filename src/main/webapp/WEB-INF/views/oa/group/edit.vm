@@ -1,0 +1,123 @@
+##<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                    <tr align="center">
+                      <td class="bg-grey" align="right" width="120"><span><font color=red>*</font></span>群组名称</td>
+                      <td align="left" class="bg-white" >
+                        <input name="id" type="hidden" value="$!{obj.id}"/>
+                        <input id="groupName" name="groupName"  style="width:100%" data-options="required:true" class="easyui-textbox" value="$!{obj.groupName}"/>
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td style="width:140px;" class="bg-grey" align="right"><span><font color=red>*</font></span>
+                        群组成员<br><a id="selectDepDialog" iconcls="icon-search" plain="true"
+                            callback=fnSelectMansCallback class="easyui-linkbutton" mans-dialog></a>
+                      </td>
+                      <td align="left" class="bg-white">
+                        <input id="groupMemberIds" name="groupMemberIds" type="hidden" value="$!{obj.groupMemberIds}"/>
+                        <textarea  class="textareaborder"  id="memberNames" name="memberNames" style="width:97%;height:60px;resize:none;"
+                            readonly class="easyui-validatebox" data-options="required:true" >$!{obj.groupMembers}</textarea>
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">排序号</td>
+                      <td align="left" class="bg-white">
+                        <input id="orderNum" name="orderNum" style="width:100%" class="easyui-numberbox" value="$!{obj.orderNum}"/>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+       <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+            <div class="bottom-but-dialog">
+                <ul>
+               <li><a id="save" onclick="saveGroup()" class="new-but" >保存</a></li>
+               <li><a id="back" onclick="back()" class="new-but" >关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+##</div>
+#@script()
+<script type="text/javascript">
+
+
+    // 关闭
+    function back() {
+        $('#editWindow').window('close');
+    }
+
+    //保存
+    function saveGroup(){
+        if($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/oa/personal/group/save.json",$("#editForm").serialize(),function(result){
+              if(result.id){
+                window.location = "$link.getContextURL()/oa/personal/group/list";
+              }else{
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+              }
+            });
+        }
+    }
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    $("a[mans-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var groupMemberIds = $('#groupMemberIds').val();
+            var _url = "$link.getContextURL()/select/selectmansClassify?userIds="+groupMemberIds;
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                //document.getElementById("over").style.display = "block";
+                //document.getElementById("layout").style.display = "block";
+                dfn(_url, _callback_fn);
+                //document.getElementById("over").style.display = "none";
+                //document.getElementById("layout").style.display = "none";
+            }
+            return false;
+        })
+    });
+
+    // 人员选择回调
+    function fnSelectMansCallback(obj){
+
+        var userNames = "";
+        var userIds = "";
+        for (var key = 0; key < obj.length; key++){
+            userNames += obj[key].dataText + ",";
+            userIds += obj[key].id + ",";
+        }
+         userNames = userNames.substring(0,userNames.length-1);
+        userIds = userIds.substring(0,userIds.length-1);
+        $('#memberNames').val(userNames);
+        $('#groupMemberIds').val(userIds);
+    }
+
+
+</script>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end
+#parse("common/easyui/crud.js.vm")

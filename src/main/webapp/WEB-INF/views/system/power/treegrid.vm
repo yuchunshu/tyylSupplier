@@ -1,0 +1,122 @@
+<style>
+.font{ font-size:14px;}
+</style>
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" onclick="newPage()"
+                    plain="true">新增</a>
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" onclick="editPage()"
+                    plain="true">修改</a>
+            <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="del()"
+                    plain="true">删除</a>
+            <i></i>
+            <a  onclick="top.CC.closeCurTab()"
+                class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="tg" class="easyui-treegrid font" style="font-size:14px;" data-options="nowrap:false,url:'system/power/listMenu.json',
+                                                                              loadFilter: datagridHtmlEncode,
+                                                                              method: 'post',
+                                                                              fitColumns:false,
+                                                                              fit:true,
+                                                                              rownumbers: true,
+                                                                              toolbar:'#tb',
+                                                                              idField: 'id',
+                                                                              treeField: 'powerName'" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="width:15%" data-options="field:'powerName'">权限名称</th>
+                        <th style="width:5" data-options="field:'icon',align:'center',formatter:iconformatter">图标</th>
+                        <th style="width:10%" data-options="field:'powerCode'">权限编号</th>
+                        <th style="width:30%" data-options="field:'url'">权限url</th>
+                        <th style="width:25%" data-options="field:'appurl'">移动端url</th>
+                        <th style="width:5%" data-options="field:'powerTypeFlag'">权限类型</th>
+                        <th style="width:5%" data-options="field:'module'">模块名称</th>
+                        ##<th style="width:5%" data-options="field:'isMenu'">菜单</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="editWindow" class="easyui-window" title="设置" style="width:500px;height:580px;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+#@script()
+<script>
+
+    function iconformatter(value,row,index){
+        if(value != '' && value != null) {
+            var img;
+            if (value.indexOf("power-icon") == 0) {
+                ## 2017-12-20 修改：采用统一标识的图标
+                var imgSize = "";
+                if (row.isMenu === "是") {
+                    if (row.powerCode && row.powerCode.length === 4) {
+                        imgSize = "large";
+                    } else if (row.powerCode && $.trim(row.url) !== "") {
+                        imgSize = "small";
+                    }
+                }
+                img = '<i class="power-icon ' + value + ' ' + imgSize + '"></i>'
+            } else {
+                ## 原来直接使用图片相对路径的图标
+                img = '<img src="' + value + '"/>';
+            }
+            return img;
+        }
+    }
+
+    var _baseUrl = '$link.getContextURL()/system/power';
+    var _listJsonUrl = '/list.json';
+    function newPage(){
+        var row = $('#tg').treegrid("getSelected");
+        if (row != null) {
+            $('#editWindow').window('open');
+            $('#editWindow').window('refresh','$link.getContextURL()/system/power/new?parentPowerId='+row.id);
+        } else {
+            $('#editWindow').window('open');
+            $('#editWindow').window('refresh','$link.getContextURL()/system/power/new');
+        }
+    }
+
+    function editPage(){
+        var row = $('#tg').treegrid("getSelected");
+        if (row != null) {
+            $('#editWindow').window('open');
+            $('#editWindow').window('refresh', '$link.getContextURL()/system/power/edit?id='+row.id);
+        } else {
+            $.messager.alert('提示','请先选择一条数据！','info');
+        }
+    }
+
+    function del(){
+        var row = $("#tg").treegrid("getSelected");
+        if(row){
+            $.messager.confirm('警告','确定删除所选菜单吗?',function(r){
+                if (r){
+                    $.post(_baseUrl + '/delete.json',{id:row.id},function(result){
+                        if (result.success){
+                            $('#tg').treegrid('reload'); // reload the user data
+                            top.CC.messager({ // show error message
+                                title: '成功',
+                                msg: result.success
+                            });
+                        } else {
+                            top.CC.messager({ // show error message
+                                title: '错误',
+                                msg: result.error
+                            });
+                        }
+                    },'json');
+                }
+            });
+        } else {
+            $.messager.alert('提示','请先选择一条数据！','info');
+        }
+    }
+
+
+</script>
+#end

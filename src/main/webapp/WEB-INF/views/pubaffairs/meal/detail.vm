@@ -1,0 +1,67 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+				<table class="table-edit" title="订餐详情">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+					<tr>
+						<td class="bg-grey">用餐人姓名</td>
+						<td class="bg-white">
+							$!{esc.html($!{obj.mealUserName})}
+						</td>
+						<td class="bg-grey">用餐类型</td>
+						<td class="bg-white">
+							$!{obj.mealType.value}
+						</td>
+                    </tr>
+					<tr>
+						<td class="bg-grey">用餐时间</td>
+						<td class="bg-white">
+							$date.format('yyyy年MM月dd日',$!{obj.mealDate})
+						</td>
+						<td class="bg-grey">用餐地点</td>
+						<td class="bg-white">
+							$!{obj.mealPlace.value}
+						</td>
+					</tr>
+					<tr align="center">
+						<td class="bg-grey">申请人</td>
+						<td class="bg-white">
+							$!{esc.html($!{user.userName})}
+						</td>
+						<td class="bg-grey">申请部门</td>
+						<td class="bg-white">
+							$!{esc.html($!{dept.deptName})}
+						</td>
+					</tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+		var title = top.CC.getCurTab().panel('options').title;
+        top.CC.closeTab(title);
+    }
+	
+</script>
+#end

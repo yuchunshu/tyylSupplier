@@ -1,0 +1,5 @@
+<option value="">--请选择--</option>
+#foreach($__option in $__options.keySet())
+    <option value="$__option" #if("$__value"=="$!{__option}")selected="selected"#end>$!{__options.get($__option)}</option>
+#end
+

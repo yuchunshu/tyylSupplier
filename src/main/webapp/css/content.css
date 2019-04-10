@@ -1,0 +1,19 @@
+@charset "utf-8";
+/* CSS Document */
+*{ margin:0; padding:0;}
+ul{ list-style-type:none}
+img{ border:none}
+a{ color:#333; text-decoration:none; font-family:"微软雅黑", "宋体"; font-size:16px;}
+.clear{ clear:both;}
+.submodule-title{width: 100%; height:30px;background-color: #f2f2f2; border-bottom: 1px solid #e0e0e0; line-height: 30px;}
+.inner-submodule-title{ display:block;height:28px;font-size: 16px; font-family: "微软雅黑","宋体"; }
+.inner-submodule-title img{ float:left; padding:9px 10px}
+.inner-submodule-title span{float:left;display:block;background:url(../images/submodule-bg.jpg) no-repeat right;background-color:#f9ead6;}
+.inner-submodule-title span strong{ font-weight:normal; padding-right:20px;}
+.submodule-title-h{height:31px;overflow-y: hidden}
+/*列表排序字段图标*/
+.datagrid-sort:not(.datagrid-sort-asc):not(.datagrid-sort-desc) .datagrid-sort-icon {
+    height: 10px;
+    padding: 0 13px 0 0;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC') no-repeat;
+}

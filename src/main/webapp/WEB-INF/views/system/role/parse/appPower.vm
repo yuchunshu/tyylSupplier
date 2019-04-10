@@ -1,0 +1,59 @@
+<table id="linktg">
+    <thead>
+        <tr>
+            <th style="width:96%" data-options="field:'powerName',formatter:ckbox"><input type="checkbox" />菜单名称</th>
+            ##<th style="width:42%" data-options="field:'url'">权限url</th>
+            ##<th style="width:10%" data-options="field:'isMenu'">菜单</th>
+        </tr>
+    </thead>
+</table>
+#@script()
+<script>
+
+$(function(){
+    $("#linktg").treegrid({
+        onLoadSuccess:function(row,data){
+            var rows = $("#linktg").treegrid('getData');
+            if(rows && rows.length>0){
+                for(var i = 0;i<rows.length;i++){
+                    if(rows[i].checked){
+                        $("#linktg").treegrid('select',rows[i].id);
+                    }
+                }
+            }
+        },
+        onSelect:function(rowData){
+            $('#power_checkbox_'+rowData.id).prop("checked",true);
+        },
+        onUnselect:function(rowData){
+            $('#power_checkbox_'+rowData.id).prop("checked",false);
+        },
+        onSelectAll:function(rows){
+            $("input[name='powerId']").prop("checked",true);
+        },
+        onUnselectAll:function(rows){
+            $("input[name='powerId']").prop("checked",false);
+        },
+        fitColumns:true,//列宽自适应
+        nowrap:false,
+        rownumbers:true,//行号
+        singleSelect:false,
+        idField: 'id',
+        fit:true,
+        treeField: 'powerName',
+        url:'$link.getContextURL()/system/power/allNeedPower.json?roleId=$!{role.id}'//获取数据的url
+    });
+});
+
+function ckbox(value,row,index) {
+    if(row.checked){
+        $("#linktg").treegrid('select',row.id);
+        return "<input name='powerId' type='checkbox' value='"+row.id+"' checked id='power_checkbox_" + row.id +"'/>" + value;
+    }else{
+        return "<input  name='powerId' type='checkbox' value='"+row.id+"' id='power_checkbox_" + row.id +"' />" + value;
+    }
+
+}
+
+</script>
+#end

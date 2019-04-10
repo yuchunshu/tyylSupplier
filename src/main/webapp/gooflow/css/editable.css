@@ -1,0 +1,20 @@
+html,body{
+    height:100%;
+    margin:0;
+    overflow: hidden;
+}
+#propertyForm{
+    float: left;
+    width: 204px;
+    height:100%;
+    /*min-width: 1000px;*/
+}
+#myResult{
+    float: left;
+}
+#demo{
+    width:100%;
+}
+.form_content tr{
+    height:100%;
+}

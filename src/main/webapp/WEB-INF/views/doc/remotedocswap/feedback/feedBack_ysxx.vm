@@ -1,0 +1,134 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+  <div id="cc" class="easyui-layout" data-options="fit:true">
+      <div data-options="region:'center'" class="mynoborder">
+          <form id="feedBackForm" method="post">
+              <input name="id" id="id" type="hidden" value="$!{envelope.id}"/>
+              <input id="returnType" type="hidden" value="$!{returnType}"/>
+              <table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr>
+                      <td class="bg-grey" style="width:100px;">公文标题</td>
+                      <td class="bg-white" colspan="3">
+                        <input type="text" name="title" class="easyui-textbox" data-options="editable:false" style="width:100%;" value="$!esc.html($!{envelope.title})"/>
+                      </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey"><span><font color=red>*</font></span>反馈信息</td>
+                        <td class="bg-white">
+                            <label><input type="radio" class="easyui-validatebox" checked required:true name="feedBackType" value="5"/>送阅</label>
+							<label><input type="radio" class="easyui-validatebox" required:true name="feedBackType" value="6"/>归档</label>
+                        </td>
+						<td class="bg-grey" id='tdName'><span><font color=red>*</font></span>传阅对象</td>
+                        <td class="bg-white">
+							<div id="content">
+                            <input style="width:100%;" id="docReadBody" name="docReadBody" data-options="required:true" class="easyui-textbox" value=""/>
+							</div>
+						</td>
+                    </tr>
+					<tr>
+					  <td class="bg-grey">签收时间</td>
+                      <td class="bg-white">
+                        <input type="text" class="easyui-textbox" data-options="editable:false" style="width:100%;" value="$!date.format('yyyy-MM-dd HH:mm:ss',$!{currentDate})"/>
+                      </td>
+					  <td class="bg-grey">办理时限</td>
+                      <td class="bg-white">
+                        <input type="text" class="easyui-textbox" data-options="editable:false" style="width:100%;" value="$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelope.limitTime})"/>
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>联系人</td>
+                      <td class="bg-white">
+                        <input type="text" name="contactName" class="easyui-textbox" data-options="required:true,validType:'maxLength[10]'" style="width:100%;" value="$!esc.html($!{currentUser.userName})"/>
+                      </td>
+					   <td class="bg-grey"><span><font color=red>*</font></span>联系电话</td>
+					   <td class="bg-white">
+                        <input type="text" name="contactPhone" class="easyui-numberbox" data-options="required:true,min:0" style="width:100%;" value="$!{currentUser.mobile}"/>
+                      </td>
+                    </tr>
+                 
+                  </tbody>
+              </table>
+          </form>
+      </div>
+      <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+          <div class="bottom-but-dialog">
+              <ul>
+                  <li><a onclick="send()" class="new-but">发送</a></li>
+                  <li><a onclick="back()" class="new-but">关闭</a></li>
+              </ul>
+          </div>
+      </div>
+  </div>
+</div>
+ 
+#@script()
+<script type="text/javascript">
+
+    $('input[name="feedBackType"]').on('click',function(){
+    					var type = $(':radio[name="feedBackType"]:checked').val();
+    					if(type == 5){
+							$("#content").show();
+    						$("#tdName").text('');
+							$("#tdName").append('<span><font color=red>*</font></span>传阅对象');
+							$('#docReadBody').next().show();
+							//赋值，跳过验证
+    						$("#docReadBody").textbox("setValue", ""); 
+    					}else if(type == 6){
+    						$("#tdName").text('');
+							$("#content").hide();
+							//赋值，跳过验证
+    						$("#docReadBody").textbox("setValue", "1"); 
+    					}
+                });
+	
+	
+	
+	$(function(){
+		//$("#content").hide();
+	});
+	 
+
+	　
+    //返回
+    function back() {
+        $('#editWindow').window('close');
+    }
+
+    //发送
+    function send(){
+        if($("#feedBackForm").form('validate')) {
+
+        top.CC.loading("发送中...");
+          $.post("$link.getContextURL()/remotedocswap/send.json",$("#feedBackForm").serialize(),function(result){
+            top.CC.loaded();
+            if(result.id){
+              //$('#id').val(result.id);
+              $('#editWindow').window('close');
+              top.CC.messager({
+                  title:'提示',
+                  msg:'发送成功！'
+              });
+			   
+			  if("paperdoc" == $("#returnType").val()){
+			  	top.CC.addTab({title:'纸质公文办理查询',url:'$link.getContextURL()/remotedocswap/paperDoc/list'});
+			  }else if("docDoing" == $("#returnType").val()){
+			  	top.CC.addTab({title:'电子公文办理查询',url:'$link.getContextURL()/remotedocswap/docReceiveDoing/list'});
+			  }else{
+			  	top.CC.addTab({title:'已签收查询',url:'$link.getContextURL()/remotedocswap/docReceive/list'});
+			  }
+			  
+        	  top.CC.closeTab('公文交换详情');
+            }else{
+              top.CC.messager({
+                  title:'提示',
+                  msg:'服务器连接不上'
+              });
+            }
+          });
+		  
+		  
+        }
+    }
+	  
+</script>
+#end

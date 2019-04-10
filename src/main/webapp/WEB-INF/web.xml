@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <display-name>news_app11</display-name>
+  <description>dmoa application</description>
+  <context-param>
+    <param-name>defaultHtmlEscape</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        WEB-INF/spring/**/*-ctx.xml
+        classpath*:META-INF/spring/*-ctx.xml
+    </param-value>
+  </context-param>
+  <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>utf-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
+  <!--移动端加密解密，对*.mo的请求进行验证解密-->
+  <filter>
+    <filter-name>mobileParamsFilter</filter-name>
+    <filter-class>cn.com.chaochuang.mobile.util.MobileParamsFilter</filter-class>
+    <init-param>
+      <param-name>excludePath</param-name>
+      <!--不进行token校验的请求,用" ; " 分隔-->
+      <!--过滤的请求：手机登录，手机验证-->
+      <param-value>.*/mobile/sys/login.mo;.*/mobile/sys/checkregister.mo;.*/mobile/sys/saveregister.mo;.*/mobile/sys/sendcode.mo;.*/mobile/sys/checkuser.mo</param-value>
+    </init-param>
+    <init-param>
+      <!--是否进行加密解密和token验证-->
+      <param-name>encodeFlag</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>mobileParamsFilter</filter-name>
+    <url-pattern>*.mo</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>HttpMethodFilter</filter-name>
+    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+  <filter>
+    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>HttpMethodFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>mainentry</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>
+            WEB-INF/spring/**/webmvc-config*.xml
+            classpath*:META-INF/spring/webmvc-config*.xml
+            </param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>mainentry</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+
+
+    <!-- cxf -->
+    <servlet>
+        <servlet-name>cxf</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cxf</servlet-name>
+        <url-pattern>/webService/*</url-pattern>
+    </servlet-mapping>
+
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+  <error-page>
+    <exception-type>java.lang.Exception</exception-type>
+    <location>/uncaughtException</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/resourceNotFound</location>
+  </error-page>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+  </welcome-file-list>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>No Access</web-resource-name>
+      <url-pattern>/*</url-pattern>
+      <http-method>OPTIONS</http-method>
+      <http-method>TRACE</http-method>
+    </web-resource-collection>
+    <auth-constraint />
+  </security-constraint>
+
+</web-app>

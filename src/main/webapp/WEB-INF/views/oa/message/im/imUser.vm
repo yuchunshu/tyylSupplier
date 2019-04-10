@@ -1,0 +1,69 @@
+<div class="cc-tableWrap" data-options="region:'center',border:true">
+    <div style="height:30px;width:98%;margin:0px 0 3px 0px;color:#f58c53; text-align:center; line-height:30px; background-color:#f4f3f3;">
+       <div id="selectman"></div>
+    </div>
+    <div style="height:410px;width:98%;overflow-y:scroll;">
+       <ul id="tree"></ul>
+    </div>
+</div>
+#@script()
+<script>
+    var _current_select ;// 当前已选非根节点
+
+    $(function(){
+        $("#tree").tree({
+            url:'$link.getContextURL()/oa/immessage/getUserTree.json',
+            checkbox:false,
+            onlyLeafCheck:false,
+            lines:true,
+            formatter:function(node){
+                // 隐藏的图标  用于消息提醒时显示
+                var divId = "new_icon_" + node.id;
+                return node.text + "<span id='" + divId + "' style='display:none;'><img src='images/icon-new.png' /></span>";
+            },
+            onClick:function(node) {
+                if (node.state == 'closed') {
+                    $("#tree").tree("expand", node.target);
+                }
+                // 若点击了别的树节点则显示与别人的聊天信息
+                if (node != _current_select) {
+                    _current_select = node;
+                    $("#show").text("");// 先清空
+                    // 历史记录3条
+                    threeHistory();
+                }
+
+                if ($("#tree").tree('isLeaf', node.target)) {
+                    // 接收新的消息
+                    receive();
+                    // 滚动条置底
+                    scrollBottom();
+                    $("#selectman").text(node.text);
+                }
+            }
+
+        });
+    });
+    function getCheckUser(){
+
+        var node = $("#tree").tree("getSelected");
+        if (node && $("#tree").tree('isLeaf', node.target)) {
+            _current_select = node;
+        }
+        if (_current_select) {
+            return _current_select.id;
+        }
+        return;
+    }
+    function treeFormatter(node) {
+        // 是否是子节点
+        var leafFlag = $("#tree").tree("isLeaf", node.target);
+        if (leafFlag) {
+            var divId = "new_icon_" + node.id;
+            // 隐藏的图标  用于消息提醒时显示
+            return node.text + "<div id='" + divId + "' style='display:none;'><img src='images/icon-new.png' style='float:left;padding:2px 5px 0 0;'/></div>";
+        }
+        return node.text;
+    }
+</script>
+#end

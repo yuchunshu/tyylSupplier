@@ -1,0 +1,328 @@
+<style type="text/css">
+<!--
+.datagrid-cell,
+.datagrid-cell-group,
+.datagrid-header-rownumber,
+.datagrid-cell-rownumber {
+  line-height: 30px;
+}
+-->
+</style>
+
+#set($bodyattr="class='easyui-layout' style='border:0px;width:850px;height:450px;margin-left:5px;margin-top:5px; padding:0 5px 3px 0;'")
+<div class="cc-tableWrap" data-options="region:'west',split:true" style="width:280px;">
+    <div style="padding:5px 5px;">
+        <ul id="menutree" data-options="url:'$link.getContextURL()/select/Dep/treeLazyDep.json',method:'post',fit:true,lines:true"></ul>
+    </div>
+</div>
+<div class="cc-tableWrap" data-options="region:'center',border:false">
+    <form id="queryForm">
+       <table class="tb2 default-table" id="tb" style="width:100%;">
+            <tr>
+                <td>
+                    <input name="parentId" id="parentId" type="hidden"/>
+                    <input name="containDeps" id="containDeps" type="hidden" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <table id="subdepTable" style="width:100%;height:100%;"
+               data-options="pageList:[10,20],pageSize:10,toolbar:'#queryForm',fitColumns:true,rownumbers:true, singleSelect:false,pagination:false,collapsible:false,url:'$link.getContextURL()/select/incepters/getSubDeps.json'">
+            <thead>
+            <tr>
+                <th field="ck" data-options="checkbox:true"></th>
+                <th data-options="field:'deptName',width:250">科室名称</th>
+                <th data-options="field:'parentDepName',width:300">所属部门</th>
+            </tr>
+            </thead>
+        </table>
+    </table>
+</div>
+<div class="cc-tableWrap" data-options="region:'east',split:true,collapsible:false" style="width:180px;">
+    <table id="peopleSelect" style="width:100%;height:100%;"
+               data-options="fitColumns:true,rownumbers:false,idField:'id',toolbar:'#toolbar2',border:false,singleSelect:true">
+            <thead>
+            <tr>
+                <th data-options="field:'userName',width:250,autoRowHeight:false,formatter:operaterFormatter" style="line-height: 30px;">已选人员</th>
+            </tr>
+            </thead>
+        </table>
+    </table>
+    <div class="cc-operateColum" id="delButton" style="height: auto; padding: 5px 0px 5px 5px;">
+            <a href='javascript:;' class="easyui-linkbutton delete-button l-btn-plain-remove" plain="true" iconCls="icon-remove" onclick="delMan(getRowIdByDom(this))" style="float: right;"></a>
+    </div>
+</div>
+<div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="saveTemp" onclick="doselect()" class="new-but">选择</a></li>
+            <li><a id="back" onclick="doclose()" class="new-but">取消</a></li>
+        </ul>
+    </div>
+</div>
+#@script()
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script>
+    // 设置dialog标题
+    $(document).ready(function() {
+        if (top.setSelectDialogFrameDialogTitle) {
+            top.setSelectDialogFrameDialogTitle("$!{selectDialogTitle}");
+        }
+    });
+
+    // 清除所有已选人员
+    function clearAllSelect() {
+        var rows =  $('#peopleSelect').datagrid('getRows');
+        for (var i=rows.length-1;i>=0;i--) {
+            $('#peopleSelect').datagrid('deleteRow', i);
+        }
+        $('#subdepTable').datagrid('uncheckAll');
+    }
+
+    // 获取row的index
+    function getRowIdByDom(dom){
+
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+
+    // 返回删除按钮
+    function delButton() {
+        var str = "<a href='javascript:;' class='easyui-linkbutton' onclick='delMan(getRowIdByDom(this))' >【删除】</a>";
+        return str;
+    }
+
+    // 删除已选人员
+    function delMan(index) {
+        $('#peopleSelect').datagrid('clearSelections');
+        $('#peopleSelect').datagrid("selectRow",index);
+        var thisRow = $('#peopleSelect').datagrid("getSelected");
+        var depId = thisRow.depId; // 获取删除行的所属部门ID
+
+        // 删除
+        $('#peopleSelect').datagrid('deleteRow', index);
+        var rows =  $('#peopleSelect').datagrid('getRows');
+        $('#peopleSelect').datagrid('loadData',rows);
+
+        if (rows != null && rows.length > 0) {
+            var containFlag = false;
+            for(var i = 0; i < rows.length; i++) {
+                // 判断剩余所选的人员中，是否存在与被删除者同部门的人
+                if (rows[i].depId == depId) {
+                    containFlag = true;
+                    break;
+                }
+            }
+            // 若同部门人员都被删除，则取消选择部门列表的对应记录
+            if (!containFlag) {
+                var depRows = $('#subdepTable').datagrid('getRows');
+                for(var j = 0; j < depRows.length; j++) {
+                    if (depRows[j].id == depId) {
+                        $('#subdepTable').datagrid('unselectRow', j);
+                        break;
+                    }
+                }
+            }
+        } else {
+            $('#subdepTable').datagrid('uncheckAll');
+        }
+    }
+
+    // 搜索
+    function formSearch() {
+        var peopleRows = $('#peopleSelect').datagrid('getRows');
+        var containDeps = "";
+        var lastDep;
+
+        // 获取所有已选择人员的部门
+        for(var j = 0; j < peopleRows.length; j++) {
+            if (lastDep == peopleRows[j].depId) {
+                continue;
+            }
+            if (j == (peopleRows.length-1)) {
+                containDeps += peopleRows[j].depId;
+            } else {
+                containDeps += peopleRows[j].depId + ",";
+            }
+            lastDep = peopleRows[j].depId;
+        }
+        $('#containDeps').val(containDeps);
+
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+        $('#subdepTable').datagrid('reload',obj);
+
+        return false;
+    }
+
+    // 重置
+    function reset(){
+##        var _qf = $("#queryForm");
+##        _qf.form("clear");
+##        $(".easyui-combobox",_qf).each(function(){
+##            $(this).combobox("select"," ");
+##        });
+        // 只清除 userName
+        $("#userName").textbox('setValue', '');
+    }
+
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+
+    //选择
+    function doselect() {
+        var rows =  $('#peopleSelect').datagrid('getRows');
+        if (rows) {
+            top.okSelectDialogFrameDialog(rows);
+        } else {
+            alert("请先选择数据。");
+        }
+        return false;
+    }
+
+
+    var _oneFlag = true;
+    $(document).ready(function(){
+        $('#menutree').tree({
+            // 绑定部门树单击节点事件
+            onSelect:function(node){
+                // 点击树文字展开树节点
+                if ($(this).tree('getSelected').state=='closed') {
+                    $(this).tree('expand',node.target);
+                }
+                $('#parentId').val(node.id);
+                formSearch();
+            },
+            onLoadSuccess:function(node, data){
+                if (_oneFlag) {  // 只在根节点生效
+                    var rootNode = $(this).tree('find', data[0].id);
+                    _oneFlag = false;
+                    $(this).tree('expandAll', rootNode.target);
+                }
+            }
+        });
+
+        $('#subdepTable').datagrid({
+            // datagrid点击行事件
+            onCheck:function(rowIndex,rowData){
+                $.post("$link.getContextURL()/select/incepters/getUserByDep.json",{depId:rowData.id},function(datas){
+                    if(datas){
+
+                        var rows = datas.rows;
+                        for(var i = 0; i < rows.length; i++) {
+                            var peopleRows = $('#peopleSelect').datagrid('getRows');
+                            if (peopleRows != null && peopleRows.length > 0) {
+                                var containFlag = false;
+                                // 查重
+                                for(var j = 0;j< peopleRows.length;j++){
+                                    if (rows[i].id == peopleRows[j].id) {
+                                        containFlag = true;
+                                        break;
+                                    }
+                                }
+                                // 去重
+                                if (containFlag) {
+                                    continue;
+                                }
+                            }
+
+                            //选择人员
+                            var obj = {
+                                id       : rows[i].id,
+                                userName : rows[i].userName,
+                                depId    : rowData.id,       //所属部门ID
+                                depName  : rows[i].depName,
+                                op       : delButton()
+                              };
+                            $('#peopleSelect').datagrid('appendRow', obj);
+                        }
+                    }
+                });
+            },
+            onUncheck:function(rowIndex,rowData){
+                var rows = $('#peopleSelect').datagrid('getRows');
+                for(var i = rows.length-1; i >= 0; i--) {
+                    // 删除已选列表中该部门的所有人
+                    if (rows[i].depId == rowData.id) {
+                        $('#peopleSelect').datagrid('deleteRow', i);
+                    }
+                }
+            },
+            onCheckAll:function(rows){
+                var depRows = $('#subdepTable').datagrid('getRows');
+                var depIds = "";
+                for(var j = 0; j < depRows.length; j++) {
+                    if (j == (depRows.length-1)) {
+                        depIds += depRows[j].id;
+                    } else {
+                        depIds += depRows[j].id + ",";
+                    }
+                }
+                $.post("$link.getContextURL()/select/incepters/getUserByAllDep.json",{depIds:depIds},function(datas){
+                    if(datas){
+                        var rows = datas.rows;
+                        for(var k = 0; k < rows.length; k++) {
+                            var peopleRows = $('#peopleSelect').datagrid('getRows');
+                            if (peopleRows != null && peopleRows.length > 0) {
+                                var containFlag = false;
+                                // 查重
+                                for(var m = 0;m< peopleRows.length;m++){
+                                    if (rows[k].id == peopleRows[m].id) {
+                                        containFlag = true;
+                                        break;
+                                    }
+                                }
+                                // 去重
+                                if (containFlag) {
+                                    continue;
+                                }
+                            }
+                            var obj = {
+                                id       : rows[k].id,
+                                userName : rows[k].userName,
+                                depId    : rows[k].depId,       //所属部门ID
+                                depName  : rows[k].depName,
+                                op       : delButton()
+                              };
+                            $('#peopleSelect').datagrid('appendRow', obj);
+                        }
+                    }
+                });
+
+            },
+            onUncheckAll:function(rows){
+                var peopleRows = $('#peopleSelect').datagrid('getRows');
+                for(var i = 0; i < rows.length; i++) {
+                    // 删除当前页所有部门的人员  不属于这些部门范围的不删除
+                    for(var j = peopleRows.length-1; j >= 0; j--) {
+                       if (rows[i].id == peopleRows[j].depId) {
+                           $('#peopleSelect').datagrid('deleteRow', j);
+                       }
+                    }
+                }
+            },
+        });
+
+        $('#peopleSelect').datagrid({
+            #if($peopleSelectUrl) url: "$link.getContextURL()$!peopleSelectUrl"#end
+        });
+    });
+
+    function operaterFormatter(value,row,index){
+        return '<span class="value-span">' + value + '</span>' + $('#delButton').html();
+    }
+</script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

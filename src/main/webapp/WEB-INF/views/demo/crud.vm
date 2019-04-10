@@ -1,0 +1,21 @@
+<div id="tb" style="padding:2px 5px;">
+#parse("/demo/query.html")
+<hr>
+#parse("/demo/tools.html")
+</div>
+#parse("/demo/table.html")
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()/crud';
+    function fnDemoSelectManCallback(obj){
+        $("#userName").textbox("setValue",obj.userName);
+    }
+    function fnDemoSelectDepCallback(obj){
+        $("#dep").textbox("setValue",obj.depName);
+    }
+</script>
+#end
+##初始化curd典型界面,(放到最后)
+#parse("common/easyui/crud.js.vm")
+##初始化追加操作列,(放到最后)
+#parse("common/easyui/operatorcolumn.js.vm")

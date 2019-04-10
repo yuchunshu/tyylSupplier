@@ -1,0 +1,287 @@
+##正文和附件相关
+## $docIsEdit 是否可编辑附件
+## $docIsType 是否交换公文
+#@script()
+<style type="text/css">
+    .uploadFile{ width:260px; height:50px; border:1px solid #E0E0E0; background-color: #eaeaea; display:inline-block;overflow:hidden;margin:5px 5px 0 0 ;}
+    .uploadImg img{width:50px; height:50px;vertical-align: middle;}
+    .uploadImg{display:inline-block;width:50px; height:50px; }
+    .uploadContent{display:inline-block; height:50px;width:165px;vertical-align: middle; margin-left:6px;}
+    .uploadContent span{ display:block; width:165px; font-size:14px; color:#666; margin-top:2px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+    .uploadContent a:hover{cursor: pointer;}
+    .uploadButton{ display:inline-block;width:30px; vertical-align: middle; float:right;}
+    .uploadButton img:hover{ background-color:#dadddf; cursor:pointer;}
+    .uploadButton span{display:block; width:30px; height:25px; text-align:center;}
+    .uploadFile.previewContent {background-color: #b7d2ff;}
+</style>
+##附件展示模板
+<div id="temp-f-item" style="display: none">
+    <div class="upload uploadFile" id="file-up-{{id}}">
+        <div class="uploadImg">
+            <span>
+                <img id="img-done-{{id}}" src="$link.getContextURL()/images/attach/icon-file.png">
+            </span>
+        </div>
+        <div class="uploadContent">
+            <span>
+                <a title="{{fileName}}" onclick="previewAttachFile('{{fileName}}','{{id}}')">{{fileName}}</a>
+            ##暂存本地文件路径
+                <input type="hidden" id="local-path-{{id}}"/>
+            ##附件id
+                <input type="hidden" id="attach-id-{{id}}"/>
+            </span>
+            <span id="file-info-{{id}}"></span>
+        </div>
+        <div class="uploadButton">
+            <span>
+                #if($docIsEdit)
+                    <img src="$link.getContextURL()/images/attach/uoload-shut.png" onclick="removeAttachattach('{{id}}','{{fileType}}')" title="点击移除附件" id="file-rm-{{id}}">
+                #end
+            </span>
+            <span>
+				#if($docIsType)
+					<img src="$link.getContextURL()/themes/default/icons_Custom/icon-download-alt.png" title="点击下载附件" onclick="downloadFile('#defaultDownloadUrl("remotedocswap")?id=','{{id}}')" id="file-download-{{id}}">
+				#else
+					<img src="$link.getContextURL()/themes/default/icons_Custom/icon-download-alt.png" title="点击下载附件" onclick="downloadFile('#defaultDownloadUrl("sysattach")?id=','{{id}}')" id="file-download-{{id}}">
+				#end
+            </span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="$link.getContextURL()/lib/console.js"></script>
+<script type="text/javascript" src="$link.getContextURL()/js/preview-helper.js"></script>
+<script type="text/javascript">
+    var preAttachListMap=#if($!{attachJson})$!{attachJson}#else{}#end;
+    var baseUrl = "$link.getContextURL()";
+    var _attachTemp = $("#temp-f-item").html();
+    var docPreview=new FilePreview("WebOffice2009","pdf-iframe","$!docIsEdit");
+    docPreview.attachListMap=preAttachListMap;
+    //正文附件标识
+    var mainFile = "mainFile";
+    var mainPdfFile = "OaDocFileMainPdf";
+    $(window).ready(function () {
+        //文件选择上传控件
+        $('.btn-file-up').each(function(){
+            var _this=$(this);
+            var _thisdom = _this.get(0);
+            var _thisurl = _this.attr("uploadurl") ;
+            var _thisswfurl = _this.attr("swfurl") ;
+            var _max_file_size = '50mb';
+            var _type = _this.attr("select-type");
+            var fileCount = 0;
+
+            var uploader = new plupload.Uploader({
+                runtimes : 'html5,flash',
+                browse_button : _thisdom,
+                container : _thisdom.parentNode,
+                url : _thisurl,
+                //正文只能选一个，其他可以多选
+                multi_selection:_type!=mainFile,
+                chunk_size : "1mb",
+                filters : {
+                    max_file_size : _max_file_size,
+                    mime_types : eval('[{"title":"可选文件", "extensions":"*"}]')
+                },
+                // Flash settings
+                flash_swf_url : _thisswfurl,
+
+                preinit : {
+                    UploadFile: function(up, file) {
+                        up.setOption('multipart_params', {fileid: file.id})
+                    }
+                },
+
+                init : {
+                    PostInit : function() {
+                    },
+                    //文件添加后
+                    FilesAdded : function(up, files) {
+                        fileCount=files.length;
+                        //开始上传
+                        plupload.each(files, function(file) {
+                            if (up.state == plupload.STOPPED) {
+                                up.refresh();
+                                docPreview.loading();
+                                up.start();
+                            }
+                        });
+                    },
+
+                    UploadProgress : function(up, file) {
+                        //文件上传时 file.percent
+                    },
+                    FileUploaded: function(up, file, info) {
+                        //上传完毕
+                        if (info && (info.status == "200")) {
+                            if (info.response) {
+                                var data = JSON.parse(info.response);
+                                createAttachHtml({
+                                    id:data.id,
+                                    name:file.name,
+                                    __fileType:_type
+                                });
+                                //打开预览
+                                if (fileCount === 1) {
+                                    previewAttachFile(file.name, data.id);
+                                }
+                            }
+                        }
+                        docPreview.loadingEnd();
+                    },
+                    Error : function(up, err) {
+                        if (plupload.FILE_SIZE_ERROR == err.code) {
+                            alert("选择的文件大小为 " + plupload.formatSize(err.file.size) + " ，超过了最大上传文件大小 " + _max_file_size + " 的限制。");
+                        }
+                        docPreview.loadingEnd();
+                    }
+                }
+            });
+
+            uploader.init();
+        });
+        //显示附件
+        if (preAttachListMap){
+            for (var id in preAttachListMap){
+                createAttachHtml(preAttachListMap[id]);
+                if (preAttachListMap[id].__fileType==mainFile){
+                    //默认显示正文
+                    previewAttachFile(preAttachListMap[id].name, preAttachListMap[id].id);
+                }
+            }
+        }
+    });
+    $(window).unload(function(){
+        //窗口关闭时执行（IE8不触发unload）
+        docPreview.ggDeleteLocalFile();
+    });
+    //显示附件
+    function createAttachHtml(info) {
+        if (info){
+            var attachItem = _attachTemp.replace(/{{fileName}}/g,info.name).replace(/{{id}}/g,info.id);
+            if (info.__fileType==mainFile){
+                attachItem = attachItem.replace(/{{fileType}}/g,mainFile);
+                //正文附件，只有一个正文
+                if (docPreview.attachListMap){
+                    for(var attachId in docPreview.attachListMap){
+                        if (docPreview.attachListMap[attachId]&&docPreview.attachListMap[attachId].__fileType==mainFile){
+                            delete docPreview.attachListMap[attachId];
+                        }
+                    }
+                }
+                //正文附件，只有一个正文
+                $("#doc-file-c").html(attachItem);
+            }else if (info.__fileType == mainPdfFile){
+                //正文的pdf格式
+                $("#pdf-file-c").html(attachItem);
+            }else{
+                attachItem = attachItem.replace(/{{fileType}}/g,'');
+                //其他附件
+                info.__fileType="";
+                $("#other-file-c").append(attachItem);
+            }
+            $("#attach-id-"+info.id).val(info.id);
+            docPreview.attachListMap[info.id]=info;
+        }
+        //保存附件id
+        putAttachId(docPreview.attachListMap);
+    }
+
+    //把附件id放入表单中
+    function putAttachId(attachListMap) {
+        var attachIdList = [];
+        for (var attachId in attachListMap){
+            if (attachListMap[attachId]&&attachListMap[attachId].__fileType==mainFile){
+                var pathInfo = docPreview.getFilePathInfo(attachListMap[attachId].__serverPath);
+                //正文附件
+                $("#docId").val(attachId);
+            }else {
+                attachIdList.push(attachId);
+            }
+        }
+        //非正文附件
+        $("#attach").val(attachIdList.join(","));
+    }
+
+    //删除附件
+    function removeAttachattach(id,type) {
+        $.messager.confirm('提示','确定删除附件吗?',function(r) {
+            if (r) {
+                $("#file-up-"+id).remove();
+                if (docPreview.previewFileId == id){
+                    $("#content-attach-2").hide();
+                    $("#content-attach").hide();
+                }
+                if (type == mainFile){
+                    //正文附件
+                    $("#docId").val("");
+                }
+                delete docPreview.attachListMap[id];
+                putAttachId(docPreview.attachListMap);
+            }
+        });
+    }
+
+    //附件预览
+    function previewAttachFile(fileName,attachId) {
+        if (attachId){
+            //附件信息
+            var attachInfo = docPreview.attachListMap[attachId];
+            $("#file-up-"+docPreview.previewFileId).removeClass("previewContent");
+            if (fileName&&/.pdf$/.test(fileName)){
+                //属于pdf文件
+                docPreview.previewPdf(attachId);
+                $("#file-up-"+attachId).addClass("previewContent");
+                $("#content-attach-2").show();
+                $("#content-attach").hide();
+            }else if (docPreview.ggCanOpen(fileName)){
+                //查看本地文件是否存在
+                var localPath = attachInfo.__localPath;
+                if (docPreview.ggWebFileExists(localPath)) {
+                    docPreview.ggWebOpenLocalFile(localPath,attachId);
+                    $("#file-up-"+attachId).addClass("previewContent");
+                    $("#content-attach").show();
+                    $("#content-attach-2").hide();
+                } else {
+                    #if($docIsType)
+                        $.get(baseUrl + "/remotedocswap/getInfo.json?attachId=" + attachId, function (result) {
+                            docPreview.ggDownloadAndOpenFile(result.savePath,attachId);
+                            $("#file-up-"+attachId).addClass("previewContent");
+                            $("#content-attach").show();
+                            $("#content-attach-2").hide();
+                        });
+                    #else
+                        $.get(baseUrl + "/sysattach/getInfo.json?attachId=" + attachId, function (result) {
+                            docPreview.ggDownloadAndOpenFile(result.savePath,attachId);
+                            $("#file-up-"+attachId).addClass("previewContent");
+                            $("#content-attach").show();
+                            $("#content-attach-2").hide();
+                        });
+                    #end
+                }
+
+            }else{
+                $("#content-attach-2").hide();
+                $("#content-attach").hide();
+            }
+        }
+    }
+
+    //下载文件
+    function downloadFile(url,attachId) {
+        $("body").append("<iframe src='"+url+attachId+"' style='display: none;' ></iframe>");
+    }
+</script>
+## 金格自定义按钮事件
+<SCRIPT language=javascript for=WebOffice2009 event=OnToolsClick(vIndex,vCaption)>
+    #if($docIsEdit)
+    if (vIndex == 5 || vIndex == -2) {
+        //保存操作
+        var r = docPreview.ggWebPutCurrFile();
+        $.messager.show({
+            title: '提示',
+            msg: r ? '保存成功' : '保存失败'
+        });
+    }
+    #end
+</SCRIPT>
+#end

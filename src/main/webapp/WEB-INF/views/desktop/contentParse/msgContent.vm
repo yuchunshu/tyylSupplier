@@ -1,0 +1,265 @@
+<div class="easyui-layout" fit="true">
+    <div class="cc-tableWrap" data-options="region:'center',border:false" >
+        <form id="queryForm">
+            <input type="hidden" id="mesType" name="$qc.equal('mesType')" value="$!{mesType}">
+        </form>
+        <table id="dg" data-options="singleSelect:true" style="width:100%;height:100%">
+            <thead>
+            <tr>
+                <th style="width:500px;" data-options="field:'content',formatter:detailUrl">内容</th>
+##                <th style="width:80px;" data-options="field:'mesType'">消息类型</th>
+                <th style="width:80px;" data-options="field:'sendManName'">发送人</th>
+                <th style="width:150px;" data-options="field:'createTimeShow'">发送时间</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div  id="clearDialog" class="easyui-dialog  query-tc" title="消息清理" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#clearbtns'"
+    style="width:500px;height:180px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td style="text-align: right">清理类型：</td>
+            <td>
+                <form id="clearForm">
+                    <label><input name="cleartype" type="radio" value="3" checked>全部已阅</label>
+                    <label><input name="cleartype" type="radio" value="2">仅保留30天内的消息</label>
+                    <label><input name="cleartype" type="radio" value="1">清理全部</label>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="clearbtns" style="top:0px; height:25px; width:auto;">
+    <a class="new-but" onclick="clearMsg()">执行</a>
+    <a class="new-but" onclick="$('#clearDialog').dialog('close');">取消</a>
+</div>
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()/oa/appmessage';
+    var _listJsonUrl = '/getWelcomeMsg.json';
+
+    // 清理
+    function clearMsg(){
+        $.messager.confirm('警告','确定要执行该操作吗?',function(r){
+            if (r){
+                $("#clearDialog").dialog("close");
+                $.post('$link.getContextURL()/oa/appmessage/dealClearMsg', $('#clearForm').serialize(), function(result){
+                    if (result.success){
+                        $('#dg').datagrid('reload'); // reload the user data
+                        $('#dg').datagrid('uncheckAll');
+
+                        // 重新计算右上角未阅消息数量
+                        countSecond();
+
+                        showMsg({ // show error message
+                            title: '成功',
+                            msg: result.success
+                        });
+                    } else {
+                        showMsg({ // show error message
+                            title: '错误',
+                            msg: result.error
+                        });
+                    }
+                },'json');
+            }
+        });
+    }
+
+    // 消息提醒(首页无法使用top.CC.messager)
+    function showMsg(options) {
+        options.timeout = 3000;
+        $.extend(options, {
+            style : {
+                right : '',
+                top : document.body.scrollTop + document.documentElement.scrollTop,
+                bottom : ''
+            }
+        });
+        $.messager.show(options);
+    }
+
+##    function getRowIdByDom(dom){
+##        var tr =$(dom).parent().parent().parent();
+##        return tr.attr("datagrid-row-index");
+##    }
+
+    String.prototype.startWith=function(str){
+        if(str==null||str==""||this.length==0||str.length>this.length)
+          return false;
+        if(this.substr(0,str.length)==str)
+          return true;
+        else
+          return false;
+        return true;
+    }
+
+    function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        $('#dg').datagrid("selectRow",index);
+        var row = $('#dg').datagrid("getSelected");
+
+##        var appId = "1";
+##        var tabTitle = "";
+##        var tabUrl = "";
+##
+##        var closeFlag = false;
+
+        if (row.mesTypeKey == '9') {
+            $.post("$link.getContextURL()/oa/appmessage/dealRead.json", {id:row.id}, function(result){
+                openIm();
+                $("#msgNum").text($("#msgNum").text()-1);
+                $("#editWindow").window("close");
+            },'json');
+        } else {
+            if (row.url && row.url != "") {
+                $.post("$link.getContextURL()/oa/appmessage/dealRead.json", {id:row.id}, function(result){
+                    var temp = row.url;
+                    var array = temp.split("&");
+                    var tabTitle = "";
+                    var tabUrl = "$link.getContextURL()/";
+                    if (typeof(array) != undefined && array.length > 0) {
+                        for (var i = 0; i < array.length; i++) {
+                            if (array[i].startWith("tabTitle")) {
+                                tabTitle = array[i].substring(array[i].lastIndexOf("=") + 1);
+                                continue;
+                            }
+                            if (array[i].startWith("tabUrl")) {
+                                tabUrl += array[i].substring(array[i].lastIndexOf("=") + 1);
+                                continue;
+                            }
+                        }
+                    }
+                    top.CC.addTab({title:tabTitle,url:tabUrl});
+                    $('#editWindow').window('close');
+##                    window.location = "$link.getContextURL()/common/index?" + row.url;
+                },'json');
+            } else {
+                showMsg({ // show error message
+                    title: '错误',
+                    msg: '数据不完整，请联系管理员。'
+                });
+            }
+        }
+
+##        switch(row.mesTypeKey)
+##        {
+##            case '0':
+##              tabTitle = "待办事项";
+##              tabUrl = "$!pendingFilePath";
+##              break;
+##            case '1':
+##              tabTitle = "待阅事项";
+##              tabUrl = "$!toReadMatterPath";
+##              break;
+##            case '2':
+##              tabTitle = "收件箱";
+##              tabUrl = "$!mailPath";
+##              break;
+##            case '3':
+##              tabTitle = "我的会议";
+##              tabUrl = "$!meetingPath";
+##              break;
+##            case '4':
+##              tabTitle = "我的日程";
+##              tabUrl = "$!schedulePath";
+##              break;
+##            case '5': // 其余业务模块（信访、监督等）
+##              $.ajax({
+##                   url         : '$link.getContextURL()/oa/appmessage/dealRead.json',
+##                   async       : false, // 同步
+##                   cache       : false,
+##                   type        : 'post',
+##                   dataType    : 'json',
+##                   data        : {
+##                                   'id':row.id
+##                                 },
+##                   success     : function(result){
+##                                    window.location = "$link.getContextURL()/common/index?" + row.url;
+##                                 }
+##              });
+##            case '9': // 即时消息
+##              openIm();
+##              $("#msgNum").text($("#msgNum").text()-1);
+##              $("#editWindow").window("close");
+##              closeFlag = true;
+##              break;
+##            default :
+##              break;
+##        }
+##
+##        if (closeFlag) {
+##            return;
+##        } else {
+##            $.post("$link.getContextURL()/oa/appmessage/dealRead.json", {id:row.id}, function(result){
+##                window.location = "$link.getContextURL()/common/index?appId=" + appId + "&tabTitle=" + tabTitle + "&tabUrl=" + tabUrl;
+##            },'json');
+##        }
+    }
+
+    function detailUrl(value,row) {
+        var pic = "";
+        if (row.isRead == '否') {
+            pic = "<img src='images/icon-new.png' style='float:left;padding:2px 5px 0 0;'/>";
+        }
+        var rowIndex = $("#dg").datagrid("getRowIndex",row);
+        return "<span style=''><a href='javascript:;' class='font-titlecolor msg-info' style='float:left;' onclick='detailRow(" + rowIndex + ")' title='" + value + "'  >" + pic + value + "</a></span>";
+    }
+
+    //全局变量覆盖：_baseUrl，_listJsonUrl
+    $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            fitColumns:false,//列宽自适应
+            fit:false,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            pagination:true,//显示分页工具条
+            singleSelect:true,//单选
+##            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+</script>
+#end

@@ -1,0 +1,235 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" >
+        <div id="docTab" class="easyui-tabs tabs-trapezoid"  fit="true" border="false">
+        <div title="用车申请办理#if(${curNode})($!{curNode.nodeName})#end" style="padding:5px;">
+            <div id="wordMenu" style="display:none;"></div>
+            <div style="border:1px solid #e0e0e0;">
+				#parse("pubaffairs/car/inner/swsign.vm")
+                </br>
+            </div>
+            <form id="editForm" method="post">
+                <input id="id" name="id" type="hidden" value="$!{obj.id}"/>
+                <input id="flowId" name="flowId" type="hidden" value="$!{obj.flowId}"/>
+                <input id="flowInstId" name="flowInstId" type="hidden" value="$!{obj.flowInstId}"/>
+                <input id="curNodeId" name="curNodeId" type="hidden" value="$!{curNode.id}"/>
+                <input id="curNodeInstId" name="curNodeInstId" type="hidden" value="$!{curNodeInstId}"/>
+                <input id="nextTaskId" name="nextTaskId" type="hidden" value=""/>
+                <input id="nextNodeId" name="nextNodeId" type="hidden" value=""/>
+                <input id="nextDealers" name="nextDealers" type="hidden" value=""/>
+                <input id="comId" name="comId" type="hidden" value="$!{comId}"/>
+                <input id="userIds" type ="hidden" name="userIds" type="userIds" value=""/>
+                <input id="fileType" name="fileType" type="hidden" value="6"/>
+                <input id="createrDepId" name="createrDepId" type="hidden" #if($obj) value="$!{obj.deptId}" #else value="$!{currUser.department.id}" #end/>
+                <input id="creatorId" name="creatorId" type="hidden" #if($obj) value="$!{obj.creatorId}" #else value="$!{currUser.id}" #end/>
+                <input id="status" name="status" type="hidden" value="$!{obj.status}"/>
+                <input id="docEditable" name="docEditable" type="hidden" #if("$!{curNode.docEditable.key}"=="1" || $!{funcList.contains("N1")}) value="1" #else value="0" #end/>
+                <input id="version_" name="version_" type="hidden" value="$!{obj.version_}"/>
+                <input id="readmans" name="readmans" type="hidden" value=""/>
+                <input id="createDate" name="createDate" type="hidden" value="$!{obj.createDate}"/>
+
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+        #if($!{funcList.contains("N1")})## 拟稿环节
+			#parse("pubaffairs/car/inner/info_edit.vm")
+        #else## 在办环节
+            #if("$!{curNode.editFlag.key}"=="1")## 可编辑意见
+				<input name="copySend" type="hidden" value="$!{obj.copySend}"/>
+				<input name="reportSend" type="hidden" value="$!{obj.reportSend}"/>
+				<input name="mainSend" type="hidden" value="$!{obj.mainSend}"/>
+				<input name="remark" type="hidden" value="$!{obj.remark}"/>
+				<input id="deadlineType" name="deadlineType" type="hidden" value="$!{obj.deadlineType}"/>
+                <input id="documentType" name="documentType" type="hidden" value="$!{obj.documentType}"/>
+    				#if("$!{curNode.docEditable.key}"=="1")## 可编辑公文
+    					#if("$!{curNode.nodeName}" == "办公室领导审批")
+							<tr>
+								<td class="bg-grey">
+									<span><font color=red>*</font></span>车牌号
+								</td>
+								<td class="bg-white">
+									<input style="width:100%;" id="carNumber" name="carNumber" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{obj.carNumber}"/>
+								</td>
+								<td class="bg-grey">
+									<span><font color=red>*</font></span>司机名称
+								</td>
+								<td class="bg-white">
+									<input style="width:100%;" id="driver" name="driver" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{obj.driver}"/>
+								</td>
+							</tr>
+    					#end
+    				#end
+                    <tr>
+                        <td class="bg-grey">
+                            办理意见 <br/>
+                            <a href="javascript:;" id="menuBtn" class="easyui-linkbutton l-btn-plain-search"  onclick="showMenu()" >个人词条</a>
+                        </td>
+                        <td class="bg-white" colspan="3">
+                            <textarea id="opinion" class="textareaborder" name="opinion" rows="4" maxlength="255"  style="width:99%;resize:none;" >$!{oppr}</textarea>
+                        <div style="height:32px;line-height:32px">
+                            <label><input type="radio" name="quikfill" onclick="apendToOpinion(this)" value="同意"/> 同意</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="quikfill" onclick="apendToOpinion(this)"  value="已阅"/> 已阅</label>&nbsp;&nbsp;
+                            <label><input type="radio" name="quikfill" onclick="apendToOpinion(this)"  value="不同意"/> 不同意</label>&nbsp;&nbsp;
+                        </div>
+                        </td>
+                    </tr>
+                #if("$!{curNode.docEditable.key}"=="0")## 不可编辑公文
+					<tr>
+                      <td class="bg-grey">附件</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{obj.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('leaveAttach')", false, "#defaultUploadUrl('leaveAttach')", false)
+                      </td>
+                    </tr>
+				#end
+				
+            #elseif("$!{curNode.editFlag.key}"=="0" || "$!{curNode.editFlag.key}"=="3")## 不可编辑意见，校对
+                #if("$!{curNode.docEditable.key}"=="0")## 不可编辑公文
+				<input name="copySend" type="hidden" value="$!{obj.copySend}"/>
+				<input name="reportSend" type="hidden" value="$!{obj.reportSend}"/>
+				<input name="mainSend" type="hidden" value="$!{obj.mainSend}"/>
+				<input name="remark" type="hidden" value="$!{obj.remark}"/>
+				
+				<tr>
+                  <td class="bg-grey">附件</td>
+                  <td colSpan="3" class="bg-white" attachId="$!{obj.id}">
+                    #formfilemulty("attach", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('leaveAttach')", false, "#defaultUploadUrl('leaveAttach')", false)
+                  </td>
+                </tr>
+                #end
+            #end
+            #if("$!{curNode.docEditable.key}"=="1")## 可编辑公文
+                    <tr>
+                        <td class="bg-grey" colspan="4" style="text-align:center;">申请信息</td>
+                    </tr>
+					#parse("pubaffairs/car/inner/info_edit.vm")
+            #else
+            #end
+		#end
+		#if($!{funcList.contains("TUR")})  ##转办
+				<tr id="receiveFilefileTr1" align="left">
+                    <td class="bg-grey"  align="right">选择流程 </td>
+                    <td class="bg-white"  colSpan="3" align="left">
+						<select name="flow" id="flow" class="easyui-combobox"  panelheight="auto" style="width:155px;">
+                             <option value="" selected >--请选择--</option>
+                             #foreach( $data in $!{flowList} )
+                             <option value="$!{data.flowType}">$!{data.flowName}</option>
+                             #end
+						</select>                        
+					</td>
+                </tr>
+    	#end
+                </tbody>
+                </table>
+            </form>
+        </div>
+
+
+        #if("$!{opflag}"!="3")
+        <div title="办理过程"  data-options="href:'$link.getContextURL()/workflow/event/getTasklist?entityId=$!{obj.id}'">
+        </div>
+        #end
+        #if("$!{obj.topiced}"=="1")## 已经上会
+        #end
+        </div>
+    </div>
+
+    #parse("pubaffairs/pubaffairsparse/buttonadd.vm")
+</div>
+
+<div id="selNodesWindow" class="easyui-window" title="提交到下一环节" style="width:350px;height:330px;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+
+
+</div>
+#@script()
+<script type="text/javascript">
+
+    $(function(){
+      var opinionWidth= $('body').width();
+      $('#opinionExp').width(opinionWidth-24);
+      $('#opinionColl').width(opinionWidth-24);
+
+      //$('#opinion').textbox('textbox').focus();
+
+    });
+
+
+    function getAppr(apprSelect){
+        if(apprSelect.checked){
+            var apprOp =$('#apprOpinion').val();
+            if(apprOp.trim()==""){
+                apprOp = apprSelect.value;
+            }else{
+                apprOp += " "+apprSelect.value;
+            }
+            $('#apprOpinion').val(apprOp);
+        }
+    }
+
+    function opinionWord(item) {
+        $('#opinion').val(item.text);
+    }
+
+    //个人词条显示
+    $(function(){
+        $.post("$link.getContextURL()/oa/personal/getWordMenu.json",function(menuList){
+            if (menuList) {
+                var menuOptions = '';
+                for (var i = 0; i < menuList.length; i++) {
+                    menuOptions += '<div>' + menuList[i].word + '</div>';
+                }
+                $('#wordMenu').html(menuOptions);
+                initWordMenu();
+            }
+        });
+    })
+
+    function initWordMenu() {
+        $('#wordMenu').menu({
+            onClick:opinionWord
+        });
+    }
+
+    function showMenu() {
+        // var elmOffset = $('#menuBtn').offset();
+        // $('#wordMenu').menu('show',{left:elmOffset.left + 20, top:elmOffset.top + 20});
+
+        var _callbackname = "fnSelectWordCallback";
+        var _url = "$link.getContextURL()/oa/personal/getWordSelect";
+        var _callback_fn = window[_callbackname];
+        var dfn = top.window.openSelectDialogFrameDialog;
+        if (typeof dfn === "function") {
+            dfn(_url, _callback_fn);
+        }
+    }
+
+    function fnSelectWordCallback(obj) {
+        if (obj) {
+            var oldVal = $('#opinion').val();
+            if ($.trim(oldVal) == "") {
+                $('#opinion').val(obj.word);
+            } else {
+                $('#opinion').val(oldVal + " " + obj.word);
+            }
+        }
+    }
+
+    function apendToOpinion(that){
+        if($(that).val()){
+            if($("#opinion").val()){
+                $("#opinion").val($("#opinion").val() + " " + $(that).val());
+            }else{
+                $("#opinion").val($(that).val());
+            }
+        }
+
+    }
+</script>
+#end
+

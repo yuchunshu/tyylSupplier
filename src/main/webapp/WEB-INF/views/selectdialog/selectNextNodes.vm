@@ -1,0 +1,112 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                #if("$!flagBean.nextOpenSel" == "false")
+                <tr>
+                    <td width="60"></td>
+                    <td class="bg-white" >
+                       <label class="myselect-task">
+                         <input type="radio" id="nodeId" name="nodeId" class="easyui-validatebox" checked data-options="required:true" value="$!flagBean.nodeId"/>$!flagBean.nodeName： $!flagBean.dealerName<br>
+                       </label>
+                    </td>
+                </tr>
+                #else
+
+				#foreach($dt in $!nodes)
+				<tr>
+                    <td width="60"></td>
+                    <td class="bg-white" >
+                        ##如果只有一个环节，自动选中
+                         <label class="myselect-task">
+                            <input type="radio" id="nodeId" name="nodeId" class="easyui-validatebox" #if($!nodesCount == 1) checked #end data-options="required:true" value="$dt.id"/>$dt.nodeName<br>
+                         </label>
+                    </td>
+                </tr>
+                #end
+                #end
+            </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+            <div class="bottom-but-dialog">
+                <ul>
+                    <li><a id="gotoNext" onclick="gotoNext('$!startflow')" class="new-but">确定</a></li>
+                    <li><a id="closew" onclick="closew()" class="new-but">取消</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function closew() {
+		showWebOffice('WebOffice2009');
+        $('#selNodesWindow').window('close');
+    }
+    //保存
+    function save(){
+        if($("#editForm").form('validate')) {
+        top.CC.loading("正在提交，请稍后。。。");
+            $.post("$link.getContextURL()/oa/personal/save.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                  top.CC.loaded();
+                    $('#id').val(result.id);
+                    $('#dg').datagrid('reload');
+                    $('#editWindow').window('close');
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+
+  // 提交
+  function gotoNext(startflow) {
+        var node = $("input[name='nodeId']:checked")
+        if(node.length<=0){
+            $.messager.alert('提示','请选择下一环节！','info');
+            return false;
+        }
+
+	  $('#selNodesWindow').window('close');
+
+      if("N999" == node.val()) {
+          $('#nextNodeId').val(node.val());
+          // 如果选中结束环节，直接办理，不需要弹出选人
+	      fnTaskDone();
+	  } else {
+	      #if("$!flagBean.nextOpenSel" == "false")
+		      // 不需要选人，直接默认提交
+		      $('#nextNodeId').val("$!flagBean.nodeId");
+		      $('#nextDealers').val("$!flagBean.dealerId");
+		      // 处理环节
+		      fnTaskDone();
+
+	      #else
+	          selNodeId = $('input[name="nodeId"]:checked').val();
+		      if (startflow != "") {
+		          start();   //启动流程
+		      } else {
+		          doSend();
+
+		      }
+	      #end
+      }
+
+  }
+
+</script>
+#end

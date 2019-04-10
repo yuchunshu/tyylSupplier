@@ -1,0 +1,19 @@
+&nbsp;&nbsp;姓名：
+<input name="$qc.equal('department.id')" id="department" type="hidden"/>
+<input name="$qc.like('userName')" id="userName" class="easyui-textbox" type="text"/>
+#@script()
+<script>
+    // 重写search方法
+    function formSerach() {
+        $("#department").val("");
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+        $('#datasDg').datagrid('reload',obj);
+        $('#menutree').find('.tree-node-selected').removeClass('tree-node-selected'); ##取消树选中
+        return false;
+    }
+</script>
+#end

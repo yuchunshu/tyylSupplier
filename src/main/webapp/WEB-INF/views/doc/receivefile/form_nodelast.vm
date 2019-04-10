@@ -1,0 +1,74 @@
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" >
+            <div id="docTab" class="easyui-tabs tabs-trapezoid"  fit="true" border="false">
+                <div title="处理笺" style="padding:10px;">
+                    <div id="cc" class="easyui-layout"  data-options="fit:true" >
+                        <div data-options="region:'center'" >
+                            #parse("oa/tobeproj/inner/jdsign.vm")
+                            </br>
+                        </div>
+                        <div data-options="region:'south'" style="height:60px;" class="mynoborder">
+                            <form id="editForm" method="post">
+                             <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+
+                                  <input  id="id" name="id" type="hidden" value="$!{obj.id}"/>
+                                  <input  id="flowId" name="flowId" type="hidden" value="$!{obj.flowId}"/>
+                                  <input  id="flowInstId" name="flowInstId" type="hidden" value="$!{flowInstId}"/>
+                                  <input  id="fordoId" name="fordoId" type="hidden" value="$!{fordoId}"/>
+                                  <input name="taskId" id="taskId" type="hidden" value="$!{taskId}"/>
+                                  <input name="nextTaskId" id="nextTaskId" type="hidden" value=""/>
+                                  <input name="nextTaskKey" id="nextTaskKey" type="hidden" value=""/>
+                                  <input  id="rtitle" name="title" type="hidden" value="$!{obj.title}"/>
+                                  <input name="nextDealers" id="nextDealers" type="hidden" value=""/>
+                                  <input  id="comId" name="comId" type="hidden" value="$!{comId}"/>
+                                  <input  id="userIds" type ="hidden" name="userIds" type="userIds" value=""/>
+                                  <input  id="fileType" type="hidden" value="1"/>
+                                  <input name="filepath" id="filepath" type="hidden" value="$!{docpath}/$!{docname}"/>
+                                  <input id="createrDepId" name="createrDepId" type="hidden" #if($obj) value="$!{obj.createrDept.id}" #else value="$!{currUser.department.id}" #end/>
+                                  <input id="creatorId" name="creatorId" type="hidden" #if($obj) value="$!{obj.creatorId}" #else value="$!{currUser.id}" #end/>
+                                  <input id="status" name="status" type="hidden" value="$!{obj.status}"/>
+
+                                <tbody>
+                                    <tr id="receiveFilefileTr1" align="left">
+                                        <td class="bg-grey"  align="right" width="120px">附件</td>
+                                        <td class="bg-white"  colSpan="3" align="left" attachId="$!{obj.id}">
+                                            #formfilemulty("attach", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('sysattach')", false, "#defaultUploadUrl('sysattach')",false)
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+                ##<div id="gwzw" title="正文"  data-options="href:'$link.getContextURL()/doc/event/editDoc?docpath=$!{docpath}&docname=$!{docname}&flowId=$!{flowId}&taskKey=$!{nfsetting.taskKey}&opflag=$!{opflag}'"></div>
+
+               ##<div title="阅知"  data-options="href:'$link.getContextURL()/doc/readMatter/listFileRead?id=$!{obj.id}'"></div>
+
+                #if("$!{opflag}"!="3")
+                <div title="办理过程"  data-options="href:'$link.getContextURL()/workflow/event/listHisTask?flowInstId=$!{flowInstId}'">
+                 </div>
+                ##<div title="轨迹图"  >
+                  ##  <iframe src="$link.getContextURL()/diagram-viewer/index.html?processDefinitionId=$!{flowId}&processInstanceId=$!{flowInstId}"></iframe>
+                ##</div>
+                #end
+
+
+            </div>
+    </div>
+
+   <div data-options="region:'south'" style="height:52px">
+        <div class="bottom-but">
+            <ul>
+             ##   <li><a onclick="doPrint()" class="new-but">打印处理笺</a></li>
+              ##   <li> <a  onclick="accept()" id="selectDepDialog" href="javascript:;" iconcls="icon-search" class="new-but">合并修订</a></li>
+                ##   <li><a onclick="doPrintZW()" class="new-but">打印正文</a></li>
+              ##   <li><a id="doFinish" onclick="doFinish()" class="new-but">办结</a></li>
+             ##    <li><a id="back" onclick="back()" class="new-but">取消</a></li>
+              #parse("doc/fileparse/buttonadd.vm")
+            </ul>
+        </div>
+   </div>
+</div>

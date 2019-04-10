@@ -1,0 +1,205 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        #if($power.checkShowMenu("上传APK","/appmanage/add"))
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" onclick="addApkInfo()" plain="true">新增</a>
+        #end
+
+        #if($power.checkShowMenu("作废APK","/appmanage/deleteapk.json"))
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delApkInfo()">删除</a>
+        #end
+
+        <a onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+           class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+        <a onclick="top.CC.closeCurTab()"
+           class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:280px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <form id="queryForm" method="post">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="text-align: right">包名:</td>
+                    <td>
+                        <input name="$qc.like('packageName')" class="easyui-textbox" style="width:300px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">上传时间:</td>
+                    <td>
+                        <input name="$qc.greaterThanOrEqualTo('uploadTime')" class="easyui-datetimebox" data-options="editable:false" style="width:140px;">
+                        至
+                        <input name="$qc.lessThanOrEqualTo('uploadTime')" class="easyui-datetimebox" data-options="editable:false" style="width:135px;">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: right">状态</td>
+                    <td>
+                        <select id="status" name="$qc.equal('status')" class="easyui-combobox" data-options="editable:false" style="width:300px;" panelheight="auto">
+                            #formoption($!{obj.status} $dict.isvalid)
+                        </select>
+                    </td>
+                </tr>
+
+            </table>
+        </form>
+
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+
+    </div>
+    <div class="cc-tableWrap mainborder-Padding" data-options="region:'center',border:false">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+            <tr>
+                <th style="width:10%" data-options="field:'appPlatform'">平台</th>
+                <th style="width:15%" data-options="field:'packageName'">名称</th>
+                <th style="width:15%" data-options="field:'appVersion'">版本号</th>
+                <th style="width:24%" data-options="field:'packageScript'">描述</th>
+                <th style="width:10%" data-options="field:'updateFlag'">更新标识</th>
+                <th style="width:15%" data-options="field:'uploadTimeShow'">上传时间</th>
+                <th style="width:10%" data-options="field:'status'">状态</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+#@script()
+<script>
+    //全局变量覆盖：_baseUrl，_delJsonUrl,_canJsonUrl,_newJsonUrl,_editJsonUrl,_listJsonUrl
+    $(document).ready(function () {
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']", _querForm);
+        var _btnClear = $("[iconCls='icon-undo']", _querForm);
+        if (_btnSearch) {
+            _btnSearch.on('click', formSerach);
+        }
+        if (_btnClear) {
+            _btnClear.on('click', reset);
+        }
+
+        function addPageCondition(param) {
+            $.extend(param, getConditions());
+        }
+
+        function getConditions() {
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for (var i = 0; i < f.length; i++) {
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+
+        function reset() {
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox", _qf).each(function () {
+                $(this).combobox("select", " ");
+            });
+        }
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            loadFilter: datagridHtmlEncode,
+            fitColumns: false,//列宽自适应
+            fit: true,//自适应
+            nowrap: false, //不可换行
+            rownumbers: true,//行号
+            #if ($!type == 'query')
+                singleSelect: true,//单选
+            #end
+            idField: 'id',
+            pagination: true,//显示分页工具条
+            toolbar: '#tb',//工具条
+            pageSize: 20,//每页记录数
+            pageList: [20],//可选每页记录数
+            url: _baseUrl + (_listJsonUrl || '/listapk.json'),//获取数据的url
+            onBeforeLoad: addPageCondition//提交查询时追加翻页条件
+        });
+    });
+    var _baseUrl, _delJsonUrl, _canJsonUrl, _newJsonUrl, _editJsonUrl, _listJsonUrl, _detailJsonUrl;
+
+    //行内操作的方法，编辑、详情
+    var _datagrid = $("#dg");
+    var _toolbar = $("#tb");
+
+    function operaterFormatter(value, row, index) {
+        return $(".cc-operateColum", _datagrid.parents(".cc-tableWrap")).html();
+    }
+
+    function getRowIdByDom(dom) {
+        var tr = $(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+
+</script>
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()/appmanage';
+    var _listJsonUrl = '/listapk.json';
+    var _newJsonUrl = '/newapk';
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset() {
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox", _qf).each(function () {
+            $(this).combobox("select", " ");
+        });
+    }
+
+    $('#dg').datagrid({
+        singleSelect: true
+    });
+
+    function addApkInfo() {
+        var url = _baseUrl + (_newJsonUrl || '/new');
+        //top.CC.addTab({title: '上传APK', url: url});
+        window.location.href = url;
+    }
+
+    function delApkInfo() {
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows && rows.length > 0){
+            $.messager.confirm('提示','确定删除这条记录吗?',function(r){
+                if (r){
+                    $.post(_baseUrl + '/deleteapk.json',{id:rows[0].id},function(result){
+                        if (result.success == "1"){
+                            $('#dg').datagrid('reload'); // reload the user data
+                            top.CC.messager({ // show error message
+                                title: '成功',
+                                msg: '删除成功'
+                            });
+                        } else {
+                            top.CC.messager({ // show error message
+                                title: '错误',
+                                msg: result.message
+                            });
+                        }
+                    },'json');
+                }
+            });
+        } else {
+            top.CC.messager({
+                title: '提示',
+                msg: '请选择一条数据进行删除'
+            });
+        }
+    }
+</script>
+#end

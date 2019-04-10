@@ -1,0 +1,28 @@
+<div class="table-responsive">
+<table class="table table-bordered table-hover text-center" >
+    <thead>
+        <tr>
+#foreach($__header in $__headers)
+            <th class="text-center">$!{__header.label}</th>
+#end
+        </tr>
+    </thead>
+    <tbody>
+#foreach($__aline in $__bodys)
+        <tr #if($__idname)rowid="$!{__aline.get($__idname)}"#end>
+#foreach($__header in $__headers)
+            <td><div #if($__header.get('class'))class="$__header.get('class')"#end>$!{__aline.get($__header.property)}</div></td>
+#end
+        </tr>
+#end
+
+#foreach($__aline in $__tails)
+        <tr>
+#foreach($__cell in $__aline)
+            <td #if($__cell.colspan)colspan="$!{__cell.colspan}"#end><div #if($__cell['class'])class="$!{__cell['class']}"#end>$!{__cell.label}</div></td>
+#end
+        </tr>
+#end
+    </tbody>
+</table>
+</div>

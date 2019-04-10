@@ -1,0 +1,113 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-storage"
+                plain="true" onclick="doPigeRa()">归档</a>
+        <i></i>
+        <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+        <a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+                <tr>
+                    <th style="width:48%" data-options="field:'title',formatter:detailUrl,sortable:true">文件标题</th>
+                    <th style="width:10%" data-options="field:'dense'">密级</th>
+                    <th style="width:8%" data-options="field:'sncode',sortable:true">编号</th>
+                    <th style="width:8%" data-options="field:'docCode'">字号</th>
+                    <th style="width:8%" data-options="field:'creatorName'">拟稿人</th>
+					<th style="width:12%" data-options="field:'createDateShow',sortable:true">拟稿时间</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+        style="width:500px;height:290px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+        <form id="queryForm">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+					<td style="text-align: right">文件标题：</td>
+                    <td><input id="title" style="width:350px;" name="$qc.like('title')" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+					<td style="text-align: right">编号：</td>
+					<td><input id="sncode" style="width:350px;" name="$qc.like('sncode')" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+					<td style="text-align: right">字号：</td>
+					<td><input id="docCode" style="width:350px;" name="$qc.like('docCode')" class="easyui-textbox" /></td>
+                </tr>
+            </table>
+         </form>
+         <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+    <div id="editWindow" class="easyui-window" title="文件归档" style="width:30%;height:77%;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+    </div>
+</div>
+#parse("doc/archives/file/tobearchive/crud.js.vm")
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()/doc/archives';
+    var _listJsonUrl = '/list.json';
+    var _newJsonUrl = '/new';
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    function doPigeRa(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows){
+            if (rows.length < 1) {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '请选择至少一条数据进行归档!'
+                });
+            }else {
+                var fileIds = "";
+				var archType = "";
+                for(var i=0;i<rows.length;i++){
+                    if(i==rows.length-1){
+                        fileIds += rows[i].id;
+                    }else{
+                        fileIds += rows[i].id + ",";
+                    }
+					
+					if(""!=archType && archType !=rows[i].fileType){
+						top.CC.messager({
+                        title: '错误',
+                        msg: '只能对同一类型的数据进行归档!'
+                    });
+						return false;
+					}
+					
+					archType = rows[i].fileType;
+                }
+                $('#editWindow').window('open');
+                $('#editWindow').window('refresh','$link.getContextURL()/doc/archives/new?fileId='+fileIds);
+            }
+
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '服务器连接不上!'
+            });
+        }
+
+    }
+</script>
+#end

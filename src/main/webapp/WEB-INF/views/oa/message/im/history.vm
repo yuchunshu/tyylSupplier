@@ -1,0 +1,214 @@
+<div class="easyui-layout" style="width:650px;height:400px;" fit="true">
+    <div data-options="region:'center', border:false" style="background:white;">
+        <div class="easyui-layout" fit="true">
+            <div id="historyMsg" data-options="region:'center'" style="padding:5px;background:white;">
+            </div>
+            <div id="page" data-options="region:'south',split:false" style="height:36px;border-top:0px;">
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'west',split:false" style="padding:5px;width:285px;">
+        <div style="height:30px;width:98%;margin:0px 0 3px 0px;color:#f58c53; text-align:center; line-height:30px; background-color:#f4f3f3;">
+           <div id="curHisMan"></div>
+        </div>
+        <ul id="hisTree"></ul>
+    </div>
+</div>
+#@script()
+<script>
+    // 最后一次选择的人员(不包括根节点)
+    var _last_leaf_node;
+
+    $(function(){
+        $(".div_selectable").click(function(){
+           if($(this).hasClass("div_active"))  return;
+           $(".div_active").removeClass("div_active");
+           $(this).addClass("div_active");
+        });
+
+        $('#page').pagination({
+            total        : 0,
+            pageSize     : 20,
+            showPageList : false,
+            displayMsg   : '每页最多显示20条记录，共{total}条记录',
+            onSelectPage : function(pageNumber, pageSize){
+                                $(this).pagination('loading');
+                                var opt = $(this).pagination('options');
+                                // 查询的页码  =  总页数  - 页面显示的当前页码  + 1
+                                var curPage = parseInt(((opt.total + pageSize - 1) / pageSize) - pageNumber + 1)
+                                toPage(curPage);
+                                $(this).pagination('loaded');
+                            },
+            buttons      : [{   // 删除历史消息按钮
+                                iconCls:'icon-remove',
+                                handler:function(){
+                                    var ids = "";
+                                    $('.selectedDiv').each(function(k,v) {
+                                        ids += this.id;
+                                        ids += ",";
+                                    });
+                                    if (ids != "") {
+                                        ids = ids.substring(0, ids.length-1);
+                                    }
+                                    if (ids != "") {
+                                        $.messager.confirm('确认对话框', '您想要删除这些记录吗？', function(r){
+                                            if (r){
+                                                $.post("$link.getContextURL()/oa/immessage/delete.json",{ids:ids},function(result){
+                                                    if (result.success) {
+                                                        var node = $("#hisTree").tree('getSelected');
+                                                        var condition = ""
+                                                        if (_last_leaf_node) {
+                                                            condition = "?senderId=" + _last_leaf_node.id;
+                                                        } else {
+                                                            #if($senderId)
+                                                            condition = "?senderId=$!senderId";
+                                                            #end
+                                                        }
+                                                        $('#hisWin').window('refresh','$link.getContextURL()/oa/immessage/popupHistory' + condition);
+                                                    }
+                                                },"json");
+                                            }
+                                        });
+                                    }
+                                }
+                            }]
+
+        });
+
+        $("#hisTree").tree({
+            url:'$link.getContextURL()/oa/immessage/getUserTree.json',
+            checkbox:false,
+            onlyLeafCheck:false,
+            lines:true,
+            onClick:function(node) {
+                if (node.state == 'closed') {
+                    $(this).tree("expand", node.target);
+                }
+                if (!node.id.contains('root_')) {
+                    _last_leaf_node = node;
+                    msgShow(1, node.id);
+                    $("#curHisMan").text(node.text);
+                }
+            },
+            onLoadSuccess:function() {
+                // 默认选中
+                #if ($senderId)
+                    var senderNode = $("#hisTree").tree("find", "$!senderId");
+                    if (senderNode) {
+                        $(this).tree("select", senderNode.target);
+                        $(this).tree("expandTo", senderNode.target)
+                        if (!senderNode.id.contains('root_')) {
+                            msgShow(1, senderNode.id);
+                            $("#curHisMan").text(senderNode.text);
+                        }
+                    }
+                #end
+            }
+
+        });
+    });
+
+    // 分页栏
+    function pageFunc(totalPage, totalRecord, curPage) {
+        if (!totalPage) {
+            totalPage = 0;
+        }
+        if (!totalRecord) {
+            totalRecord = 0;
+        }
+        if (!curPage) {
+            curPage = 0;
+        }
+        $("#page").pagination("refresh", {
+            total      : totalRecord,
+            pageNumber : totalPage + 1 - curPage
+        });
+    }
+
+    // 分页跳转
+    function toPage(page) {
+        $("#historyMsg").text("");
+        var node = $("#hisTree").tree("getSelected");
+        if (node && !node.id.contains('root_')) {
+            var senderId = node.id;
+            $.post("$link.getContextURL()/oa/immessage/listHistory.json",{senderId:senderId, page:page},function(page){
+                if (page) {
+                    var rows = page.rows;
+                    var curId = "$!{curUser.id}";
+                    for(var i = rows.length - 1; i >= 0; i--) {
+                        var htmlPre = "<div id='" + rows[i].id + "' onclick='selectDiv(this)' style='text-align:left;margin:2px;border:1px solid #ffffff;'>";
+                        if (curId == rows[i].senderId) {
+                            htmlPre += "<span style='color:green;'>"; // 当前用户为绿色
+                        } else {
+                            htmlPre += "<span style='color:blue;'>";  // 其他用户为蓝色
+                        }
+                        var html = htmlPre + rows[i].senderName + " &nbsp;&nbsp;&nbsp;"+ rows[i].createTimeShow + "</span><br>";
+                        // 页面显示
+                        html += "&nbsp;&nbsp;&nbsp;<code>" + html2Escape(rows[i].content) + "</code><br></div>";
+                        $("#historyMsg").append(html);
+
+                        // 滚动条置底
+                        scrollHisBottom();
+                    }
+                }
+            },"json");
+        }
+    }
+
+    // 滚动条置底
+    function scrollHisBottom() {
+        $("#historyMsg").scrollTop($("#historyMsg")[0].scrollHeight);
+    }
+
+    var _changeSender = 0;
+    // 数据显示
+    function msgShow(page, senderId) {
+        if (_changeSender != senderId) {
+            $("#historyMsg").text("");
+            _changeSender = senderId;
+        } else {
+            return;
+        }
+        if (senderId && page) {
+            $.post("$link.getContextURL()/oa/immessage/listHistory.json",{senderId:senderId, page:page},function(page){
+                if (page) {
+                    pageFunc(((page.total + 20 - 1)/20), page.total, 1);
+                    var rows = page.rows;
+                    var curId = "$!{curUser.id}";
+                    for(var i = rows.length - 1; i >= 0; i--) {
+                        var htmlPre = "<div id='" + rows[i].id + "' onclick='selectDiv(this)' style='text-align:left;margin:2px;border:1px solid #ffffff;'>";
+                        if (curId == rows[i].senderId) {
+                            htmlPre += "<span style='color:green;'>"; // 当前用户为绿色
+                        } else {
+                            htmlPre += "<span style='color:blue;'>";  // 其他用户为蓝色
+                        }
+
+                        var html = htmlPre + rows[i].senderName + " &nbsp;&nbsp;&nbsp;"+ rows[i].createTimeShow + "</span><br>";
+                        // 页面显示
+                        html += "&nbsp;&nbsp;&nbsp;<code>" + html2Escape(rows[i].content) + "</code><br></div>";
+                        $("#historyMsg").append(html);
+
+                        // 滚动条置底
+                        scrollHisBottom();
+                    }
+                }
+            },"json");
+        }
+    }
+
+    // div选中效果;用于删除
+    function selectDiv(div) {
+        if ($(div).prop('class') == 'selectedDiv') {
+            $(div).css('background-color', '#ffffff');
+            $(div).css('border', '1px solid #ffffff');
+            $(div).removeClass('selectedDiv');
+        } else {
+            $(div).css('background-color', '#ffedc4');
+            $(div).css('border', '1px solid #ffed8d');
+            $(div).addClass('selectedDiv');
+        }
+
+
+    }
+</script>
+#end

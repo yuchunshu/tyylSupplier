@@ -1,0 +1,132 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            #if($type != "query")
+            #if($power.checkShowMenu("简报添加","/oa/briefing/new"))<a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>#end
+            #if($power.checkShowMenu("简报修改","/oa/briefing/edit"))<a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>#end
+            #if($power.checkShowMenu("简报删除","/oa/briefing/delete.json"))<a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" plain="true">删除</a>#end
+            #end
+            #if($power.checkShowMenu("简报导出","/oa/briefing/export.json"))<a href="javascript:;" class="easyui-linkbutton" iconCls="icon-download-alt" onclick="exportBriefings()" plain="true">导出</a>#end
+            <i></i>
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+                 class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                 class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg" data-options="nowrap:false" style="width:100%;">
+                <thead>
+                <tr>
+                    <th style="width:5" data-options="field:'attachFlag',formatter:attFlag"><img src='images/attach.png'/></th>
+                    <th style="width:35%" data-options="field:'title'#if($power.checkShowMenu('简报详情','/oa/briefing/detail')),formatter:detailUrl#end">简报标题</th>
+                    <th style="width:20%" data-options="field:'publishDeptName'">接收部门</th>
+                    <th style="width:15%" data-options="field:'briefType'">类型</th>
+                    <th style="width:10%" data-options="field:'createDateShow'">录入时间</th>
+                    <th style="width:10%" data-options="field:'publishDateShow'">发布时间</th>
+                    <th style="width:5%" data-options="field:'status'">状态</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+             style="width:500px;height:360px;padding:20px 10px; background-color:#f4f4f4;display:none">
+            <form id="queryForm">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right">标题：</td>
+                        <td><input id="title" name="$qc.like('title')" style="width:350px;" class="easyui-textbox" /></td>
+                    </tr>
+                    <tr>
+                        <td align="right">发布单位：</td>
+                        <td>
+                            <input id="department" name="$qc.like('publishUnit')" class="easyui-textbox" style="width:350px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">发布日期：</td>
+                        <td align="left">
+                            <input name="$qc.greaterThanOrEqualTo('publishDate')" class="easyui-datebox" value="$!{firstDay}" data-options="editable:false" style="width:150px;">
+                            至
+                            <input name="$qc.lessThanOrEqualTo('publishDate')" class="easyui-datebox" value="$!{lastDay}" data-options="editable:false" style="width:150px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">状态：</td>
+                        <td align="left">
+                            <select id="status" name="$qc.equal('status')" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                                panelheight="auto">
+                                <option value=" ">-全部-</option>
+                                <option value="1">已发布</option>
+                                <option value="2">暂存</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+             </form>
+            <div id="bnts" style="top:0px; height:25px; width:auto;">
+                <a class="new-but" onclick="formSerach()">确定</a>
+                <a class="new-but" onclick="reset()">重置</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("oa/briefing/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () { // 给查询dialog中的 标题、发布部门input 绑定回车事件
+        $('#title').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+
+        $('#department').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+
+    var _baseUrl = '$link.getContextURL()/oa/briefing';
+    #if( $type == 'query' )
+        var _listJsonUrl = '/querylist.json';
+    #else
+        var _listJsonUrl = '/list.json';
+    #end
+    var _newJsonUrl = '/new';
+
+    function attFlag(value,row,index){
+        if(value == '有附件') {
+            return "<img src='images/attach.png'/>";
+        }
+    }
+
+    function exportBriefings() {
+        $.messager.confirm('警告','确定导出这些简报吗?',function(r){
+            if (r){
+                #if( $type == 'query' )
+                    window.location = "$link.getContextURL()/oa/briefing/exportQuery.json?"+$("#queryForm").serialize();
+                #else
+                    window.location = "$link.getContextURL()/oa/briefing/export.json?"+$("#queryForm").serialize();
+                #end
+            }
+        });
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+</script>
+#end

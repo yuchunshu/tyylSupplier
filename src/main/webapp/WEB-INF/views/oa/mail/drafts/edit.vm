@@ -1,0 +1,192 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+                <input name="id" id="id" type="hidden" value="$!{obj.id}">
+                <table class="table-edit" title="草稿箱" width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">
+##                        <span><font color=red>*</font></span>
+                        <a id="selectDepDialog" title="选择收件人" href="javascript:;" mans-dialog
+                            callback=fnSelectMansCallback class="easyui-linkbutton">收件人</a>
+                      </td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="manAddressNames" id="manAddressNames" data-options="required:true"
+                            class="easyui-textbox" readonly value="$!{obj.addressName}"/>
+                        <input id="manAddress" name="manAddress" type="hidden" value="$!obj.address" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>标题</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="title" data-options="required:true" class="easyui-textbox" value="$!{obj.title}"/>
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">消息提示</td>
+                      <td align="left" class="bg-white">
+                        <label><input type="checkbox" id="receiptFlag" name="receiptFlag" value="1" #if($!obj.receiptFlag == '1') checked #end />已读回执</label>
+                      </td>
+                    </tr>
+                    <tr align="center">
+                        <td class="bg-grey" align="right">内容</td>
+                        <td valign="top" class="bg-white">
+                        <input id="content" name="content" type="hidden"/>
+                        <textarea class="ckeditor" id="mailContent" name="mailContent" cols="" style="resize:none;width:95%;">$!{obj.content}</textarea>
+                        </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">附件</td>
+                      <td align="left" attachId="$!obj.id" class="bg-white">
+                        #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", true, "#defaultUploadUrl('emAttach')",true,"","","", "cc") ## "cc"为可拖拽区域的dom id
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                  <li><a id="drafts" onclick="drafts()" class="new-but" >存草稿</a></li>
+                  <li><a id="send" onclick="send()" class="new-but" >发送</a></li>
+                  <li><a id="trash" onclick="trash()" class="new-but" >移到垃圾箱</a></li>
+                  <li><a id="back" onclick="top.CC.closeCurTab()" class="new-but" >关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+
+    $(function(){
+        CKEDITOR.replace('mailContent', { height: '340px'});
+    });
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.closeCurTab();
+    }
+
+    //发送
+    function send(){
+        var value = CKEDITOR.instances.mailContent.getData();
+        $('#content').val(value);
+        if($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/oa/mail/send.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'发送成功！'
+                    });
+                    top.CC.addTab({title:'草稿箱',url:'$link.getContextURL()/oa/mail/drafts/list'});
+                    top.CC.closeTab('查看邮件');
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+
+    //移到到垃圾箱
+    function trash(){
+        $.messager.confirm('警告','确定将这封信件移动到垃圾箱吗?',function(r){
+            if (r){
+                var mailIds = $('#id').val();
+                if($("#editForm").form('validate')) {
+                    $.post("$link.getContextURL()/oa/mail/drafts/dealTrash.json",{mailIds:mailIds},function(result){
+                          if(result.id){
+                            $('#id').val(result.id);
+                            top.CC.messager({
+                                title:'提示',
+                                msg:'删除成功！'
+                            });
+                            top.CC.addTab({title:'草稿箱',url:'$link.getContextURL()/oa/mail/drafts/list'});
+                            top.CC.closeTab('查看邮件');
+                          }else{
+                            top.CC.messager({
+                                title:'提示',
+                                msg:'服务器连接不上'
+                            });
+                          }
+                    });
+                }
+            }
+        });
+    }
+
+    //草稿
+    function drafts(){
+        var value = CKEDITOR.instances.mailContent.getData();
+        $('#content').val(value);
+        if($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/oa/mail/saveDrafts.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！该邮件已存入草稿箱。'
+                    });
+                    top.CC.addTab({title:'草稿箱',url:'$link.getContextURL()/oa/mail/drafts/list'});
+                    top.CC.closeTab('查看邮件');
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+
+    //个人邮件选择对话框
+    $("a[mans-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var manAddress = $('#manAddress').val();
+            if (typeof(manAddress) == "undefined") {
+                manAddress = "";
+            }
+            var _url = "$link.getContextURL()/oa/mail/select/getIncepters?userIds=" + manAddress;
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+
+    // 人员选择回调
+    function fnSelectMansCallback(obj){
+        var userNames = "";
+        var userIds = "";
+        for (var i = 0; i < obj.length; i++){
+            userNames += obj[i].dataText + ",";
+            userIds += obj[i].id + ",";
+        }
+        userNames = userNames.substring(0,userNames.length-1);
+        userIds = userIds.substring(0,userIds.length-1);
+        $('#manAddressNames').textbox('setValue', userNames);
+        $('#manAddress').val(userIds);
+    }
+
+</script>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end

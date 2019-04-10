@@ -1,0 +1,24 @@
+<li>
+    <label for="$!{__id}_select" class="form-fill-label">$!__title</label>
+    <input id="$!__id" name="$!__name" value="$!{esc.html($!__value)}" class="selectdepartmentid" type="hidden">
+    <input readonly id="$!{__id}_select" type="text" value="$!{esc.html($!__showvalue)}" class="selectdepartmentdialog form-control $!__class" placeholder="$!__holder" $!__inputatt />#callformrequired()
+</li>
+
+#@script()
+<script type="text/javascript">
+        $('.selectdepartmentdialog').each(function(){
+            $(this).click(function(){
+
+                var item=$(this);
+                var iditem=item.parent().find('.selectdepartmentid');
+
+                showArtDialog('$!{link.getContextPath()}/selectdata/choosedepartment', function(result) {
+                    if (result) {
+                        item.val(result.name || "");
+                        iditem.val(result.id || "");
+                    }
+                });
+            });
+        });
+</script>
+#end

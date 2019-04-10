@@ -1,0 +1,210 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <a  class="easyui-linkbutton" plain="true" onclick="newPage()" iconCls="icon-add" >添加</a>
+        <a  onclick="top.CC.closeCurTab()"
+                 class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" style="width:100%;">
+            <thead>
+            <tr>
+                <th data-options="field:'id',width:15,editor:'text'">流程ID</th>
+                <th data-options="field:'name',width:20">流程名称</th>
+                <th data-options="field:'category',width:20">流程分类</th>
+                <th data-options="field:'createTime',width:15,formatter:formatDate">创建时间</th>
+                <th data-options="field:'operate',align:'center',formatter:operaterFormatter,width:15">操作列</th>
+            </tr>
+            </thead>
+        </table>
+        <div class="cc-operateColum">
+            <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+                plain="true" onclick='edit(__id__)'>修改</a>
+            ##<a  href='javascript:;' class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+            ##    plain="true" onclick='del(__id__)'>删除</a>
+            <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+                plain="true" onclick='deploy(__id__)'>部署</a>
+        </div>
+    </div>
+    <div id="editWindow" class="easyui-window  dialog-tc" title="创建新流程" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+        style="width:450px;height:275px;padding:20px 10px; background-color:#f4f4f4;">
+        <form id="modelForm" action="workflow/model/create" target="_blank" method="post">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="text-align: right">流程名称：</td>
+                    <td>
+                        <input id="name" name="name"  class="easyui-textbox" style="width:350px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">流程分类：</td>
+                    <td>
+                        <input id="category" name="category"  class="easyui-textbox" style="width:350px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">简要说明：</td>
+                    <td>
+                        <textarea class="textareaborder" id="description" name="description" style="width:340px; height: 60px;"></textarea>
+                    </td>
+                </tr>
+
+            </table>
+        </form>
+        
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="$('#modelForm').submit();$('#editWindow').window('close');">确定</a>
+            <a class="new-but" onclick="$('#editWindow').window('close');">取消</a>
+        </div>
+        
+    </div>
+</div>
+
+#parse("common/easyui/operatorcolumn.js.vm")
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/workflow/model/list.json';
+    var _delJsonUrl = '/workflow/model/delete';
+    var _deployJsonUrl = '/workflow/model/deploy';
+
+    function newPage(){
+        $('#editWindow').window('open');
+        //$('#editWindow').window('refresh','$link.getContextURL()/workflow/model/create');
+    }
+
+    function edit(id){
+        window.open('$link.getContextURL()/modeler.html?modelId='+id);
+    }
+
+    function formatDate(value, row){
+        return new Date(parseInt(row.createTime)).toLocaleString().replace(/:\d{1,2}$/,' ');
+    }
+
+    function del(id){
+        $.messager.confirm('警告','确定删除该流程吗?' + id, function(r){
+            if (r){
+                $.post(_baseUrl + _delJsonUrl + '/' + id, {modelId:id}, function(result){
+                    if (result.success){
+                        $('#dg').datagrid('reload'); // reload the user data
+                    } else {
+                        $.messager.show({ // show error message
+                            title: '错误',
+                            msg: result.errorMsg
+                        });
+                    }
+                },'json');
+            }
+        });
+    }
+
+    function deploy(id){
+        $.messager.confirm('提示','确定部署该流程吗?' + id, function(r){
+            if (r){
+                $.post(_baseUrl + _deployJsonUrl + '/' + id, {modelId:id}, function(result){
+                    if (result.success){
+                        $('#dg').datagrid('reload'); // reload the user data
+                        $.messager.show({ // show error message
+                            title: '提示',
+                            msg: result.success
+                        });
+                    } else {
+                        $.messager.show({ // show error message
+                            title: '错误',
+                            msg: result.errorMsg
+                        });
+                    }
+                },'json');
+            }
+        });
+    }
+
+
+    function operaterFormatter(value,row,index){
+        return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html().replace(new RegExp("__id__",'gm'),row.id);
+     }
+
+    function fnDemoSelectDepCallback(obj){
+        $("#dep").textbox("setValue",obj.depName);
+    }
+
+
+     $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            if($("#editForm").form('validate')){
+                var dfn = top.window.openSelectDialogFrameDialog;
+            }else{
+                return false;
+            }
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepQueryCallback(obj){
+        $('#dep').textbox('setValue',obj.id);
+        $('#dep').textbox('setText',obj.text);
+    }
+</script>
+#end

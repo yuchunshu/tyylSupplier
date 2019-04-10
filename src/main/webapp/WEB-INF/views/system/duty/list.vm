@@ -1,0 +1,133 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onClick="DutyEdit('new')">新增</a>
+            <a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="DutyEdit('edit')">修改</a>
+            <a  href='javascript:;' class="easyui-linkbutton l-btn-plain-remove" 
+                iconCls="icon-remove" plain="true" onclick='deleteDuty()'>删除</a>
+            <i></i>
+            <a  onclick="$('#searchDialog').show().window('open').window('center');"
+                class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+        <table id="dg" data-options="nowrap:false" style="width:100%;">
+            <thead>
+                <th style="width:200px" data-options="field:'dutyName'">职务名称</th>
+                <th style="width:150px" data-options="field:'dutyDesc'">排序</th>
+            </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:180px;padding:20px 10px; background-color:#f4f4f4;display:none">
+    <form id="queryForm">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td style="text-align: right">职务名称：</td>
+                <td><input name="$qc.like('dutyName')" id="roleName" style="width:350px;" class="easyui-textbox" /></td>
+            </tr>
+        </table>
+     </form>
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="formSerach()">确定</a>
+        <a class="new-but" onclick="reset()">重置</a>
+    </div>
+</div>
+<div id="editDialog" class="easyui-dialog" title="职务编辑" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#editbnts'"
+         style="width:500px;height:240px;padding:10px 10px;display:none">
+    
+    <div id="editbnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="saveDuty()">保存</a>
+        <a class="new-but" onclick="$('#editDialog').dialog('close');">关闭</a>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    function DutyEdit(type){
+        if(type == "new"){
+            $("#editDialog").show().dialog("open").dialog("center").dialog('refresh', '$link.getContextURL()/system/duty/edit');  
+        }else if(type == "edit"){
+            var row = $("#dg").datagrid("getSelected");
+            if(row && row.id){
+                $("#editDialog").show().dialog("open").dialog("center").dialog('refresh', '$link.getContextURL()/system/duty/edit?id='+row.id);  
+            }else{
+                top.CC.messager({title:"提示",msg:"请选择要修改的职务。"})
+            }
+        }
+    }
+    function saveDuty(){
+        if($("#editForm").form("validate")){
+            $.post("$link.getContextURL()/system/duty/save.json",$("#editForm").serialize(),function(result){
+                if(result.id){
+                    $('#editDialog').dialog('close');
+                    top.CC.messager({title:"提示",msg:"保存成功。"});
+                    $("#dg").datagrid("reload");                    
+                }else{
+                    top.CC.messager({title:"提示",msg:"保存失败！"});
+                }
+            });
+        }
+    }
+    function deleteDuty(){
+        var row = $("#dg").datagrid("getSelected");
+        if(row && row.id){
+            $.messager.confirm('提示','您确认删除该职务吗？',function(r){    
+                if (r){ 
+                    $.post("$link.getContextURL()/system/duty/delete.json",{ids:row.id},function(result){
+                        if(result){
+                            top.CC.messager({title:"提示",msg:"删除成功。"});
+                            $("#dg").datagrid("reload");                    
+                        }else{
+                            top.CC.messager({title:"提示",msg:"删除失败！"});
+                        }
+                    });
+                }    
+            });  
+        }else{
+            top.CC.messager({title:"提示",msg:"请选择要删除的职务。"})
+        }
+    }
+    $(function(){
+        $("#dg").datagrid({
+            loadFilter: datagridHtmlEncode, // 防js注入
+            // fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:"$link.getContextURL()/system/duty/list.json",//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });        
+    });    
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+    function addPageCondition(param){
+        $.extend(param,getConditions());
+    }
+    function getConditions(){
+        var f = $("#queryForm").serializeArray();
+        var searchConditions = {};
+        for(var i = 0;i< f.length;i++){
+            searchConditions[f[i].name] = f[i].value;
+        }
+        return searchConditions;
+    }
+</script>
+#end
+

@@ -1,0 +1,2 @@
+<th>&nbsp;&nbsp;&nbsp;车牌号：</th>
+<td><input name="$qc.like('vehCode')" class="easyui-textbox" type="text"/></td>

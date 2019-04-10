@@ -1,0 +1,136 @@
+@charset "utf-8";
+/* CSS Document */
+.weektrip {
+    width: 100%;
+}
+.table dl,
+.table dt,
+.table dd,
+.table ul,
+.table ol,
+.table li {
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+.table {
+    min-width: 1080px;
+    min-height: 42px;
+    border: 1px solid #e0e0e0;
+    position: relative;
+    /*overflow: hidden;*/
+    /*border-bottom-width:2px;*/
+}
+.table .top {
+  background-color: #f2f2f2
+}
+
+.table div {
+    /*overflow: hidden;*/
+    text-align: center;
+}
+.table .left {
+  overflow: hidden;
+}
+
+.table .right {
+    float: right;
+    overflow: hidden;
+    width: 987px;
+}
+
+.table .left,
+.table .right {
+    border-bottom: 2px solid #e0e0e0;
+    position: relative;
+}
+.table .bottom {
+    padding-left: 80px;
+}
+.table .bottom .right,.table .bottom .left {
+    min-height: 32px;
+    line-height:32px;
+    padding: 5px 0!important;
+}
+.table .bottom .right {
+  overflow: visible;
+}
+.table .top {
+  background-image: none;
+  /*padding-left: 80px;*/
+}
+.table .top .left,
+.table .top .right {
+    height: 42px;
+}
+.table .top .left {
+  line-height: 42px;
+}
+
+.table .right ul li {
+    overflow: hidden;
+    width: 140px;
+    /*min-height: 32px;*/
+    list-style: none;
+}
+
+.table .top .right ul li {
+    height: 38px;
+    line-height: 18px;
+    float: left;
+    padding-top: 4px;
+}
+
+.table .bottom .right ul li {
+  width: 414px;
+    position: absolute;
+    height: 20px;
+    line-height: 20px;
+    border: 1px solid #8cc9eb;
+    left: 0;
+    top: 0;
+    padding: 5px 0;
+    /*margin-top: 5px;*/
+    text-align: left;
+    background-color: #e9edf3;
+    z-index: 99;
+}
+.table .bottom .right ul li:hover {
+    background-color: #faecc9;
+}
+.table .left-side {
+    position: absolute;
+    left: 0;
+    top: 42px;
+    width: 80px;
+}
+
+.right_bg {
+    position: absolute;
+    right: 0;
+    /*top: 42px;*/
+    z-index: 99;
+    width:987px;
+}
+
+.right_bg dt {
+    border-left: 1px solid #e0e0e0;
+    height: 1000px;
+    width: 140px;
+    float: left;
+}
+.bottom_li{
+  padding: 5px 0!important;
+}
+.table .bottom .right ul li,.table .bottom .left{
+  text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.left-side li {
+    border: 1px solid #e0e0e0;
+    border-left-width: 0px;
+    border-bottom-width: 0px;
+    border-top-width: 2px;
+}

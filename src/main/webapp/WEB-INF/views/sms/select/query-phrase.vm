@@ -1,0 +1,22 @@
+&nbsp;&nbsp;内容：
+<input name="type" id="type" type="hidden"/>##类型 type为空时查询部门人员
+<input name="$qc.like('phraseName')" id="phraseName" class="easyui-textbox" type="text"/>
+
+#@script()
+<script>
+    // 重写search方法
+    function formSerach() {
+        $("#groupId").val("");
+        $("#type").val("");
+        $("#department").val("");
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+        $('#datasDg').datagrid('reload',obj);
+        $('#menutree').find('.tree-node-selected').removeClass('tree-node-selected'); ##取消树选中
+        return false;
+    }
+</script>
+#end

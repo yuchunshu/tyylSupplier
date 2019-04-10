@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+>
+    <description>角色缺省权限的Url</description>
+
+    <!-- 角色默认就有的权限列表定义 -->
+    <bean
+        id="defaultRoleNamePowerUrlMap"
+        name="defaultRoleNamePowerUrlMap"
+        class="org.springframework.beans.factory.config.MapFactoryBean"
+    >
+        <property name="sourceMap">
+            <map>
+                <entry key="系统管理员">
+                    <list>
+                        <value>/system/user/list</value>
+                        <value>/system/user/list.json</value>
+                        <value>/system/user/new</value>
+                        <value>/system/user/edit</value>
+                        <value>/system/user/save.json</value>
+                        <value>/system/user/delete.json</value>
+                        <value>/system/dept/list</value>
+                        <value>/system/dept/list.json</value>
+                        <value>/system/dept/new</value>
+                        <value>/system/dept/save.json</value>
+                        <value>/system/dept/edit</value>
+                        <value>/system/dept/del.json</value>
+                        <value>/system/role/roleList</value>
+                        <value>/system/role/listRole.json</value>
+                        <value>/system/role/editRole</value>
+                        <value>/system/role/deleteRole.json</value>
+                        <value>/system/role/saveRole.json</value>
+                        <value>/system/role/linkUser</value>
+                        <value>/system/role/linkUser.json</value>
+                        <value>/system/role/saveLinkUser.json</value>
+                        <value>/system/role/linkPower</value>
+                        <value>/system/role/saveLinkPower.json</value>
+                        <value>/system/role/editUserRole</value>
+                        <value>/system/power/listModule.json</value>
+                        <value>/system/power/saveModule.json</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <!-- 权限url后缀对应的中文解释 -->
+    <bean
+        id="powerNameRuleMap"
+        class="org.springframework.beans.factory.config.MapFactoryBean"
+    >
+        <property name="sourceMap">
+            <map>
+                <entry
+                    key="edit"
+                    value="编辑" />
+                <entry
+                    key="save"
+                    value="保存" />
+                <entry
+                    key="saveperset"
+                    value="保存" />
+                <entry
+                    key="savefile"
+                    value="保存" />
+                <entry
+                    key="del"
+                    value="删除" />
+                <entry
+                    key="delete"
+                    value="删除" />
+                <entry
+                    key="info"
+                    value="信息" />
+                <entry
+                    key="detail"
+                    value="详情" />
+                <entry
+                    key="getDetail"
+                    value="获取详情" />
+                <entry
+                    key="forward"
+                    value="转发" />
+                <entry
+                    key="reply"
+                    value="回复" />
+                <entry
+                    key="returndocrecordfile"
+                    value="退回" />
+                <entry
+                    key="refreshpower"
+                    value="刷新权限" />
+                <entry
+                    key="report"
+                    value="上报" />
+                <entry
+                    key="saveDraft"
+                    value="暂存" />
+                <entry
+                    key="sendMail"
+                    value="发送" />
+                <entry
+                    key="docdetail"
+                    value="文档详情" />
+                <entry
+                    key="revocation"
+                    value="恢复" />
+            </map>
+        </property>
+    </bean>
+
+    <!-- 特殊url的中文解释及父节点关联信息 -->
+    <bean
+        id="parentUrlDetailMap"
+        class="org.springframework.beans.factory.config.MapFactoryBean"
+    >
+
+        <property name="sourceMap">
+            <map>
+                <entry key="/onlineuser/list"><!-- 这里的key可以是父权限的powerName或者powerUrl -->
+                    <map>
+                        <entry
+                            key="/onlineuser/del"
+                            value="强制下线" />
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

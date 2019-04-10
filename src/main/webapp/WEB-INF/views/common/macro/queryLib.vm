@@ -1,0 +1,63 @@
+###########################
+#macro(urlbutton $__url $__name $__title $__btnclass $__iconclass $__idparamname $__onlyone $__alertmessage  $__buttonattr)
+#callQueryParse("/common/query/urlbutton.vm", "#defaultIdForName($__name)")
+#end
+
+###########################
+
+#macro(queryformlayout $__formid $__formaction $__formmethod $__formattr)
+#parse("/common/query/formquery.layout.vm")
+#end
+
+###########################
+#macro(callQueryParse $__templatename $__id)
+#parse($__templatename)
+#end
+
+#macro(callQuery2IdParse $__templatename $__id1 $__id2)
+#parse($__templatename)
+#end
+
+#macro(queryhidden $__name $__value)
+#callQueryParse("/common/query/queryhidden.vm", "#defaultIdForName($__name)")
+#end
+
+#macro(querytext $__title $__class $__name $__value $__holder)
+#callQueryParse("/common/query/querytext.vm", "#defaultIdForName($__name)")
+#end
+
+#macro(querytextlike $__title $__class $__fieldname $__holder)
+#querytext($__title, $__class, $qc.like("$__fieldname"), $qc.like($query, "$__fieldname"), $__holder)
+#end
+
+#macro(querytextstartwith $__title $__class $__fieldname $__holder)
+#querytext($__title, $__class, $qc.startsWith("$__fieldname"), $qc.startsWith($query, "$__fieldname"), $__holder)
+#end
+
+#macro(query2date $__title $__class $__name1 $__value1 $__name2 $__value2 $__holder1 $__holder2)
+#callQuery2IdParse("/common/query/query2date.vm", "#defaultIdForName($__name1)", "#defaultIdForName($__name2)")
+#end
+
+#macro(query2datesimple $__title $__class $__fieldname)
+#query2date($__title, $__class, $qc.greaterThanOrEqualTo("$__fieldname"), $qc.greaterThanOrEqualTo($query, "$__fieldname"), $qc.lessThanOrEqualTo("$__fieldname"), $qc.lessThanOrEqualTo($query, "$__fieldname"))
+#end
+
+#macro(queryselect $__title $__class $__name $__value $__options $__holder)
+#callQueryParse("/common/query/queryselect.vm", "#defaultIdForName($__name)")
+#end
+
+#macro(queryselectequal $__title $__class $__fieldname $__options $__holder)
+#queryselect($__title, $__class, $qc.equal("$__fieldname"), $qc.equal($query, "$__fieldname"), $__options, $__holder)
+#end
+
+#macro(queryradio $__title $__class $__name $__value $__options $__holder)
+#callQueryParse("/common/query/queryradio.vm", "#defaultIdForName($__name)")
+#end
+
+#macro(queryradioequal $__title $__class $__fieldname $__options $__holder)
+#queryradio($__title, $__class, $qc.equal("$__fieldname"), $qc.equal($query, "$__fieldname"), $__options, $__holder)
+#end
+
+#macro(querybutton $__formid $__name $__title $__btnclass $__iconclass)
+#callQueryParse("/common/query/querybutton.vm", "#defaultIdForName($__name)")
+#end

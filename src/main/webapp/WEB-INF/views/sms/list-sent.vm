@@ -1,0 +1,92 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+                  style="width:500px;height:290px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+                <form id="queryForm">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tb2 default-table" >
+                        <tr>
+                            <td style="text-align: right">短信内容：</td>
+                            <td><input style="width:330px;" id="title" name="$qc.like('content')" class="easyui-textbox" /></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">接收人：</td>
+                            <td>
+                                <input style="width:330px;" class="easyui-textbox" name="$qc.like('receiveMan')" />
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">接收号码：</td>
+                            <td>
+                                <input style="width:330px;" class="easyui-textbox" name="$qc.like('receivePhone')" />
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">发送日期：</td>
+                            <td>
+                                <input style="width:150px;" name="$qc.greaterThanOrEqualTo('sendTime')" class="easyui-datebox" data-options="editable:false">
+                                至
+                                <input style="width:150px;" name="$qc.lessThanOrEqualTo('sendTime')" class="easyui-datebox" data-options="editable:false">
+                            </td>
+
+                        </tr>
+                    </table>
+                </form>
+                <div id="bnts" style="top:0px; height:25px; width:auto;">
+                    <a href="javascript:;" class="new-but" onclick="formSerach()" >查询</a>
+                    <a href="javascript:;" class="new-but" onclick="reset()" >重置</a>
+                </div>
+            </div>
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg"  data-options="nowrap:false" style="width:100%;">
+                <thead>
+                <tr>
+                    <th style="width:50%" data-options="field:'content',formatter:showContentFmt">短信内容</th>
+                    <th style="width:15%" data-options="field:'receivePhone'">接收号码</th>
+                    <th style="width:10%" data-options="field:'receiveMan'">接收人</th>
+                    <th style="width:15%" data-options="field:'sendTimeFmt'">发送时间</th>
+                    <th style="width:10%" data-options="field:'err',formatter:smsSendStatus">状态</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#@script()
+#parse("sms/list-base.js.vm")
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()/sms';
+    var _listJsonUrl = '/listsent.json';
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    function smsSendStatus(value,row,index) {
+        if (row.err){
+            return '<div style="color:red" title="'+row.err+'">发送失败</div>';
+        }else{
+            return '<div style="color:green">发送成功</div>';
+        }
+    }
+
+    function showContentFmt(value,row,index) {
+        if (row.content&&row.content.length>50){
+            return '<div title="'+row.content+'">'+row.content.substring(0,50)+'...</div>';
+        }else{
+            return row.content;
+        }
+    }
+
+</script>
+#end

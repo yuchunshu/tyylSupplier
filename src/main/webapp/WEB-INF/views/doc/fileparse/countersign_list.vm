@@ -1,0 +1,30 @@
+ <div class="easyui-layout1" data-options="fit:true " >
+    <div class="cc-tableWrap1" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="app_apply_tab1" class="table-edit"  cellSpacing="1" cellpadding="5">
+            <tbody>
+        <tr style="text-align:center">
+          <td class="bg-grey" style="text-align:center" width="5%">序号</td>
+          <td class="bg-grey" style="text-align:center" width="10%">发送人</td>
+          <td class="bg-grey" style="text-align:center" width="10%">发送时间</td>
+          <td class="bg-grey" style="text-align:center" width="40%">会签意见</td>
+          <td class="bg-grey" style="text-align:center" width="10%">办理人</td>
+          <td class="bg-grey" style="text-align:center" width="10%">会签状态</td>
+        </tr>
+        #foreach( $cs in $csignList)
+        <tr>
+          <td class="bg-white" style="text-align:center">$velocityCount</td>
+          <td class="bg-white" style="text-align:center">
+            $!{esc.html($!{cs.sendUser.userName})}
+          </td>
+          <td class="bg-white" style="text-align:center">$!date.format('yyyy-MM-dd', $!cs.sendTime)</td>
+          <td class="bg-white" style="text-align:center">$!{esc.html($!{cs.opinion})}</td>
+          <td class="bg-white" style="text-align:center">$!{esc.html($!{cs.cosignUser.userName})}</td>
+          <td class="bg-white" style="text-align:center">$!{esc.html($!{cs.status.value})}</td>
+        </tr>
+        #end
+      </tbody>
+        </table>
+
+    </div>
+</div>
+

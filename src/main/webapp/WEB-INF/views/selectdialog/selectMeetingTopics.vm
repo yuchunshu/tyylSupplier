@@ -1,0 +1,227 @@
+<style type="text/css">
+.datagrid-cell,
+.datagrid-cell-group,
+.datagrid-header-rownumber,
+.datagrid-cell-rownumber {
+  line-height: 30px;
+}
+</style>
+
+#set($bodyattr="class='easyui-layout' style='border:0px;width:850px;height:480px;margin-left:5px;margin-right:5px;margin-top:5px; padding:0 5px 3px 0;'")
+<div class="cc-tableWrap" data-options="region:'center',border:true,collapsible:false">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <form id="queryForm">
+            <input type="hidden" name="notIds" value="$!{notIds}"/>
+            <input name="$qc.like('title')" id="title" type="text" style="width:50%;" class="easyui-textbox" prompt="请输入要查询的议题标题"/>
+            <a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="formSearch()">查询</a>
+        </form>
+    </div>
+    <table id="topicTable" style="width:100%;height:100%;"
+        data-options="border:false,pageList:[10],pageSize:10,toolbar:'#queryForm',rownumbers:true, singleSelect:false, pagination:true,collapsible:false,toolbar:'#tb'">
+        <thead>
+            <tr>
+                <th field="ck" data-options="checkbox:true"></th>
+                <th data-options="field:'title',width:450">议题标题</th>
+            </tr>
+        </thead>
+    </table>
+</div><!-- end of center -->
+
+<div class="cc-tableWrap" data-options="region:'east',split:true,collapsible:false" style="width:280px;">
+    <table id="selectedData" style="width:100%;height:100%;"
+        data-options="fitColumns:true,rownumbers:false,idField:'id',toolbar:'#toolbar2',border:false,singleSelect:true">
+        <thead>
+            <tr>
+                <th data-options="field:'title',width:'100%',autoRowHeight:false,formatter:operaterFormatter" style="line-height: 30px;">已选择</th>
+            </tr>
+        </thead>
+    </table>
+    <div class="cc-operateColum" id="delButton" style="height: auto; padding: 5px 0px 5px 5px;">
+        <a href='javascript:;' class="easyui-linkbutton delete-button l-btn-plain-remove" plain="true" iconCls="icon-remove" onclick="delTopic(getRowIdByDom(this))" style="float: right;"></a>
+    </div>
+</div><!-- end of east -->
+
+<div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="saveTemp" onclick="doselect()" class="new-but">选择</a></li>
+            <li><a id="back" onclick="doclose()" class="new-but">取消</a></li>
+        </ul>
+    </div>
+</div><!-- end of south -->
+#@script()
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script>
+    // 设置dialog标题
+    $(document).ready(function() {
+        if (top.setSelectDialogFrameDialogTitle) {
+            top.setSelectDialogFrameDialogTitle("$!{selectDialogTitle}");
+        }
+    });
+
+    // 获取row的index
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+
+    //选择
+    function doselect() {
+        var selectRow =  $('#selectedData').datagrid('getRows'); // 多选
+        if (selectRow) {
+            top.okSelectDialogFrameDialog(selectRow);
+        } else {
+            alert("请先选择数据。");
+        }
+        return false;
+    }
+
+    String.prototype.trim=function(){
+        return this.replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+    function formSearch() {
+        $('#topicTable').datagrid('reload');
+    }
+    var _isCheckFlag = false;
+    var _oneFlag = true;
+    $(document).ready(function(){
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var _querForm = $("#queryForm");
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        $('#topicTable').datagrid({
+            onLoadSuccess:function(data){ // 勾选"已选人员"
+                var rows = data.rows;
+                var selectIds = "$!{selectIds}";
+                for (var i = 0; i < rows.length; i++) {
+                    if (selectIds.indexOf(rows[i].id) >= 0) {
+                        var chkIndex = $('#topicTable').datagrid('getRowIndex',rows[i]);
+                        if (chkIndex > -1) {
+                            $('#topicTable').datagrid('checkRow',chkIndex);
+                        }
+                    }
+                }
+            },
+            // 多选
+            // datagrid点击行事件
+            onCheck:function(rowIndex,rowData){
+                var obj = { 
+                    id       : rowData.id,
+                    title    : rowData.$!{dataText}
+                }
+                // 去重
+                var rows = $('#selectedData').datagrid('getRows');
+                if (rows != null && rows.length > 0) {
+                    for(var i = 0;i< rows.length;i++){
+                        if (obj.id == rows[i].id) {
+                            return ;
+                        }
+                    }
+                }
+                $('#selectedData').datagrid('appendRow', obj);
+            },
+            onUncheck:function(rowIndex,rowData){
+                var peopleRows = $('#selectedData').datagrid('getRows');
+                for(var i = 0; i < peopleRows.length; i++) {
+                    if (peopleRows[i].id == rowData.id) {
+                        $('#selectedData').datagrid('deleteRow', i);
+                        break;
+                    }
+                }
+            },
+            onCheckAll:function(rows){
+                var selectRows = $('#selectedData').datagrid('getRows');
+                for(var i = 0; i < rows.length; i++) {
+                    var obj = {
+                            id       : rows[i].id,
+                            dataText : rows[i].$!{dataText}
+                          };
+                    if (selectRows != null && selectRows.length > 0) {
+                        var containFlag = false;
+                        for(var j = 0; j < selectRows.length; j++) {
+                           if (obj.id == selectRows[j].id) {
+                               containFlag = true;
+                               break;
+                           }
+                        }
+                        if (containFlag) {
+                           continue;
+                        }
+                    }
+                    $('#selectedData').datagrid('appendRow', obj);
+                }
+            },
+            onUncheckAll:function(rows){
+                var peopleRows = $('#selectedData').datagrid('getRows');
+                for(var i = 0; i < rows.length; i++) {
+                    for(var j = peopleRows.length-1; j >= 0; j--) {
+                       if (rows[i].id == peopleRows[j].id) {
+                           $('#selectedData').datagrid('deleteRow', j);
+                           break;
+                       }
+                    }
+                }
+            },
+            onClickRow:function(rowIndex,rowData){
+                $(this).datagrid('selectRow',rowIndex);
+            },
+            onDblClickRow:function(rowIndex,rowData){
+                $(this).datagrid('selectRow',rowIndex);
+                doselect();
+            },
+            url:'$link.getContextURL()/oa/meeting/topic/select.json',
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+
+        // 获取已选
+        $('#selectedData').datagrid({
+            url: '$link.getContextURL()/oa/meeting/topic/get.json?inIds=$!{selectIds}'
+        });
+    });
+    function operaterFormatter(value,row,index){
+        return '<span class="value-span" style="width:200px;">' + value + '</span>' + $('#delButton').html();
+    }
+
+    // 删除议题
+    function delTopic(index) {
+        // 取得ID
+        $('#selectedData').datagrid('selectRow', index);
+        var delRowId = $('#selectedData').datagrid('getSelected').id;
+
+        // 删除
+        $('#selectedData').datagrid('deleteRow', index);
+        var rows =  $('#selectedData').datagrid('getRows');
+        $('#selectedData').datagrid('loadData',rows);
+
+        // 取消选中 (不知道为什么getRowIndex ID取index 用不了)
+        var checkRows = $('#datasDg').datagrid('getChecked');
+        if (checkRows && checkRows.length > 0) {
+            for (var i = 0; i < checkRows.length; i++) {
+                if (checkRows[i].id == delRowId) {
+                    $('#datasDg').datagrid('uncheckRow', $('#datasDg').datagrid('getRowIndex', checkRows[i]));
+                    break;
+                }
+            }
+        }
+    }
+</script>
+#end

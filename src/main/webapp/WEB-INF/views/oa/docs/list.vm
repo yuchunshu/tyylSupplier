@@ -1,0 +1,376 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" data-options="fit:true,border:false" >
+        <div class="cc-tableWrap" data-options="region:'west',split:false,collapsible:false,border:false" style="width:250px;">
+            <div class="easyui-layout" fit="true">
+                <div  region="center" class="submodule-title-h mynoborder panel-body" style="padding:0 5px 0 0" >
+                    <div class="easyui-layout" fit="true" style=" border: 1px solid #e0e0e0;">
+                        <div class="cc-tableWrap" data-options="region:'north',border:false" style="padding:6px 10px 6px 10px; border-bottom:1px solid #e0e0e0;   background-color: #ededed;">
+                            <div>
+                                #if($power.checkShowMenu("电子文件目录添加","/oa/docs/folder/createNode.json"))
+                                <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" onclick="append()"
+                                        plain="true">新增</a>
+                                #end
+                                #if($power.checkShowMenu("电子文件目录删除","/oa/docs/folder/updateNode.json"))
+                                <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="delNode()"
+                                        plain="true">删除</a>
+                                #end
+                            </div>
+                        </div>
+                        <div class="cc-tableWrap" data-options="region:'center',border:false">
+                           <ul style="height: 99%;" id="menutree"
+                            data-options="url:'$link.getContextURL()/oa/docs/folder/lazyFolderTree.json',method:'post',fit:true,lines:true"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <div class="easyui-layout" fit="true">
+                <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+                    <div id="button" style="display:none">
+                        #if($power.checkShowMenu("电子文件添加","/oa/docs/new"))
+                        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add"
+                                plain="true">添加</a>
+                        #end
+                        #if($power.checkShowMenu("电子文件批量上传","/oa/docs/dealUploadBatch"))
+                        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-upload-alt" onclick="uploadFiles()"
+                                plain="true">多文件上传</a>
+                        #end
+                    </div>
+                    #if($power.checkShowMenu("电子文件修改","/oa/docs/edit"))
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit"
+                            plain="true">修改</a>
+                    #end
+                    #if($power.checkShowMenu("电子文件迁移","/oa/docs/dealExchange.json"))
+                    <a id="selectFolderDialog" href="javascript:;" iconcls="icon-exchange" plain="true"
+                                callback=fnSelectFolderCallback class="easyui-linkbutton" select-dialog="$link.getContextURL()/oa/docs/folder/folderTree">迁移</a>
+                    #end
+                    #if($power.checkShowMenu("电子文件删除","/oa/docs/delete.json"))
+                    <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+                            plain="true">删除</a>
+                    #end
+                    <i></i>
+                    <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+                         class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+                    <a  onclick="top.CC.closeCurTab()"
+                         class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+                </div>
+
+                <div class="cc-tableWrap" data-options="region:'center',border:false">
+                    <table id="dg" data-options="nowrap:false" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th field="ck" data-options="checkbox:true">序号</th>
+                            <th style="width:35%" data-options="field:'fileName',formatter:detailUrl">文件名称</th>
+                            <th style="width:10%" data-options="field:'folderName'">所属目录</th>
+                            <th style="width:10%" data-options="field:'keyword'">关键词</th>
+                            <th style="width:10%" data-options="field:'fileType'">文件类型</th>
+                            <th style="width:10%" data-options="field:'fileSize'">大小（字节）</th>
+                            <th style="width:10%" data-options="field:'createDateShow'">上传日期</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+                     style="width:500px;height:320px;padding:20px 10px; background-color:#f4f4f4;display:none">
+                    <form id="queryForm">
+                        <input id="folderCode" name="folderCode" type="hidden" />
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="text-align: right">文件名称：</td>
+                                <td><input id="fileName" style="width:348px;" name="$qc.like('fileName')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">关键词：</td>
+                                <td><input id="keyword" style="width:348px;" name="$qc.like('keyword')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">文件类型：</td>
+                                <td>
+                                     <select style="width:158px;" id="fileType"  name="$qc.equal('fileType')"  style="width:30%" class="easyui-combobox"  data-options="editable:false" panelheight="auto" />
+                                         <option selected value=""></option>
+                                         #formoption($!{obj.fileType} $dict.DocsType)
+                                     </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">上传时间：</td>
+                                <td>
+                                    <input name="$qc.greaterThanOrEqualTo('createDate')" class="easyui-datebox" value="$!{firstDay}" style="width:158px;" data-options="editable:false">
+                                    至
+                                    <input name="$qc.lessThanOrEqualTo('createDate')" class="easyui-datebox" value="$!{lastDay}" style="width:158px;" data-options="editable:false">
+                                </td>
+                            </tr>
+                        </table>
+                     </form>
+                    <div id="bnts" style="top:0px; height:25px; width:auto;">
+                        <a class="new-but" onclick="formSearch()">确定</a>
+                        <a class="new-but" onclick="reset()">重置</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mm" class="easyui-menu" style="width:150px;display:none;">
+        #if($power.checkShowMenu("电子文件目录添加","/oa/docs/folder/createNode.json"))<div onclick="append()" data-options="iconCls:'icon-add'">新增</div>#end
+        #if($power.checkShowMenu("电子文件目录修改","/oa/docs/folder/updateNode.json"))<div onclick="$('#menutree').tree('beginEdit',$('#menutree').tree('getSelected').target)" data-options="iconCls:'icon-edit'">修改</div>#end
+        #if($power.checkShowMenu("电子文件目录删除","/oa/docs/folder/delNode.json"))<div onclick="delNode()" data-options="iconCls:'icon-remove'">删除</div>#end
+        <div onclick="$('#menutree').tree('expandAll',$('#menutree').tree('getSelected').target)" data-options="iconCls:'icon-plus-sign'">展开所有下级节点</div>
+    </div>
+</div>
+
+#parse("/oa/docs/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () { // 给查询dialog中的 标题input 绑定回车事件
+        $('#fileName').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSearch();
+            }
+        });
+        $('#keyword').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSearch();
+            }
+        });
+
+        ## easyui-tree 初始化
+        var _oneFlag = true;
+        $('#menutree').tree({
+            onClick:function(node){
+                reset();
+                $(this).tree("expand", node.target);
+                $("#folderCode").val(node.folderCode);
+                if (node) {
+                    $('#button').css('display','inline');
+                } else {
+                    $('#button').css('display','none');
+                }
+                formSearch();
+            },
+            onLoadSuccess:function(node, data){
+                if (data) {
+                    if (_oneFlag) {  // 只在第一个根节点生效
+                        var rootNode = $(this).tree('find', data[0].id);
+                        _oneFlag = false;
+                        $(this).tree('expandAll', rootNode.target);
+                    }
+                }
+            },
+            #if($power.checkShowMenu("电子文件目录修改","/oa/docs/folder/updateNode.json"))
+            onDblClick:function(node){ // 双击改名
+                if (node) {
+                    $(this).tree("beginEdit", node.target);
+                }
+            },
+            #end
+            onAfterEdit:updateNode,
+            onContextMenu: function(e, node){
+                $("#mm").css("display", "block");
+                e.preventDefault();
+                // 查找节点
+                $(this).tree('select', node.target);
+                // 显示快捷菜单
+                $('#mm').menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                });
+            }
+
+        });
+    })
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+
+            var checkedRow = $("#dg").datagrid("getChecked");
+
+            if (checkedRow && checkedRow.length > 0) {
+                var dfn = top.window.openSelectDialogFrameDialog;
+                if (typeof dfn === "function") {
+                    dfn(_url, _callback_fn);
+                }
+            } else {
+                top.CC.messager({
+                    title:'提示',
+                    msg:'请选择要迁移的数据！'
+                });
+            }
+            return false;
+        })
+    });
+
+    // 回调方法
+    function fnSelectFolderCallback(obj){
+        var checkedRow = $("#dg").datagrid("getChecked");
+        var ids = "";
+        for(var i = 0; i < checkedRow.length; i++) {
+            ids += checkedRow[i].id;
+            if (i < (checkedRow.length - 1)) {
+                ids += ",";
+            }
+        }
+        top.CC.loading("正在迁移数据!");
+        $.post("$link.getContextURL()/oa/docs/dealExchange.json",{ids:ids, folderId:obj.id},function(result){
+            top.CC.loaded();
+            if(result.id){
+                top.CC.messager({
+                    title:'提示',
+                    msg:'迁移成功！'
+                });
+                top.CC.addTab({title:'电子文件管理',url:'$link.getContextURL()/oa/docs/list'});
+            }else{
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+            }
+        });
+    }
+
+    var _baseUrl = '$link.getContextURL()/oa/docs';
+    var _listJsonUrl = '/list.json';
+
+    function formSearch() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+        $('#dg').datagrid('uncheckAll');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    function uploadFiles() {
+        var params = "";
+        var node = $("#menutree").tree("getSelected");
+        if (node) {
+            params = "?folderId=" + node.id;
+        }
+        top.CC.addTab({title:"文件上传", url:"$link.getContextURL()/oa/docs/dealUploadBatch" + params});
+    }
+
+
+    ## 以下是对树进行操作的方法
+    function append() {
+        var selectedNode = $("#menutree").tree("getSelected");
+        var param = {};
+        var parentId = "";
+        if (selectedNode) {
+            parentId = selectedNode.id
+        }
+
+        top.CC.loading("正在创建新的目录!");
+        $.ajax({
+               url         : "$link.getContextURL()/oa/docs/folder/createNode.json",
+               async       : false, // 同步
+               cache       : false,
+               type        : 'post',
+               dataType    : 'json',
+               data        : {
+                               'parentId': parentId,
+                             },
+               success     : function(bean){
+                                if (bean) {
+                                    if (selectedNode) {
+                                        param = {parent:selectedNode.target,data:bean};
+                                    } else {
+                                        param = {data:bean};
+                                    }
+                                }
+                                $("#menutree").tree("append",param);
+                                var node = $("#menutree").tree("find",bean.id);
+                                $("#menutree").tree("select",node.target);
+                                $("#menutree").tree("beginEdit",node.target);
+                                top.CC.loaded();
+                             }
+        });
+    }
+
+    function delNode() {
+
+        $.messager.confirm('警告','确定删除该目录吗?',function(r){
+            if (r){
+                var selectedNode = $("#menutree").tree("getSelected");
+                if (selectedNode) {
+                    var childrenNode = $("#menutree").tree("getChildren", selectedNode.target);
+                    if (childrenNode && childrenNode.length>0) {
+                        top.CC.messager({
+                            title:'提示',
+                            msg:'该目录不为空，不能删除！'
+                        });
+                        return;
+                    }
+                    top.CC.loading("正在删除目录!");
+                    $.ajax({
+                           url         : "$link.getContextURL()/oa/docs/folder/delNode.json",
+                           async       : false, // 同步
+                           cache       : false,
+                           type        : 'post',
+                           dataType    : 'json',
+                           data        : {
+                                           'id': selectedNode.id,
+                                         },
+                           success     : function(result){
+                                            top.CC.loaded();
+                                            if (result.error) {
+                                                top.CC.messager({
+                                                    title:'提示',
+                                                    msg:result.error
+                                                });
+                                                return;
+                                            } else {
+                                               $("#menutree").tree("remove", selectedNode.target);
+                                               top.CC.messager({
+                                                    title:'提示',
+                                                    msg:'目录删除成功！'
+                                               });
+                                               top.CC.addTab({title:'电子文件管理',url:'$link.getContextURL()/oa/docs/list'});
+                                            }
+                                         }
+                    });
+                }
+            }
+        });
+    }
+
+    function updateNode() {
+        var selectedNode = $("#menutree").tree("getSelected");
+        if (selectedNode) {
+            top.CC.loading("正在修改目录!");
+            $.ajax({
+                   url         : "$link.getContextURL()/oa/docs/folder/updateNode.json",
+                   async       : false, // 同步
+                   cache       : false,
+                   type        : 'post',
+                   dataType    : 'json',
+                   data        : {
+                                   'id': selectedNode.id,
+                                   'folderName': selectedNode.text
+                                 },
+                   success     : function(result){
+                                    top.CC.loaded();
+                                    if (result.error) {
+                                        top.CC.messager({
+                                            title:'提示',
+                                            msg:result.error
+                                        });
+                                        return;
+                                    }
+                                 }
+            });
+        }
+    }
+</script>
+#end

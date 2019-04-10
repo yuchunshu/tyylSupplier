@@ -1,0 +1,108 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+		<a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+            <tr>
+				<th style="width:36%" data-options="field:'docTile',formatter:detailUrl">公文标题</th>
+                <th style="width:16%" data-options="field:'sendUnitCode'">发文单位</th>
+				<th style="width:12%" data-options="field:'receiveUnitCode'">收文单位</th>
+				<th style="width:11%" data-options="field:'insertTime',formatter:insertTimeObjFormatter">入库时间</th>
+				<th style="width:11%" data-options="field:'ywlsh'">业务流水号</th>
+				<th style="width:12%" data-options="field:'errorReason'">错误原因</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:220px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <form id="queryForm">
+			<input type="hidden" name="startQuery" id="q_start_q" value="$!{queryData.startQuery}" />
+			##<input type="hidden" name="queryUuid" id="q_uuid" value="sendList-2017-07-18-8bba721c-9bdf-4660-abdb-603a6904635f" />
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+                    <td align="right">业务流水号：</td>
+                    <td align="left">
+						<input id="ywlsh" name="ywlsh" class="easyui-textbox" style="width:320px;" />
+                    </td>
+                </tr>
+				<tr>
+                    <td align="right">发送时间：</td>
+                    <td align="left">
+                        <input name="startDate" class="easyui-datebox" value="$!{queryData.startDate}" data-options="editable:false" style="width:150px;">
+							至
+                        <input name="endDate" class="easyui-datebox" value="$!{queryData.endDate}" data-options="editable:false" style="width:150px;">
+                    </td>
+                </tr>
+            </table>
+         </form>
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+</div>
+#parse("doc/remotedocswap/crud.js.vm")
+#@script()
+<script type="text/javascript">
+    $(function () { // 给查询dialog中的 标题input 绑定回车事件
+        $('#title').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+
+    var _baseUrl = '$link.getContextURL()/remotedocswap/statistic';
+    var _listJsonUrl = '/listReadError.json';
+	
+	//查询
+    function formSerach() {
+		$("#q_start_q").val("true");
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+	//重置
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+	
+	
+	// 入库时间 格式化
+    function insertTimeObjFormatter(value, row, index) {
+     	return new Date(value).toLocaleString(); 
+    }
+	
+	function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+	
+    function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        _datagrid.datagrid("selectRow",index);
+        var row = _datagrid.datagrid("getSelected");
+		url = "$link.getContextURL()/remotedocswap/detailDocSwap?id="+row.linkDoc.envelopeId + "&queryFlag=statistic";
+        top.CC.addTab({title:'公文交换详情',url:url});
+    }
+	
+    function detailUrl(value,row) {
+        var display = "<span><font color=red>[置顶]</font></span>";
+        if (row.linkDoc) {
+            return "<a href='javascript:;' class='font-titlecolor' onclick='detailRow(getRowIdByDom(this))'>"+value+"</a>";
+        } else {
+            return value;
+        }
+    }
+</script>
+#end

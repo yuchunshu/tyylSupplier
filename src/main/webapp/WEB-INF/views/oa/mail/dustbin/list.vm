@@ -1,0 +1,128 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-undo" onclick="recover()"
+                    plain="true">恢复</a>
+            <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="del()"
+                    plain="true">删除</a>
+            <i></i>
+            <a  onclick="top.CC.closeCurTab()" class="easyui-linkbutton l-btn-plain-quit"
+                 data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg"  data-options="nowrap:false" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th field="ck" data-options="checkbox:true"></th>
+                        <th style="width:5" data-options="field:'attachFlag',formatter:attFlag"><img src='images/attach.png'/></th>
+                        <th style="width:80%" data-options="field:'title',formatter:detailUrl">主题</th>
+                        <th style="width:14%" data-options="field:'delDateShow'">删除时间</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("oa/mail/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        $('#dg').datagrid("selectRow",index);
+        var row = $('#dg').datagrid("getSelected");
+        var url;
+        url = "$link.getContextURL()/oa/mail/dustbin/detail?delId=" + row.id;
+        top.CC.addTab({title:'查看邮件',url:url});
+    }
+
+    var _baseUrl = '$link.getContextURL()/oa/mail/dustbin';
+    var _listJsonUrl = '/list.json';
+
+    function attFlag(value,row,index){
+        if(value == '有附件') {
+            return "<img src='images/attach.png'/>";
+        }
+    }
+
+    function recover(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows && rows.length > 0){
+            $.messager.confirm('警告','确定恢复这些信件吗?',function(r){
+                if (r){
+                    var ids = "";
+                    for(var i=0;i<rows.length;i++){
+                        if(i==rows.length-1){
+                            ids += rows[i].id;
+                        }else{
+                            ids += rows[i].id + ",";
+                        }
+                    }
+                    $.post("$link.getContextURL()/oa/mail/dustbin/dealRecover.json",{delIds:ids},function(result){
+                        if (result.success){
+                            $('#dg').datagrid('reload'); // reload the user data
+                            $('#dg').datagrid('uncheckAll');
+                            top.CC.messager({ // show error message
+                                title: '成功',
+                                msg: '恢复成功!'
+                            });
+                        } else {
+                            top.CC.messager({ // show error message
+                                title: '错误',
+                                msg: result.errorMsg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '请选择至少一条数据!'
+            });
+        }
+
+    }
+
+    function del(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows && rows.length > 0){
+            $.messager.confirm('警告','确定彻底删除这些信件吗?',function(r){
+                if (r){
+                    var ids = "";
+                    for(var i=0;i<rows.length;i++){
+                        if(i==rows.length-1){
+                            ids += rows[i].id;
+                        }else{
+                            ids += rows[i].id + ",";
+                        }
+                    }
+                    $.post("$link.getContextURL()/oa/mail/dustbin/delete.json",{delIds:ids},function(result){
+                        if (result.success){
+                            $('#dg').datagrid('reload'); // reload the user data
+                            $('#dg').datagrid('uncheckAll');
+                            top.CC.messager({ // show error message
+                                title: '成功',
+                                msg: '删除成功!'
+                            });
+                        } else {
+                            top.CC.messager({ // show error message
+                                title: '错误',
+                                msg: result.errorMsg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '请选择至少一条数据!'
+            });
+        }
+
+    }
+</script>
+#end

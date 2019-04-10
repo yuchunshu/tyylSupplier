@@ -1,0 +1,72 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                 <input name="id" id="id" type="hidden" value="$!{obj.id}"/>
+                 <input name="createDate" type="hidden" value="$!{obj.createDate}"/>
+                 <input name="depId" type="hidden" value="$!{obj.depId}"/>
+                    <tbody>
+                        <tr>
+                            <td class="fix_td_title">&nbsp;</td>
+                            <td class="fix_td_data">&nbsp;</td>
+                        </tr>
+                        <tr align="center">
+                            <td class="bg-grey" align="right" width="120px">案卷名</td>
+                            <td  align="left" class="bg-white">
+                                $!{esc.html($!{obj.archName})}
+                            </td>
+                        </tr>
+                        <tr align="center">
+                            <td class="bg-grey" align="right">案卷号</td>
+                            <td align="left" class="bg-white">
+                                $!{obj.archNo}
+                            </td>
+                         </tr>
+                         <tr align="center">
+                            <td class="bg-grey" align="right">排序号</td>
+                            <td align="left" class="bg-white">
+                                $!{obj.orderNum}
+                            </td>
+                        </tr>
+                        <tr align="center">
+                          <td class="bg-grey" align="right">案卷类型</td>
+                          <td align="left" class="bg-white">
+                                $!{obj.archType.value}
+                          </td>
+                        </tr>
+                        <tr align="center">
+                          <td class="bg-grey" align="right">立卷日期</td>
+                          <td align="left" class="bg-white">
+                                $!date.format("yyyy-MM-dd",$!{obj.createDate})
+                          </td>
+                        </tr>
+                        <tr align="center">
+                          <td class="bg-grey" align="right">备注</td>
+                          <td align="left" class="bg-white">
+                            <textarea name="remark" class="textareaborder" readonly style="width:95%;height:80px;resize:none;" >$!{esc.html($!{obj.remark})}</textarea>
+                          </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+            <div class="bottom-but-dialog">
+                <ul>
+                    <li><a id="back" onclick="back()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        $('#editWindow').window('close');
+    }
+</script>
+#end

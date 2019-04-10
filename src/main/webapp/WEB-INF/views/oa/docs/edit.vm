@@ -1,0 +1,245 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <input type="hidden" id="id" name="id" value="$!{obj.id}"/>
+                  <input type="hidden" id="folderId" name="folderId" value="$!{folderId}"/>
+                  <input type="hidden" id="fileName" name="fileName" value="$!{esc.html($!obj.fileName)}"/>
+                  <tbody>
+                    <tr>
+                      <td class="fix_td_title">&nbsp;</td>
+                      <td class="fix_td_data">&nbsp;</td>
+                      <td class="fix_td_title">&nbsp;</td>
+                      <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr align="center" >
+                        <td class="bg-grey"><span><font color=red>*</font></span>文件名称</td>
+                        <td class="bg-white" colspan="3" >
+                            <div>
+                                <div class="filelist" id="filelist" style="display:inline-block;">
+                                $!{obj.fileName}#if(!$obj.fileName) 文件大小不能超过100mb! #end
+                                </div>
+                                <a id="uploadBtn"  type="plupload" class="easyui-linkbutton" icon="icon-add" plain=true href="javascript:;" uploadurl="$link.getContextURL()/oa/docs/plupload/upload.json" maxfilesize="100mb">
+                                添加附件
+                                <input class="easyui-validatebox" id="pluploadFinish" value="不上传" data-options="required:true,missingMessage:'附件未上传完成'" style="width:0px;padding:0px;margin:0px;border:0px"/>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr align="center" >
+                        <td class="bg-grey">关键词</td>
+                        <td class="bg-white" >
+                        <input style="width:100%" id="keyword" data-options="validType:'maxLength[250]'" class= "easyui-textbox" name="keyword" value="$!{esc.html($!{obj.keyword})}"/>
+                        </td>
+                        <td class="bg-grey">文件类型</td>
+                        <td class="bg-white" >
+                            <select id="fileType"  name="fileType"  style="width:100px" class="easyui-combobox"  data-options="editable:false" panelheight="auto" />
+                                <option selected value=""></option>
+                                #formoption($!{obj.fileType} $dict.DocsType)
+                            </select>
+                        </td>
+                   </tr>
+                   <tr align="center" >
+                        <td class="bg-grey">所属目录</td>
+                        <td class="bg-white">
+                            #if($obj) $!{obj.folder.fullFloderName} #else $!{folder.fullFloderName} #end
+                        </td>
+                        <td class="bg-grey">上传人</td>
+                        <td class="bg-white">
+                            #if($!{createName}) $!{createName} #else $!{currUser.userName} #end
+                        </td>
+                   </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    #if($obj.id)<li><a id="save" onclick="downloadDocs()" class="new-but" >下载</a></li>#end
+                    #if($power.checkShowMenu("电子文件保存","/oa/docs/edit/save.json"))<li><a id="save" onclick="save()" class="new-but" >保存</a></li>#end
+                    <li><a id="back" onclick="back()" class="new-but" >返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+
+    //关闭
+    function back() {
+        top.CC.addTab({title:'电子文件管理',url:'$link.getContextURL()/oa/docs/list'});
+        top.CC.closeTab("文件上传");
+    }
+
+    function downloadDocs() {
+         $.messager.confirm('提示','确定要下载< $!obj.fileName >文件吗?',function(r){
+            if(r){
+                var url = "$link.getContextURL()/oa/docs/download?id=$!obj.id";
+                window.location = url;
+            }
+         });
+    }
+
+    function save(){
+        if($("#editForm").form('validate')) {
+            var fileId = $("#id").val();
+            if (!fileId || fileId == "") {
+                top.CC.messager({
+                    title:'提示',
+                    msg:'请先上传文件!'
+                });
+                return;
+            }
+            top.CC.loading("保存中，请稍后...");
+            $.post("$link.getContextURL()/oa/docs/save.json",$("#editForm").serialize(),function(result){
+             top.CC.loaded();
+                  if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                    top.CC.addTab({title:'电子文件管理',url:'$link.getContextURL()/oa/docs/list'});
+                    top.CC.closeTab("文件上传");
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        $('a[type="plupload"]').each(function(){
+            var _this=$(this);
+            var _thisdom = _this.get(0);
+            var _thisurl = _this.attr("uploadurl") || "$!{link.getContextPath()}/plupload/upload.json";
+            var _max_file_size = _this.attr("maxfilesize") || '100mb';
+            var _mime_types = _this.attr("mimetypes") || '[{"title":"所有文件", "extensions":"*"}]';
+            _mime_types = eval(_mime_types);
+
+            var _filelistdom = $(".filelist", _thisdom.parentNode).get(0);
+
+            var _targetinput = $("input[type='hidden']", _thisdom.parentNode);
+
+            var uploader = new plupload.Uploader({
+                    runtimes : 'html5,flash',
+
+                    browse_button : _thisdom,
+                    container : _thisdom.parentNode,
+
+                    url : _thisurl,
+
+                    multi_selection:false,
+                    chunk_size : "1mb",
+
+                    filters : {
+                        max_file_size : _max_file_size,
+                        mime_types : _mime_types
+                    },
+
+                    // Flash settings
+                    flash_swf_url : '$!{link.getContextPath()}/lib/plupload/Moxie.swf',
+
+                    preinit : {
+                        UploadFile: function(up, file) {
+                            up.setOption('multipart_params', {fileid: file.id})
+                        }
+                    },
+
+                    init : {
+                        PostInit : function() {
+                            //_filelistdom.innerHTML = '';
+                        },
+                        FilesAdded : function(up, files) {
+                            plupload.each(files, function(file) {
+                            var s = '<span id="' + file.id + '">' + file.name
+                                        + ' (' + plupload.formatSize(file.size) + ') <b></b></span>';
+                                $(_filelistdom).html(s);
+                                if (up.state == plupload.STOPPED) {
+                                    up.refresh();
+                                    up.start();
+                                }
+                            });
+                        },
+                        BeforeUpload : function() {
+                            var ids = $("#id").val();
+                            $("#id").val("");
+                            if (ids) {
+                                $.ajax({
+                                   url         : '$link.getContextURL()/oa/docs/delete.json',
+                                   async       : true,
+                                   cache       : false,
+                                   type        : 'post',
+                                   dataType    : 'json',
+                                   data        : {
+                                                   'ids': ids
+                                                 }
+                                });
+                            }
+                        },
+                        UploadProgress : function(up, file) {
+                            $("#pluploadFinish").val("");
+                            if (document.getElementById(file.id)){
+                                var d = $('div.uploadafter',$('#' + file.id)).get(0);
+                                var b = $('b',d).get(0);
+                                $(b).html('<span>' + file.percent + '%</span>');
+                            }
+                        },
+                        FileUploaded: function(up, file, info) {
+                            $("#pluploadFinish").val("完成");
+                            if (info && (info.status == "200")) {
+                                var message='<span>上传完毕</span>';
+                                if (info.response) {
+                                    var data = JSON.parse(info.response);
+                                    if (data.error) {
+                                        message=null;
+                                        _filelistdom.innerHTML = '上传失败！' + data.error;
+                                    } else {
+                                        if (data.id) {
+                                            var _value = _targetinput.attr('value');
+                                            var _del = document.getElementById(file.id).getElementsByTagName('a')[0];
+                                            $(_del).attr('id',data.id);
+                                            $(_del).linkbutton({});
+                                            if(_value !== ""){
+                                                _value += "," + data.id;
+                                            }else{
+                                                _value = data.id;
+                                            }
+                                            _targetinput.attr('value', _value);
+                                            $("#id").val(data.id);
+                                            $("#fileName").val(file.name);
+                                        }
+                                    }
+                                }
+
+                                if (message && document.getElementById(file.id)){
+                                    var d = $('div.uploadafter',$('#' + file.id)).get(0);
+                                    var b = $('b',d).get(0);
+                                    $(b).html(message);
+                                }
+                            } else {
+                            }
+                        },
+                        Error : function(up, err) {
+                            if (plupload.FILE_SIZE_ERROR == err.code) {
+                                alert("选择的文件大小为 " + plupload.formatSize(err.file.size) + " ，超过了最大上传文件大小 " + _max_file_size + " 的限制。");
+                            } else {
+                                _filelistdom.innerHTML = err.message;
+                            }
+                        }
+                    }
+                });
+
+                uploader.init();
+
+        });
+    });
+</script>
+#end

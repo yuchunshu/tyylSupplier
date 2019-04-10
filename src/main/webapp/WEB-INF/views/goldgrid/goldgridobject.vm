@@ -1,0 +1,33 @@
+<script>
+    var str = '';
+    var copyright = "金格科技iWebOffice2015智能文档中间件[演示版];V5.0S0xGAAEAAAAAAAAAEAAAAG4BAABwAQAALAAAACRMjL8EEB30GKfgBdV5QBd174nAiygzmBLzZyLiwD5H5kNqbnEfine68UfE9xDiuc9xwFj2MV1e922BAyY1dtuo2ichZj/AKL/C6X8yUTMR4OavFt3zEb7JUyAmBmKEvwbFHIocqxFTYoyByK9jaXhX/hKM2RCCboOpAZBJCh6pdfkEqAiflhiaicLEMCl8UWDTXK0NJqShtyCsFrsk9UZs2BFv2rNeakzkDehf920LvJwUioAgjNTTuTqUH2PLphmqNrex0smvTg0xx0VTQkMQIcynMG61pd92BfwDBso+4OKq3Vt/1D3X2RVxZIuAhbnEHrGvzOG0lWgY9vWdgNXGn2wcOAw1sr3s98GxsGCuc5/5r5BYhUX5mp9tX73CtQ/CdB6AO8A7hHirG8sHNAvqfQatDLtpjauN/EWNemPFMVVm/aq78DbG1HtU+sY+saSAq0ldq9j9WdepJbUy9Tj/cF+n1hSpEQNUmsMATFyCjbQmDWLSJuEEViBAuZ7EOg==";
+    str += '<object id="WebOffice2015" ';
+    str += ' width="100%"';
+    str += ' height="100%"';
+    if ((window.ActiveXObject != undefined) || (window.ActiveXObject != null) || "ActiveXObject" in window) {
+        str += ' CLASSID="CLSID:D89F482C-5045-4DB5-8C53-D2C9EE71D025"  codebase="$link.getContextURL()/lib/goldgrid/iWebOffice2015.cab#version=12,0,0,370"';
+        str += '>';
+        str += '<param name="Copyright" value="' + copyright + '">';
+    } else {
+        str += ' progid="Kinggrid.iWebOffice"';
+        str += ' type="application/iwebplugin"';
+        str += ' OnCommand="OnCommand"';
+        str += ' OnReady="OnReady"';
+        str += ' OnOLECommand="OnOLECommand"';
+        str += ' OnExecuteScripted="OnExecuteScripted"';
+        str += ' OnQuit="OnQuit"';
+        str += ' OnSendStart="OnSendStart"';
+        str += ' OnSending="OnSending"';
+        str += ' OnSendEnd="OnSendEnd"';
+        str += ' OnRecvStart="OnRecvStart"';
+        str += ' OnRecving="OnRecving"';
+        str += ' OnRecvEnd="OnRecvEnd"';
+        str += ' OnRightClickedWhenAnnotate="OnRightClickedWhenAnnotate"';
+        str += ' OnFullSizeBefore="OnFullSizeBefore"';
+        str += ' OnFullSizeAfter="OnFullSizeAfter"';
+        str += ' Copyright="' + copyright + '"';
+        str += '>';
+    }
+    str += '</object>';
+    document.write(str);
+</script>

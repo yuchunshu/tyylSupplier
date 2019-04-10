@@ -1,0 +1,17 @@
+#@script()
+<style>
+*{ font-size:14px;}
+body{ background:#fff;font-family:"Microsoft Yahei",sans-serif!important;padding:5px 5px 35px!important;  box-sizing: border-box;}
+.no_bottom {
+    border-bottom: 0px;
+}
+.form_tab{
+    background-color:#95B8E7;  width: 100%;
+    }
+.form_tab td{
+    background-color:#fff;
+    }
+.form_tab .form_gray_unit{background-color:#ecf3ff;  font-weight:;}
+.margin_top_5{margin-top:5px;}
+</style>
+#end

@@ -1,0 +1,60 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <a href="javascript:;" id="add" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+        <a href="javascript:;" id="edit" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+        <a href="javascript:;" id="remove" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" plain="true">删除</a>
+		<i></i>
+        <a onclick="top.CC.closeCurTab()" class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+            <tr>
+                <th style="width:35%" data-options="field:'templateName'">模板名称</th>
+                <th style="width:20%" data-options="field:'remark'">备注</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+</div>
+
+<div id="editWindow" class="easyui-window" title="设置" style="width:500px;height:500px;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("doc/template/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()/doc/template';
+    var _listJsonUrl = '/list.json';
+    var _newJsonUrl = '/new';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+
+    function newPage(){
+        $('#editWindow').window('open');
+        $('#editWindow').window('refresh','$link.getContextURL()/doc/template/new');
+    }
+
+
+
+
+
+</script>
+#end

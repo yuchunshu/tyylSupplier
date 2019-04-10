@@ -1,0 +1,255 @@
+<div id="addDialog" class="easyui-dialog  dialog-tc" title="新增模块" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+     style="width:500px;height:250px;padding:20px 10px; background-color:#f4f4f4;display:none">
+    <form id="editForm">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td style="text-align: right"></span>模块名称：</td>
+                <td><input name="moduleName" id="moduleName" style="width:350px;" class="easyui-textbox"/></td>
+            </tr>
+			<tr>
+                <td style="text-align: right"><font color=red>*</font></span>模块KEY：</td>
+                <td><input name="moduleKey" id="moduleKey" style="width:350px;" class="easyui-textbox" data-options="required:true"/></td>
+            </tr>
+			<input type="hidden" id="moduleId" name="id" />
+        </table>
+     </form>
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="doOk()">确定</a>
+        <a class="new-but" onclick="doCancel()">取消</a>
+    </div>
+</div>
+<div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+	<a href="javascript:;" onclick="addBtn()" class="easyui-linkbutton" plain="true" iconCls="icon-add" >新增</a>
+	<a href="javascript:;" onclick="editBtn()" class="easyui-linkbutton" plain="true" iconCls="icon-edit" >修改</a>
+	<a href="javascript:;" onclick="delBtn()" class="easyui-linkbutton" plain="true" iconCls="icon-remove" >删除</a>
+	<a href="javascript:;" onclick="detail()" class="easyui-linkbutton" plain="true" iconCls="icon-search">详细权限</a>
+</div>
+<table id="moduletg" data-options:"toolbar:'#tb'">
+    <thead>
+        <tr>
+            <th style="width:35%" data-options="field:'moduleName'">模块名称</th>
+            <th style="width:5%" data-options="field:'ALL',formatter:checkBox">全选</th>
+            <th style="width:5%" data-options="field:'CRE',formatter:checkBox">添加</th>
+			<th style="width:5%" data-options="field:'UPD',formatter:checkBox">修改</th>
+			<th style="width:5%" data-options="field:'DEL',formatter:checkBox">删除</th>
+			<th style="width:5%" data-options="field:'RET',formatter:checkBox">查询</th>
+			<th style="width:5%" data-options="field:'STA',formatter:checkBox">统计</th>
+			<th style="width:5%" data-options="field:'DEA',formatter:checkBox">办理</th>
+			<th style="width:5%" data-options="field:'AUD',formatter:checkBox">审核</th>
+			<th style="width:5%" data-options="field:'PRN',formatter:checkBox">打印</th>
+			<th style="width:5%" data-options="field:'EXP',formatter:checkBox">导入</th>
+			<th style="width:5%" data-options="field:'IMP',formatter:checkBox">导出</th>
+        </tr>
+    </thead>
+</table>
+#@script()
+<script>
+
+$(function(){
+    $("#moduletg").datagrid({
+/*      onLoadSuccess:function(data){
+            var rows = $("#moduletg").datagrid('getData');
+            if(rows && rows.length>0){
+                for(var i = 0;i<rows.length;i++){
+                    if(rows[i].checked){
+                        $("#moduletg").datagrid('select',rows[i].id);
+                    }
+                }
+            }
+        },
+        onSelect:function(rowData){
+            $('#power_checkbox_'+rowData.id).prop("checked",true);
+        },
+        onUnselect:function(rowData){
+            $('#power_checkbox_'+rowData.id).prop("checked",false);
+        },
+        onSelectAll:function(rows){
+            $("input[name='powerId']").prop("checked",true);
+        },
+        onUnselectAll:function(rows){
+            $("input[name='powerId']").prop("checked",false);
+        },
+*/      fitColumns:true,//列宽自适应
+        nowrap:false,
+        rownumbers:true,//行号
+        singleSelect:true,
+        idField: 'id',
+        fit:true,
+        //field: 'powerName',
+        url:'$link.getContextURL()/system/power/listModule.json?roleId=$!{role.id}'//获取数据的url
+    });
+
+	$("#detailtg").datagrid({
+        fitColumns:true,//列宽自适应
+        nowrap:false,
+        rownumbers:true,//行号
+        singleSelect:false,
+        fit:true,
+        //field: 'powerName',
+        //url:'$link.getContextURL()/system/power/listModule.json?roleId=$!{role.id}'//获取数据的url
+    });
+});
+
+function ckbox(value,row,index) {
+    if(row.checked){
+        $("#linktg").treegrid('select',row.id);
+        return "<input name='powerId' type='checkbox' value='"+row.id+"' checked id='power_checkbox_" + row.id +"'/>" + value;
+    }else{
+        return "<input  name='powerId' type='checkbox' value='"+row.id+"' id='power_checkbox_" + row.id +"' />" + value;
+    }
+
+}
+
+function checkBox(value,row,index){
+	var field = this.field;
+	if(row.operates){
+		var opArr = row.operates.split(',');
+		for(var i = 0;i < opArr.length;i++){
+			if(field == opArr[i]){
+				return "<input name='"+row.moduleName+"' type='checkbox' checked value="+field+" onclick='boxClick()'>";
+			}
+		}
+	}
+	return "<input name='"+row.moduleName+"' type='checkbox' value='' onclick='boxClick()'>";
+}
+
+//勾选相关事件
+function boxClick(e){
+	if(!e){
+		e = window.event.srcElement || window.event.target;
+	}
+	var field = $(e).parent().parent().attr('field');
+	if($(e)[0].checked){
+		$(e).val(field);
+
+	}else{
+		$(e).val("");
+		$(e).parent().parent().prevAll("[field='ALL']").find("input").removeAttr("checked").val("");
+	}
+	//全选
+	if(field == "ALL"){
+		if($(e)[0].checked){
+    		$(e).parent().parent().nextAll().each(function(i){
+    			var thisField = $(this).attr('field');
+    			$(this).find("input").attr("checked", "checked").val(thisField);
+
+    		});
+		}else{
+			$(e).parent().parent().nextAll().each(function(i){
+    			$(this).find("input").removeAttr("checked").val("");
+    		});
+		}
+	}
+}
+
+//打开详细权限窗口
+function detail(){
+	$("#powerDetail").window('open');
+
+    var _callbackname = "fnSelectWordCallback";
+    var _url = "$link.getContextURL()/system/power/detailModule?roleId=$!{role.id}";
+    var _callback_fn = window[_callbackname];
+    var dfn = top.window.openSelectDialogFrameDialog;
+    if (typeof dfn === "function") {
+        dfn(_url, _callback_fn);
+    }
+}
+
+//打开新增窗口
+function addBtn(){
+	$("#addDialog").window('open').show();
+	$("#addDialog").window('center');
+	$("#moduleId").val("");
+	$("#moduleName").textbox('setValue',"");
+	$("#moduleKey").textbox('setValue',"");
+}
+
+//编辑按钮
+function editBtn(){
+	var row = $("#moduletg").datagrid('getSelected');
+	if(row){
+		addBtn();
+		$("#moduleId").val(row.moduleId);
+		$("#moduleName").textbox('setValue',row.moduleName);
+		$("#moduleKey").textbox('setValue',row.moduleKey);
+	}else{
+		top.CC.messager({title:'提示',msg:'请选择一条数据进行修改'})
+	}
+}
+
+//删除
+function delBtn(){
+	var row = $("#moduletg").datagrid('getSelected');
+	if(row){
+		$.messager.confirm('确认对话框', '您确认要删除该权限吗？', function(r){
+			if (r){
+        		var url = "$link.getContextURL()/system/power/deletePowerModule.json";
+        		$("#moduleId").val(row.moduleId);
+        		$("#moduleName").textbox('setValue',row.moduleName);
+        		$("#moduleKey").textbox('setValue',row.moduleKey);
+        		$.post(url,$("#editForm").serialize(),function(result){
+                	if(result.success){
+                		top.CC.messager({
+                            title:'提示',
+                            msg:'删除成功'
+                        });
+        				close();
+        				$("#moduletg").datagrid('reload');
+                	}else{
+                		top.CC.messager({
+                            title:'提示',
+                            msg:result.error
+                        });
+                	}
+                });
+			}
+		});
+	}else{
+		top.CC.messager({title:'提示',msg:'请选择一条数据进行删除'})
+	}
+}
+
+//取消按钮
+function doCancel(){
+	$("#addDialog").window('close');
+}
+
+//关闭编辑页面
+function close(){
+	$("#addDialog").window('close');
+	$("#moduleId").val("");
+	$("#moduleName").textbox('setValue',"");
+	$("#moduleKey").textbox('setValue',"");
+}
+
+//确认新增/修改
+function doOk(){
+	var url = "$link.getContextURL()/system/power/updatePowerModule.json";
+	var successMessage = "";
+	var moduleId = $("#moduleId").val();
+	if(moduleId){
+		successMessage = "修改成功"
+	}else{
+		successMessage = "新增成功"
+	}
+	if($("#editForm").form('validate')) {
+        $.post(url,$("#editForm").serialize(),function(result){
+        	if(result.success){
+        		top.CC.messager({
+                    title:'提示',
+                    msg:successMessage
+                });
+				close();
+				$("#moduletg").datagrid('reload');
+        	}else{
+        		top.CC.messager({
+                    title:'提示',
+                    msg:result.error
+                });
+        	}
+        });
+	}
+}
+
+</script>
+#end

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        #fixhtmlhead()
+        #fixhtmlcss()
+        #fixhtmlscript()
+    </head>
+    <body $!bodyattr>
+$screen_content
+#localhtmlscript()
+    </body>
+</html>

@@ -1,0 +1,91 @@
+<style>
+*{
+    font-size:12px;
+}
+hr {
+    background-color:#CCC;
+    height:1px;
+    border:0px;
+    }
+body {
+    font-family:verdana,helvetica,arial,sans-serif;
+    padding:10px;
+    font-size:12px;
+    margin:0;
+}
+h2 {
+    font-size:18px;
+    font-weight:bold;
+    margin:0;
+    margin-bottom:15px;
+}
+.demo-info{
+    padding:0 0 12px 0;
+}
+.demo-tip{
+    display:none;
+}
+.demo-add {
+    height:250px;padding:10px;
+
+    }
+.demo-add .btn-right {
+    float:right; height:30px;
+
+    }
+.demo-add input {
+    margin:5px;
+    }
+/*基础表格*/
+.default-table {
+width:100%;
+/*margin-top:10px;*/
+    border-spacing:1px;
+    }
+.default-table th,.default-table td {
+    padding:3px 5px;
+    height:20px;
+
+    }
+.default-table th {
+    text-align:right;
+
+    }
+
+/*自制表格-EASYUI默认风格*/
+.self-table {
+background-color:#95b8e7;
+}
+.self-table th,.self-table td {
+    background-color:#fff;
+    }
+.self-table th {
+    text-align:right;
+    background-color:#ecf3ff;
+    }
+.ant-right {
+    text-align:right;
+    height:35px;
+    width:100%;
+}
+
+/*自制表格-EASYUI默认风格 无边框颜色*/
+.self-table-noborder tr{
+    ##    background-color:#95b8e7;
+}
+.self-table-noborder th,.self-table-noborder td {
+    background-color:#eee;
+    }
+.self-table-noborder th {
+    text-align:right;
+    background-color:#ecf3ff;
+    }
+
+
+.tb2 td{padding: 0 5px;}
+#tb>a{margin:0 5px;}
+.right_tools{
+    text-align:right;
+}
+
+</style>

@@ -1,0 +1,87 @@
+<div id="editWindow" class="easyui-dialog  dialog-tc" title="修改个人信息" style="width:600px;height:390px;display:none;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false,closable:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mainborder-Padding">
+            <form id="editForm" method="post">
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                    <tr>
+                       <td class="bg-grey" align="right" style="width:120px">
+                            <span><font color=red>*</font></span>用户名称
+                       </td>
+                       <td class="bg-white" align="left">
+                            <input type="hidden" id="id" name="id" value="$!{obj.id}"/>
+                            <input type="hidden" id="deptId" name="deptId" value="$!{obj.department.id}"/>
+                            <input style="width:100%;" id="userName" name="userName" class="easyui-textbox" data-options="required:true" value="$!{esc.html($!{obj.userName})}"/>
+                       </td>
+                    </tr>
+                    <tr>
+                       <td class="bg-grey" align="right" >
+                            登录名
+                       </td>
+                       <td class="bg-white" align="left">
+                            <input type="hidden" id="account" name="account" value="$!{esc.html($!{obj.account})}"/>
+                            $!{esc.html($!{obj.account})}
+                       </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-grey" align="right">所属部门</td>
+                        <td class="bg-white" align="left">
+                            $!{esc.html($!{obj.department.deptName})}
+                        </td>
+                    <tr>
+                       <td class="bg-grey" align="right" >
+                            手机号码
+                       </td>
+                       <td class="bg-white" align="left">
+                            <input style="width:100%;" class="easyui-textbox" id="mobile" name="mobile" value="$!{esc.html($!{obj.mobile})}"/>
+                       </td>
+                    </tr>
+                    <tr>
+                       <td class="bg-grey" align="right" >
+                            电子信箱
+                       </td>
+                       <td class="bg-white" align="left">
+                            <input style="width:100%;" class="easyui-textbox" id="email" data-options="validType:'email'"
+                                 name="email" value="$!{esc.html($!{obj.email})}"/>
+                       </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+            <div class="bottom-but-dialog">
+                <ul>
+                    <li><a class="new-but" onclick="save()">保存</a></li>
+                    <li><a class="new-but" onclick="top.CC.closeCurTab()">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+        $('#editWindow').css("display","block"); // 显示div
+        $('#editWindow').dialog('center'); //定位居中
+        $('#editWindow').dialog('open'); // 打开窗口
+    })
+    //保存
+    function save(){
+        if ($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/system/user/saveInfo.json",$("#editForm").serialize(),function(result){
+                  if(null == result.errorMsg){
+                     $.messager.alert('提示','保存成功!','info');
+                  }else{
+
+                     top.CC.messager({
+                        title:'提示',
+                        msg:result.errorMsg
+                     });
+                  }
+            });
+        }
+    }
+</script>
+#end
+#include("base/common.css.html")

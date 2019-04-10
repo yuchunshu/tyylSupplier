@@ -1,0 +1,561 @@
+<div  class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+			<form id="editForm" method="post">
+				<input type="hidden" id="id" name="id" value="$!{envelope.id}"/>
+				<input type="hidden" id="envStatus" name="envStatus" value="$!{envelope.envStatus}"/>
+				<input type="hidden" name="identifier" value="007565768-N-2014G001000000003"/>##?? 为什么要这么设置（电子公文：007565768-N-2014G001000000003）
+				<input type="hidden" id="secondaryUnitIdentifier" name="secondaryUnitIdentifier" value="$!{envelope.secondaryUnitIdentifier}"/>
+				<input type="hidden" name="resourceIden" value="dzgw"/>##?? 为什么要这么设置
+				## <input type="hidden" id="docNumber" name="docNumber" value="$!{envelopeContent.docNumber}"/>
+
+				<table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+					<tr>
+						<td class="fix_td_title">&nbsp;</td>
+						<td class="fix_td_data">&nbsp;</td>
+						<td class="fix_td_title">&nbsp;</td>
+						<td class="fix_td_data">&nbsp;</td>
+					</tr>
+					<tr>
+						<td class="bg-grey" style="width:150px;"><span><font color=red>*</font></span>类型</td>
+						<td class="bg-white">
+							#formradio("documentType" "$!{envelope.documentType}" $dict.RemoteDocSwapType "0")
+						</td>
+						<td class="bg-grey" style="width:150px;">密级</td>
+						<td class="bg-white">
+							<input style="width:99%;" name="secretLevel" editable="false" data-options="required:true" class="easyui-textbox" value="非涉密"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bg-grey"><span><font color=red>*</font></span>公文标题</td>
+						<td class="bg-white" colspan="3">
+							<textarea name="title" class="easyui-validatebox textareaborder" data-options="required:true,validType:'maxLength[250]'" style="width:99%;height:40px;resize:none;" >$!{esc.html($!{envelope.title})}</textarea>
+						</td>
+					</tr>
+					<tr>
+						<td class="bg-grey" style="width:150px;"><span><font color=red>*</font></span>发文字号</td>
+						<td class="bg-white" colspan="3">
+							##<input style="width:99%;" name="docNumber" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{envelopeContent.docNumber})}"/>
+							<input type="hidden" id="docNumber" name="docNumber" value="$!{envelopeContent.docNumber}"/>
+							##<input type="text" id="docCode1" value="$!{docCode1}" class="easyui-textbox" style="width:80px;"/>&nbsp;[&nbsp;
+							<select name="docCode1" id="docCate" class="easyui-combobox"  panelheight="auto" style="width:100px;">
+								<option value="" #if("" == "$!{docCode1}") selected #end >--请选择--</option>
+									#foreach( $code in $!{docCodeList} )
+										<option value="$!{code}" #if("$!{code}" == "$!{docCode1}") selected #end >$!{code.value}</option>
+									#end
+							</select>&nbsp;
+							<select id="codeName" class="easyui-combobox" panelheight="auto" data-options="valueField:'codeName',textField:'codeName',width:150">  
+								<option value="" selected  >--请选择--</option>
+							</select>
+							&nbsp;
+							<input type="text" id="docCode1" value="$!{docCode1}" data-options="required:true" class="easyui-textbox" style="width:150px;"/>
+							&nbsp;[&nbsp;
+							<select name="docCode2" id="docCode2" class="easyui-combobox" data-options="editable:false" panelheight="auto" style="width:60px;">
+								<option value="$!{date.getYear()}" #if("!{docCode2}"=="$!{date.getYear()}") selected="selected" #end>$!{date.getYear()}</option>
+									#set( $lastYear = ${date.getYear()} - 1 )
+									<option value="$!{lastYear}" #if("!{docCode2}"=="$!{lastYear}") selected="selected" #end>$!{lastYear}</option>
+							</select>&nbsp;]&nbsp;
+							<input type="text" id="docCode3" value="$!{docCode3}" data-options="required:true" class="easyui-textbox" style="width:80px;"/>号
+						</td>
+					</tr>
+					<tr>
+						<td class="bg-grey"><span><font color=red>*</font></span>限时办结要求</td>
+						<td class="bg-white" colspan="3" id="emergencyLevel">
+							<label><input type="radio" class="easyui-validatebox" #if('1' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="1"/>特急&nbsp;</label>
+								<label><input type="radio" class="easyui-validatebox" #if('2' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="2"/>急件</label>
+								<label><input type="radio" class="easyui-validatebox" checked #if('3' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="4"/>普通一类</label>
+								<label><input type="radio" class="easyui-validatebox" #if('4' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="5"/>普通二类</label>
+								<label><input type="radio" class="easyui-validatebox" #if('5' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="6"/>普通三类</label>
+								<label><input type="radio" class="easyui-validatebox" #if('6' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="7"/>其它</label>
+						</td>
+					</tr>
+					<tr>
+						<td class="bg-grey">紧急程度</td>
+						<td class="bg-white" colspan="3">
+							<input type="hidden" name="emergencyLevel" id="eme_lv" value="3">
+								<input style="width:99%;" id="emergencyLevelName" name="emergencyLevel" editable="false" class="easyui-textbox" value="无"/>
+                    	</td>
+                	</tr>
+					<tr>
+						<td class="bg-grey"><font color=red>*</font></span>限办工日</td>
+						<td class="bg-white">
+							<div id="ltday1" style="float:left; witdh:60px; display:block">
+								<input style="width:50px;" id="deadlineDay"  name="deadlineDay" editable="false" data-options="validType:'integer',onChange:showworktime" class="easyui-textbox"  value="">
+									&nbsp;个工作日&nbsp;
+									<span id="receiveFileDisplayLimitTime" style="color:red; font-weight: bold;"></span>
+									##<input type="hidden" id="limitTime" name="limitTime" value="">
+                  			</div>
+							<div id="ltday2" style="float:left; witdh:200px; display:none">
+								<input style="width:100px;" id="limitTime" name="limitTime" class="easyui-datebox"  data-options="required:true,editable:false" />
+							</div>
+                    	</td>
+						<td class="bg-grey"><span><font color=red>*</font></span>签发人</td>
+						<td class="bg-white">
+							<input style="width:99%;" name="signReceiveMan" class="easyui-textbox" value="$!{esc.html($!{envelopeContent.signReceiveMan})}"/>
+						</td>
+                	</tr>
+					<tr>
+						<td class="bg-grey">印发机关</td>
+						<td class="bg-white">
+							<input style="width:99%;" name="printOrg" class="easyui-textbox" value="$!{esc.html($!{envelopeContent.printOrg})}"/>
+						</td>
+						<td class="bg-grey"><font color=red>*</font></span>印发日期</td>
+						<td class="bg-white">
+							<input style="width:120px;" name="printDate" data-options="required:true,editable:false" class="easyui-datebox" #if($envelope.id) value="$!date.format('yyyy-MM-dd',$!{envelopeContent.printDate})" #else value="$!date.get('yyyy-MM-dd')" #end/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bg-grey"><font color=red>*</font></span>联系人</td>
+						<td class="bg-white">
+							<input style="width:99%;" name="contactName" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{envelopeContent.contactName})}"/>
+						</td>
+						<td class="bg-grey"><font color=red>*</font></span>联系方式</td>
+						<td class="bg-white">
+							<input style="width:99%;" name="contactPhone" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{envelopeContent.contactPhone})}"/>
+						</td>
+                    
+                	</tr>
+					<tr>
+						<td class="bg-grey" style="width:150px;"><span><font color=red>*</font></span>收文单位</td>
+						<td class="bg-white" colspan="3">
+							<input style="width:40%;" id="secondaryUnitIdentifierName" name="secondaryUnitIdentifierName" editable="false" data-options="required:true"
+								class="easyui-textbox" value="$!{esc.html($!{envelope.secondaryUnitIdentifierName})}"/>
+								
+								<a class="easyui-linkbutton unitSelDlg" callback="selectHandleUnitCallback" href="javascript:;" 
+									iconCls='icon-search' mans-dialog  title="选择"></a>
+						</td>
+					</tr>
+					<tr>
+						<td class="bg-grey">正文</td>
+						<td colspan="3" class="bg-white" attachId="$!{envelopeContent.id}">
+							#formremotedocswapfile("gdFileId","gwFileId","tifFileId", "", "", "", "", "", $!{attachMap.get("$envelopeContent.id")},"#defaultDownloadUrl('remotedocswap')", true, "#defaultUploadUrl('remotedocswap')",true)
+						</td>
+					</tr>
+					##<tr>
+					##	<td class="bg-grey">附件</td>
+					##	<td colspan="3" class="bg-white" attachId="$!{envelopeContent.id}">
+					##		#formfilemulty("swapFileAttachId", "", "", "", $!{attachMap.get("$envelopeContent.id")},"#defaultDownloadUrl('remotedocswap')", true, "#defaultUploadUrl('remotedocswap')",true)
+					##	</td>
+					##</tr>
+					
+					<tr>
+						<td class="bg-grey">附件</td>
+						<td colspan="3" class="bg-white">
+							##附件id
+							<input id="attach" name="attach" type="hidden" value=""/>
+							<div class="filelistmulti" id="file-list-c">
+								<a class="easyui-linkbutton btn-file-up" icon="icon-add" plain="true" select-type="otherFile" uploadurl="#defaultUploadUrl('remotedocswap')" swfurl="$!{link.getContextPath()}/js/Moxie.swf">
+									添加附件
+								</a>
+								<div id="other-file-c">
+
+								</div>
+							</div>
+						</td>
+					</tr>
+
+            	</table>
+			
+				##金格预览框
+				<div style="width:100%; height:800px; float:left; border:1px solid #e0e0e0; text-align:center;display: none;" id="content-attach">
+					<div style="width:100%;height:25px;text-align: center;color:red;">修改文件后请按下Ctrl+S 保存，或者点击左上方工具栏的"保存文件"按钮</div>
+					<div class="easyui-layout" data-options="fit:true">
+						<div data-options="region:'center',border:false">
+							<object id="WebOffice2009" width="100%" height="98%" classid="clsid:8B23EA28-2009-402F-92C4-59BE0E063499" codebase="$link.getContextURL()/lib/goldgrid/2009/iWebOffice2009.cab#version=10,8,6,8">
+								<PARAM name="WebUrl" value="$link.getContextURL()/OfficeServer.jsp">
+								<PARAM name="RecordID" value="">
+								<PARAM name="UserName" value="$user.getCurrentUserName()">
+								<PARAM name="PenColor" value="#FF0000">
+								<PARAM name="PenWidth" value="1">
+								## EditType(x,y) 第一位可以为0,1,2,3,4其中：0不可编辑；1可以编辑，无痕迹；2可以编辑，有痕迹，无修订；3可以编辑，有痕迹，有修订；4不可编辑，但可以选择文档内容和复制。第二位可以为0,1其中：0不可手写批注；1可以手写批注（转换批注不受影响）
+								<PARAM name="EditType" value="1,1">
+
+								<PARAM name="ExtParam" value="">
+								<PARAM name="Print" value="1">
+								<PARAM name="ShowToolBar" value="1">
+                        	</object>
+                    	</div>
+                	</div>
+            	</div>
+				##pdf预览框
+				<div style="width:100%; height:800px; float:left; border:1px solid #e0e0e0; text-align:center;display: none;" id="content-attach-2">
+					<iframe temp-src="$link.getContextURL()/lib/pdfviewer/viewer/viewer.html?file=" id="pdf-iframe" download-url="#defaultDownloadUrl('remotedocswap')""></iframe>
+            	</div>
+			
+       	 	</form>
+    	</div>
+		<div data-options="region:'south'" class="bottom-h">
+			<div class="bottom-but">
+				<ul>
+					##<li><a onclick="saveTemp()" class="new-but">暂存</a></li>
+					<li><a onclick="publish()" class="new-but">发送</a></li>
+					#if(${envelope.id})
+						<li><a onclick="delDocswap()" class="new-but">删除</a></li>
+					#end
+					<li><a onclick="back()" class="new-but">返回</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    $(function(){
+				//类型和限时办结联动效果
+				initEmergencyLevelRadio();
+				initRemoteDocSwapTypeRadio();
+				$('input[name="deadlineType"][value=4]').click();
+				
+				$('#codeName').combobox({  
+                    onLoadSuccess :function(){
+						var docCateValue = $('#docCate').combobox('getValue');
+                        if(""!=docCateValue){
+							var val = $('#codeName').combobox("getData");  
+    						$('#codeName').combobox('select',val[0].codeName);
+							
+						}
+                	},
+				  	onSelect: function () {
+    					var codeNameValue = $('#codeName').combobox('getValue');
+						var docCateValue = $('#docCate').combobox('getValue');
+                        if(""!=docCateValue){
+    						$('#docCode1').textbox('setValue',codeNameValue);
+    					}else{
+    						$('#docCode1').textbox('setValue','');
+    					}
+					}
+				}); 
+				
+				$('#docCate').combobox({  
+                    onSelect: function () {
+						var docCateValue = $('#docCate').combobox('getValue');
+                        if(""!=docCateValue){
+							var url = '$link.getContextURL()/remotedocswap/getCodeNameByDocCate.json?docCate=' + docCateValue;  
+                        	$('#codeName').combobox('reload', url);
+						}else{
+							$('#codeName').combobox('loadData', {});
+							$('#codeName').combobox('select','--请选择--');
+						}
+                    }  
+                }); 
+				 
+
+    })
+	
+	$("a[mans-dialog]").each(function() {
+    	$(this).click(function(){
+      		hideWebOffice('WebOffice2009');
+      		var $this = $(this);
+      		var _callbackname = $this.attr("callback");
+      		var _callbackname1 = "showWebOffice";
+      		var _url = "$link.getContextURL()/remotedocswap/unit/select";
+      		var _callback_fn = window[_callbackname];
+     	 	var _callback_fn1 = window[_callbackname1];
+      		var dfn = top.window.openSelectDialogFrameDialog;
+      		if (typeof dfn === "function") {
+        		dfn(_url, _callback_fn,_callback_fn1);
+      		}
+      		return false;
+    	})
+  });
+	
+	//类型变化时改变 限时办结要求
+	function initRemoteDocSwapTypeRadio(){
+		$('input[name="documentType"]').on('click',function(){
+					 var type = $(':radio[name="documentType"]:checked').val();
+					 $("#emergencyLevel").html('');
+					 var str = '';
+					 if(1 == type){
+        				 str += '<label><input type="radio" class="easyui-validatebox" #if('1' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="1"/>特急&nbsp;</label>';
+        				 str += '<label><input type="radio" class="easyui-validatebox" #if('2' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="2"/>急件</label>';
+        				 str += '<label><input type="radio" class="easyui-validatebox" checked #if('3' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="3"/>普通</label>';
+						 $("#emergencyLevel").html(str);
+    					 initEmergencyLevelRadio();
+    					 $('input[name="deadlineType"][value=3]').click();
+    					 $("#eme_lv").val(3);
+					 }else{
+    					 str += '<label><input type="radio" class="easyui-validatebox" #if('1' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="1"/>特急&nbsp;</label>';
+    					 str += '<label><input type="radio" class="easyui-validatebox" #if('2' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="2"/>急件</label>';
+    					 str += '<label><input type="radio" class="easyui-validatebox" checked #if('3' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="4"/>普通一类</label>';
+    					 str += '<label><input type="radio" class="easyui-validatebox" #if('4' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="5"/>普通二类</label>';
+    					 str += '<label><input type="radio" class="easyui-validatebox" #if('5' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="6"/>普通三类</label>';
+    					 str += '<label><input type="radio" class="easyui-validatebox" #if('6' == $!{envelopeContent.emergencyLevel}) checked #end data-options="required:true" name="deadlineType" value="7"/>其它</label>';
+						 $("#emergencyLevel").html(str);
+    					 initEmergencyLevelRadio();
+    					 $('input[name="deadlineType"][value=4]').click();
+    					 $("#eme_lv").val(3);
+					 }
+					 
+                });
+				
+	}
+	
+	//限时办结要求 变化时触发事件
+	function initEmergencyLevelRadio(){
+		
+		$('input[name="deadlineType"]').on('click',function(){
+					var level = $(':radio[name="deadlineType"]:checked').val();
+					var type = $(':radio[name="documentType"]:checked').val();
+					var map = {};
+					
+					#foreach($item in $deadLineTypeMap.entrySet())  
+					   map[$item.key] = $item.value; 
+                    #end
+					var value = map[level + type];
+					
+					$('#deadlineDay').textbox('textbox').attr('readonly',true); 
+					if(level == 1){
+						$('#deadlineDay').textbox('setValue','1');
+						$('#emergencyLevelName').textbox('setValue','特急');
+						$("#eme_lv").val(1);
+						showLimitDaySpan(1);
+					}else if(level == 2){
+						$('#deadlineDay').textbox('setValue','5');
+						$('#emergencyLevelName').textbox('setValue','急件');
+						$("#eme_lv").val(2);
+						showLimitDaySpan(1);
+					}else if(level == 3){
+						$('#deadlineDay').textbox('setValue','15');
+						$('#emergencyLevelName').textbox('setValue','无');
+						$("#eme_lv").val(3);
+						showLimitDaySpan(1);
+					}else if(level == 4){
+						$('#deadlineDay').textbox('setValue','15');
+						$('#emergencyLevelName').textbox('setValue','无');
+						$("#eme_lv").val(3);
+						showLimitDaySpan(1);
+					}else if(level == 5){
+						$('#deadlineDay').textbox('setValue','30');
+						$('#emergencyLevelName').textbox('setValue','无');
+						$("#eme_lv").val(3);
+						showLimitDaySpan(1);
+					}else if(level == 6){
+						$('#deadlineDay').textbox('setValue','120');
+						$('#emergencyLevelName').textbox('setValue','无');
+						$("#eme_lv").val(3);
+						showLimitDaySpan(1);
+					}else if(level == 7){
+						$('#deadlineDay').textbox('setValue','');
+						$('#emergencyLevelName').textbox('setValue','无');
+						$('#deadlineDay').textbox('textbox').attr('readonly',false); 
+						$("#eme_lv").val(3);
+						showLimitDaySpan(0);
+					}
+					
+					//如果初始化设置了限时办结要求对应天数，则使用设置的值
+					if(value!=""&&value!=undefined){
+						$('#deadlineDay').textbox('setValue',value);
+					}
+                });
+	}
+	
+	//根据限时办结要求 切换限时工日
+	function showLimitDaySpan(p){
+     var span1 = $("#ltday1");
+     var span2 = $("#ltday2");
+     if (p == 1) {
+        span1.css("display", "block");
+        span2.css("display", "none");
+        //$("#expiryDate").textbox("setValue","");
+     } else {
+        span1.css("display", "none");
+        span2.css("display", "block");
+        $("#deadlineDay").textbox("setValue","");
+     }
+  }
+  
+    function showworktime(newValue, oldValue){
+        var day =newValue;
+        ##替换非数字
+        //day=day.replace(/\D/g,"");
+        if (day== ""|| day =="0") {
+            $("#deadlineDay").val("");
+            $("#receiveFileDisplayLimitTime").text("");
+			$('#limitTime').datebox('setValue','');
+            return false;
+        }
+        jQuery.ajax({
+            url:"$link.getContextURL()/doc/event/getLimitTime.json",
+            data:{
+                limitDay: day
+            },
+            type:"post",
+            async:false,
+            dataType:"text",
+            success:function(data) {
+				$("#limitTime").textbox("setValue",data);
+                var value = data.substr(0, data.indexOf(' ')).split("-");
+                var displayLimitTime = "";
+                displayLimitTime = value[0] + "年" + value[1] + "月" + value[2] + "日";
+                $("#receiveFileDisplayLimitTime").text(" 至  " + displayLimitTime);
+            }
+        });
+    }
+
+    function selectHandleUnitCallback(data) {
+        if (data != null) {
+			var ids = '';
+			var names = '';
+			for(var i=0;i<data.length;i++){
+				ids += data[i].unitIdentifier + ',';
+				names += data[i].unitName + ',';
+			}
+			ids = ids.substring(0,ids.length-1);
+			names = names.substring(0,names.length-1);
+            $('#secondaryUnitIdentifierName').textbox('setValue',names);
+        	$('#secondaryUnitIdentifier').val(ids);
+        }
+    }
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'发送查询',url:'$link.getContextURL()/remotedocswap/send/list'});
+        top.CC.closeTab(#if($envelope.id) '编辑公文交换' #else '新建公文交换' #end);
+    }
+
+	//拼接文号
+	function createDocNumber(){
+		var docCode1 = $('#docCode1').textbox('getValue');
+		var docCode2 = $('#docCode2').combobox('getValue');
+		var docCode3 = $('#docCode3').textbox('getValue');
+		var docNumber = docCode1 + '〔' + docCode2 + '〕' + docCode3;
+		return docNumber;
+	}
+	
+	//发送
+    function publish(){
+        if($("#editForm").form('validate')) {
+			
+			$("#docNumber").val(createDocNumber());
+			
+			//检查附件
+            if (!$("#gdFileId").val()) {
+                alert("请上传正文附件。");
+                return false;
+            }
+            if (!$("#gwFileId").val()) {
+                alert("请上传正文附件。");
+                return false;
+            }
+            if (!$("#tifFileId").val()) {
+                alert("请上传正文附件。");
+                return false;
+            }
+    		
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/remotedocswap/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'发送成功！'
+                    });
+                    top.CC.addTab({title:'发送查询',url:'$link.getContextURL()/remotedocswap/send/list'});
+                    top.CC.closeTab('新建公文交换');
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+    // 暂存
+    function saveTemp(){
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/remotedocswap/saveTemp.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'暂存成功！'
+                    });
+                      back();
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+    // 删除
+    function delDocswap() {
+        $.messager.confirm('提示','确定要删除交换公文吗?',function (r) {
+            if (r) {
+                top.CC.loading("正在删除...");
+                $.post('$link.getContextURL()/remotedocswap/delete.json', {ids: '$!{envelope.id}'}, function(result) {
+                    top.CC.loaded();
+                    if (result.id) {
+                        top.CC.messager({ title: '提示', msg: '删除成功！' });
+                        back();
+                    } else {
+                        top.CC.messager({
+                            title:'提示',
+                            msg:'服务器连接不上'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepCallback(obj){
+        $("#department").textbox('setValue',obj.text);
+        $("#publishDepId").val(obj.id);
+    }
+</script>
+##正文和附件相关
+##设置可以编辑附件
+##docIsType代表去公文交换状态
+#set($docIsEdit=true)
+#set($docIsType=true)
+#parse("doc/fileparse/previewdoc.vm")
+
+<link href="themes/default/style_xoa.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+<style>
+.filelistmulti{
+    display: block;
+    float: left;
+    line-height:25px;
+    width: 100%;
+}
+.uploadedfile{
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 300px;
+}
+.uploadafter{
+    display: inline-block;
+    float: right;
+    width: 200px;
+}
+</style>
+#end

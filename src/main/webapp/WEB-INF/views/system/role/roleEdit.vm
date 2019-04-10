@@ -1,0 +1,184 @@
+#include("system/role/common.css.html")
+<div class="easyui-layout" fit="true">
+
+    ###############主体内容start  layout>>center################
+    <div class="" data-options="region:'center',border:false">
+        ###############嵌套layout start################
+        <div class="easyui-layout" data-options="fit:true">
+            ###############嵌套layout>>north start################
+            <div class="mainborder-Padding" data-options="region:'north'" style="height:130px">
+                <form id="roleEdit">
+                    <input type="hidden" id="roleId" name="id" value="$!{role.id}"/>
+                    <input type="hidden" id="powerIds" name="powerIds" value=""/>
+                    ##<input type="hidden"  id="userIds" name="userIds" value=""/>
+                    <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                        <tr>
+                            <td style="width:150px" class="bg-grey" align="right"><font color=red>*</font>角色名称</td>
+                            <td class="bg-white" style="width:40%;">
+                            <input style="width:100%;" data-options="required:true,validType:['isBlank','checkRoleName']" class="easyui-textbox" id="roleName" name="roleName"  value="$!{role.roleName}"/>
+                            </td>
+                            <td class="bg-grey" align="right" style="width:150px">排序</td>
+                            <td class="bg-white">
+                                <input style="width:100%;" data-options="validType:'integer'"  class="easyui-numberbox" name="orderNum" value="$!{role.orderNum}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="bg-grey" align="right">角色说明</td>
+                            <td class="bg-white" colspan="3">
+                                <input  style="width:100%;height:50px" data-options="multiline:true" class="easyui-textbox" name="remark" value="$!{role.remark}"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            ###############嵌套layout>>north end################
+            ###############嵌套layout>>center start################
+            <div data-options="region:'center'">
+                <div class="easyui-panel" fit="true" title=""  border="false">
+                        #parse("/system/role/parse/appPower.vm")
+                </div>
+            </div>
+            ###############嵌套layout>>center end################
+            ###############嵌套layout>>west start################
+            <div data-options="region:'east'" style="width:70%">
+                 <div class="easyui-panel" fit="true" border="false" title="" >
+                        #parse("/system/role/parse/modulePower.vm")
+                </div>
+            </div>
+			
+            ###############嵌套layout>>west end################
+        </div>
+        ###############嵌套layout end################
+    </div>
+    ###############主体内容end  layout>>center################
+    <div data-options="region:'south'"  class="bottom-h" height="52px">
+        <div class="bottom-but">
+            <ul>
+                <li><a onclick="saveRole()" class="new-but">保存</a></li>
+                <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+##</form>
+#@script()
+<script>
+    $(function(){
+        $("#roleName").textbox("textbox").focus();
+    })
+
+$.extend($.fn.validatebox.defaults.rules,{
+    isBlank: {
+                validator:function(value){ return $.trim(value) != '' },
+                message: '不能是空格'
+            },
+    integer:{
+        // 验证整数
+        validator:function(value) {
+                    return /^[+]?[1-9]+\d*$/i.test(value);
+                 },
+        message : '请输入整数'
+    },
+    checkRoleName:{
+        validator:function(value){
+            var checkR=$.ajax({
+                async : false,
+                cache : false,
+                type : 'post',
+                url : '$link.getContextURL()/system/role/checkRoleName.json',
+                data : {
+                    'id':'$!{role.id}',
+                    'roleName':value
+                }
+            }).responseText;
+            return checkR==="true";
+        },
+        message:"名称已存在"
+    }
+});
+
+function saveRole(){
+    $.easyui.loading({locale:$('body')});
+    var flag = $("#roleEdit").form('validate');
+    if(flag){
+        var powerIds = "";
+        var pInput = $("input[name='powerId']:checked");
+        pInput.each(function(i){
+            if($(this).prop("checked")){
+                if(i == pInput.length-1)
+                    powerIds += $(this).val();
+                else
+                    powerIds += $(this).val() + ",";
+            }
+        });
+        $("#powerIds").val(powerIds);
+        //$("#userIds").val(getCheckUser);
+        $.post("$link.getContextURL()/system/role/saveRole.json",$("#roleEdit").serialize(),function(data){
+			if(data.id){
+                $("#roleId").val(data.id);
+				saveModuleAjax();
+            }else{
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+            }
+        });
+		
+    }
+}
+
+//保存模块与角色的关系
+function saveModuleAjax(){
+	$.ajax({
+        type :"post",
+        url : "$link.getContextURL()/system/power/saveModule.json",
+		contentType :"application/json;charset=utf-8", 
+    	data :JSON.stringify(saveModule()),
+		success: function(data){
+			$.easyui.loaded($('body'));
+			if(data.id){
+                top.CC.messager({title:"提示",msg:"保存成功"});
+                top.CC.refreshTab("角色列表");
+                //top.CC.closeCurTab();
+            }else{
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+            }
+		}
+    });
+}
+
+
+
+//整理勾选的数据
+function saveModule(){
+	var row = $("#moduletg").datagrid('getData').rows;
+	var total = $("#moduletg").datagrid('getData').total;
+	for(var i = 0;i < row.length;i++){
+		var strOperates = "";
+		var name = row[i].moduleName;
+		var inp = $("[name='"+name+"']");
+		for(var j=0;j<inp.length;j++){//将勾选框转换成字符串
+			var str = inp[j].value;
+			if(str || str != ""){
+				if(j != inp.length-1 && inp.length !=1){
+					str+=",";
+				}
+				strOperates+=str;
+			}
+		}
+		row[i].operates = strOperates;
+		row[i].roleId = $!{role.id};
+	}
+	return row;
+}
+
+// 关闭
+function back() {
+    $('#editWin').window('close');
+}
+</script>
+#end

@@ -1,0 +1,111 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div  region="center" class="submodule-title-h mynoborder panel-body" >
+            <div class="easyui-layout" fit="true" style=" border: 1px solid #e0e0e0;">
+                <div class="cc-tableWrap" data-options="region:'north',border:false" style="padding:6px 10px 6px 10px; border-bottom:1px solid #e0e0e0;   background-color: #ededed;">
+                    <div>
+                        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" onclick="newPage()"
+                                plain="true">新增</a>
+                        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" onclick="edit()"
+                                plain="true">修改</a>
+                        <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="del()"
+                                plain="true">删除</a>
+                        <i></i>
+                        <a  onclick="top.CC.closeCurTab()"
+                            class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+                    </div>
+                </div>
+                <div class="cc-tableWrap" data-options="region:'center',border:false">
+                   <ul id="deptree"data-options="url:'system/dept/treeLazyDep.json',method:'post',fit:true,lines:true"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editWindow" class="easyui-window" title="部门编辑" style="width:500px;height:365px;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    var _delJsonUrl = '/system/dept/delete.json';
+
+     function newPage(){
+        var node = $('#deptree').tree('getSelected');
+        if (node) {
+            $('#editWindow').window('open');
+            $('#editWindow').window('refresh','$link.getContextURL()/system/dept/new?id='+node.id);
+        } else {
+            top.CC.messager({ // show error message
+                title: '错误',
+                msg: '请先选择一个部门!'
+            });
+        }
+    }
+
+    function edit(){
+        var node = $('#deptree').tree('getSelected');
+        if (node) {
+            $('#editWindow').window('open');
+            $('#editWindow').window('refresh', '$link.getContextURL()/system/dept/edit?id='+node.id);
+        } else {
+            top.CC.messager({ // show error message
+                title: '错误',
+                msg: '请先选择一个部门!'
+            });
+        }
+    }
+
+    function del(){
+        var node = $('#deptree').tree('getSelected');
+        if (node) {
+            $.messager.confirm('警告','确定删除该部门吗?',function(r){
+                if (r){
+                    $.post(_baseUrl + (_delJsonUrl || '/delete.json'),{id:node.id},function(result){
+                        if (result.errorMsg == null){
+##                            $('#deptree').tree('reload'); // reload the user data
+                            top.CC.messager({ // show error message
+                                title: '成功',
+                                msg: '操作成功!'
+                            });
+                            window.location = "$link.getContextURL()/system/dept/list";
+                        } else {
+                            top.CC.messager({ // show error message
+                                title: '错误',
+                                msg: result.errorMsg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        } else {
+            top.CC.messager({ // show error message
+                title: '错误',
+                msg: '请先选择一个部门!'
+            });
+        }
+    }
+
+    var _oneFlag = true;
+    $(document).ready(function(){
+        $('#deptree').tree({
+            onSelect:function(node){
+                // 点击树文字展开、关闭树节点
+                if ($(this).tree('getSelected').state=='closed') {
+                    $(this).tree('expand',node.target);
+                } else {
+                    $(this).tree('collapse',node.target);
+                }
+            },
+            onLoadSuccess:function(node, data){
+                if (_oneFlag) {  // 只在根节点生效
+                    var rootNode = $(this).tree('find', data[0].id);
+                    _oneFlag = false;
+                    $(this).tree('expandAll', rootNode.target);
+                }
+            },
+        });
+    });
+</script>
+#end

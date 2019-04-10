@@ -1,0 +1,80 @@
+@charset "utf-8";
+/* CSS Document */
+
+.top{ width:100%;  height:99px; border-bottom:0px solid #c9e2f7; /* background-color:#e9f5ff; */}
+
+.tabs-header, .tabs-scroller-left, .tabs-scroller-right, .tabs-tool, .tabs, .tabs-panels, .tabs li a.tabs-inner, .tabs li.tabs-selected a.tabs-inner, .tabs-header-bottom .tabs li.tabs-selected a.tabs-inner, .tabs-header-left .tabs li.tabs-selected a.tabs-inner, .tabs-header-right .tabs li.tabs-selected a.tabs-inner {
+    background-color: #e8f2fc;
+    height: 32px;
+    }
+.tabs {
+    background-color: #e7f4fd;
+    height: 32px!important;
+    padding: 0px;
+    background:url(../default/images/tab-bg.jpg) repeat-x;
+    opacity:1;
+}
+
+.tabs li {
+    margin:0px;
+    font-size:14px!important;
+    border-right: 1px solid #FFF;
+}
+
+.tabs li a.tabs-inner {
+    background: linear-gradient(to bottom,#d1e7fc 0,#d1e7fc 100%);
+}
+
+.tabs li.tabs-selected a.tabs-inner {
+    background: linear-gradient(to bottom,#FFF 0,#ffffff 100%);
+    background-repeat: repeat-x;
+    border: 0px solid #fff;
+    border-top: 2px #1694d9 solid;
+    height: 30px!important;
+    line-height: 26px!important;
+    color: #1694d9;
+    padding: 0px 10px;
+}
+.tabs li.tabs-selected a.tabs-inner span{color: #1694d9;}
+/*tab选项卡*/
+.easyui-tabs .tabs-header,.easyui-tabs .tabs-tool {
+    background-color: #E8F2FC;
+    padding: 0px;
+    }
+
+/*重写easyui的tabs*/
+.tabs li a.tabs-inner {
+    display: inline-block;
+    text-decoration: none;
+    margin: 0;
+    padding: 0 10px;
+    height: 32px;!important
+    line-height: 32px;!important
+    text-align: center;
+    white-space: nowrap;
+    border-width: 1px;
+    border-style: solid;
+    -moz-border-radius: 0px 0px 0 0;
+    -webkit-border-radius: 0px 0px 0 0;
+    border-radius: 0px 0px 0 0;
+        border: 0px;!important
+}
+/**/
+.tabs-selected a,.tabs-inner {
+    color:#0366b7;!important
+
+}
+.tabs li {
+    background: linear-gradient(to bottom,#d1e7fc 0,#d1e7fc 100%);
+    line-height: 32px;
+}
+.tabs-title {
+    margin: 0px 5px;
+}
+.tabs li a.tabs-close, .tabs-p-tool {
+    top: 53%;!important
+}
+.tabs li a.tabs-inner:hover {
+    background-color:#d1e7fc;!important
+
+}

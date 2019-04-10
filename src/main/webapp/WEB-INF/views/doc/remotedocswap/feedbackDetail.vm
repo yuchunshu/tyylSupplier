@@ -1,0 +1,369 @@
+#set($signDocList=$!{envelopeMap.get("1")})
+#if($signDocList)
+<div>
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">签收信息</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($envelopeDoc in $signDocList)
+	<table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+            <tr>
+              <td class="bg-grey">签收部门</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.signerDeptName}
+              </td>
+    		   <td class="bg-grey">签收人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.signerName}
+              </td>
+            </tr>
+			<tr>
+              <td class="bg-grey">签收时间</td>
+              <td class="bg-white" colspan="3">
+    			$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelopeDoc.signDate})
+              </td>
+            </tr>
+    		<tr>
+              <td class="bg-grey">联系人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactName}
+              </td>
+    		   <td class="bg-grey">联系电话</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactPhone}
+              </td>
+            </tr>
+          </tbody>
+      </table>
+    #end
+#end
+
+#set($envelopeDocList=$!{envelopeMap.get("5")})
+#if($envelopeDocList)
+<div >
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">正文反馈</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($envelopeDoc in $envelopeDocList)
+		<table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+            <tr>
+              <td class="bg-grey">紧急程度</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.emergencyLevel.value}
+              </td>
+    		  <td class="bg-grey">密级</td>
+              <td class="bg-white">
+    			非涉密
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey">公文标题</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.title}
+              </td>
+    		  <td class="bg-grey">发文字号</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.docNumber}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey">发文单位</td>
+              <td class="bg-white">
+				$!{envelopeDoc.content.sendOrgName}
+              </td>
+    		  <td class="bg-grey">发送人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.senderName}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey">业务类型</td>
+              <td class="bg-white">
+				反馈文
+              </td>
+    		  <td class="bg-grey">公文类型</td>
+              <td class="bg-white">
+    			反馈文
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey">印发机关</td>
+              <td class="bg-white" colspan="3">
+				$!{envelopeDoc.content.printOrg}
+              </td>
+            </tr>
+			<tr>
+              <td class="bg-grey">发送时间</td>
+              <td class="bg-white">
+    			$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelopeDoc.sendTime})
+              </td>
+			  <td class="bg-grey">签发人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.signReceiveMan}
+              </td>
+            </tr>
+    		<tr>
+              <td class="bg-grey">联系人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactName}
+              </td>
+    		  <td class="bg-grey">联系电话</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactPhone}
+              </td>
+            </tr>
+			<tr>
+                <td class="bg-grey">正文</td>
+                <td class="bg-white" colspan="3">
+					#set($docFilehMap=$!{envelopeMap.get("docFilehMap")})
+					#formremotedocswapfilemulti("attach", "", "", "", $!{docFilehMap.get("$envelopeDoc.content.id")},"#defaultDownloadUrl('remotedocswap')", false, "#defaultUploadUrl('remotedocswap')",false)
+                </td>
+            </tr>
+            <tr>
+                <td class="bg-grey">附件</td>
+                <td colspan="3" class="bg-white">
+					#set($attachMap=$!{envelopeMap.get("attachMap")})
+					#formremotedocswapfilemulti("attach", "", "", "", $!{attachMap.get("$envelopeDoc.content.id")},"#defaultDownloadUrl('remotedocswap')", false, "#defaultUploadUrl('remotedocswap')",false)
+                </td>
+            </tr>
+          </tbody>
+      </table>
+    #end
+#end
+
+#set($feedbackDocList=$!{envelopeMap.get("6")})
+#if($feedbackDocList)
+<div >
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">办结反馈</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($feedbackDoc in $feedbackDocList)
+    <table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+            <tr>
+              <td class="bg-grey">处理结果</td>
+              <td class="bg-white">
+    			#if($!{feedbackDoc.content.dealResultType}=="1")
+					已办结
+                #elseif($!{feedbackDoc.content.dealResultType}=="2")
+					不办理
+                #elseif($!{feedbackDoc.content.dealResultType}=="3")
+					转阅件
+                #end
+              </td>
+    		   <td class="bg-grey">意见</td>
+              <td class="bg-white">
+    			$!{feedbackDoc.content.dealResult}
+              </td>
+            </tr>
+			<tr>
+              <td class="bg-grey">办结时间</td>
+              <td class="bg-white" colspan="3">
+    			$!date.format('yyyy-MM-dd HH:mm:ss',$!{feedbackDoc.content.finishTime})
+              </td>
+            </tr>
+    		<tr>
+              <td class="bg-grey">联系人</td>
+              <td class="bg-white">
+    			$!{feedbackDoc.content.contactName}
+              </td>
+    		   <td class="bg-grey">联系电话</td>
+              <td class="bg-white">
+    			$!{feedbackDoc.content.contactPhone}
+              </td>
+            </tr>
+          </tbody>
+      </table>
+	 
+    #end
+#end
+
+#set($undoDocList=$!{envelopeMap.get("7")})
+#if($undoDocList)
+<div >
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">撤销</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($envelopeDoc in $undoDocList)
+		<table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+            <tr>
+              <td class="bg-grey">撤销时间</td>
+              <td class="bg-white" colspan="3">
+    			$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelopeDoc.undoTime})
+              </td>
+            </tr>
+    		<tr>
+              <td class="bg-grey">联系人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactName}
+              </td>
+    		   <td class="bg-grey">联系电话</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactPhone}
+              </td>
+            </tr>
+         
+          </tbody>
+      </table>
+    #end
+#end
+
+#set($invalidDocList=$!{envelopeMap.get("8")})
+#if($invalidDocList)
+<div >
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">作废</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($envelopeDoc in $invalidDocList)
+    	<table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+            <tr>
+              <td class="bg-grey">作废时间</td>
+              <td class="bg-white" colspan="3">
+    			$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelopeDoc.invalidTime})
+              </td>
+            </tr>
+    		<tr>
+              <td class="bg-grey">联系人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactName}
+              </td>
+    		   <td class="bg-grey">联系电话</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactPhone}
+              </td>
+            </tr>
+         
+          </tbody>
+      </table>
+    #end
+#end
+
+#set($toReadDocList=$!{envelopeMap.get("9")})
+#if($toReadDocList)
+<div >
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">传阅</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($envelopeDoc in $toReadDocList)
+        <table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+            <tr>
+              <td class="bg-grey">传阅对象</td>
+              <td class="bg-white">
+        		$!{envelopeDoc.content.docReadBody}
+              </td>
+              <td class="bg-grey">传阅时间</td>
+              <td class="bg-white">
+        		$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelopeDoc.content.docReadTime})
+              </td>
+            </tr>
+        	<tr>
+              <td class="bg-grey">联系人</td>
+              <td class="bg-white">
+        		$!{envelopeDoc.content.contactName}
+              </td>
+        	   <td class="bg-grey">联系电话</td>
+              <td class="bg-white">
+        		$!{envelopeDoc.content.contactPhone}
+              </td>
+            </tr>
+         
+          </tbody>
+        </table>
+    #end
+#end
+
+#set($fileDocList=$!{envelopeMap.get("10")})
+#if($fileDocList)
+<div >
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">归档</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($envelopeDoc in $fileDocList)
+        <table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+              <tbody>
+                <tr>
+                  <td class="bg-grey">归档时间</td>
+                  <td class="bg-white" colspan="3">
+            		$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelopeDoc.content.docFileTime})
+                  </td>
+                </tr>
+            	<tr>
+                  <td class="bg-grey">联系人</td>
+                  <td class="bg-white">
+            		$!{envelopeDoc.content.contactName}
+                  </td>
+            	   <td class="bg-grey">联系电话</td>
+                  <td class="bg-white">
+            		$!{envelopeDoc.content.contactPhone}
+                  </td>
+                </tr>
+             
+              </tbody>
+        </table>
+    #end
+#end
+
+#set($returnDocList=$!{envelopeMap.get("11")})
+#if($returnDocList)
+<div >
+    <table cellpadding="0" cellspacing="0" style="height:32px;width: 100%">
+        <tr>
+            <td colspan="6"><div style="text-align: center">退文</div></td>
+        </tr>
+    </table>
+</div>
+    #foreach($envelopeDoc in $returnDocList)
+    <table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+			<tr>
+              <td class="bg-grey">退回时间</td>
+              <td class="bg-white" colspan="3">
+    			$!date.format('yyyy-MM-dd HH:mm:ss',$!{envelopeDoc.content.backTime})
+              </td>
+            </tr>
+			<tr>
+              <td class="bg-grey">退回原因</td>
+              <td class="bg-white" colspan="3">
+				$!{envelopeDoc.content.backReason}
+              </td>
+            </tr>
+    		<tr>
+              <td class="bg-grey">联系人</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactName}
+              </td>
+    		   <td class="bg-grey">联系电话</td>
+              <td class="bg-white">
+    			$!{envelopeDoc.content.contactPhone}
+              </td>
+            </tr>
+          </tbody>
+      </table>
+	 
+    #end
+#end

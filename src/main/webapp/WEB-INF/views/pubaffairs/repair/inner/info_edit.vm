@@ -1,0 +1,48 @@
+<tr align="center">
+    <td class="bg-grey"><span><font color=red>*</font></span>申请科室</td>
+    <td class="bg-white">
+		$!{esc.html($!{obj.deptName})}
+	</td>
+	<td class="bg-grey"><span><font color=red>*</font></span>申请人</td>
+	<td class="bg-white">
+		$!{esc.html($!{obj.creatorName})}
+	</td>
+</tr>
+<tr align="center">
+	<td class="bg-grey"><span><font color=red>*</font></span>仪器名称</td>
+	<td class="bg-white" colspan="3">
+		<input style="width:100%;" id="deviceName" name="deviceName" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{obj.deviceName}"/>
+	</td>
+</tr>
+<tr align="center">
+	<td class="bg-grey"><span><font color=red>*</font></span>型号</td>
+	<td class="bg-white">
+		<input style="width:100%;" id="deviceModel" name="deviceModel" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{obj.deviceModel}"/>
+	</td>
+	<td class="bg-grey"><span><font color=red>*</font></span>编号</td>
+	<td class="bg-white">
+		<input style="width:100%;" id="deviceNumber" name="deviceNumber" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{obj.deviceNumber}"/>
+	</td>
+</tr>
+<tr>
+	<td class="bg-grey"><span><font color=red>*</font></span>故障原因</td>
+	<td colspan="3" class="bg-white">
+		<textarea class="easyui-validatebox textareaborder" data-options="required:true" id="failureReason" name="failureReason" maxLength="150" cols="" style="resize:none;width:99%;height:50px;">$!{esc.html($!{obj.failureReason})}</textarea>
+	</td>
+</tr>
+<tr>
+  <td class="bg-grey">附件</td>
+  <td colSpan="3" class="bg-white" attachId="$!{obj.id}">
+    #formfilemulty("attach", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('repairAttach')", true, "#defaultUploadUrl('repairAttach')",true)
+  </td>
+</tr>
+##<tr>
+##	<td class="bg-grey"><span><font color=red>*</font></span>维修类型</td>
+##    <td class="bg-white">
+##		$!{esc.html($!{obj.deptName})}
+##	</td>
+##	<td class="bg-grey"><span><font color=red>*</font></span>预计费用</td>
+##	<td class="bg-white">
+##		$!{esc.html($!{obj.creatorName})}
+##	</td>
+##</tr>

@@ -1,0 +1,94 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/pubaffairs/atten.css"/>
+<div id="receiveContainers">
+	<div class="receive_table">
+		<table cellspacing="0" cellpadding="0" >
+			<tr>
+				<th colspan="6">广西-东盟食品药品安全检验检测中心因公（南宁市内）外出实报实销申请单</th>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">申请人：</td>
+        		<td class="wordLT" colspan="3" style="vertical-align: middle;"><span>$!{esc.html($!{obj.creatorName})}</span></td>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">外出时间：</td>
+        		<td class="wordLT" colspan="3" style="vertical-align: middle;"><span>$date.format('yyyy年MM月dd日HH时mm分',$!{obj.beginTime}) 至 $date.format('yyyy年MM月dd日HH时mm分',$!{obj.endTime})</span></td>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">外出事由：</td>
+        		<td class="wordLT" colspan="3" style="vertical-align: middle;"><span>$!{esc.html($!{obj.reason})}</span></td>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">起止地点：</td>
+        		<td class="wordLT" colspan="3" style="vertical-align: middle;"><span>$!{esc.html($!{obj.departurePlace})}  至   $!{esc.html($!{obj.rentalPlace})}</span></td>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">科室领导意见：</td>
+        		<td colspan="3" class="wordLT" style="vertical-align: middle;">
+					<span>
+						#foreach($data in $opinionList)
+    						#if("$!data.curNode.nodeName" == "科室审核")
+    							<span>$!{esc.html($!{data.apprOpinion})}</span>
+    							<ul class="span_content_date">
+    								<li><span>$!{data.approver.userName}</span></li>
+    								<li><span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span></li>
+    							</ul>
+    							<div style="clear:both"></div>
+    						#end
+    					#end
+					</span>
+				</td>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">办公室意见：</td>
+        		<td colspan="3" class="wordLT" style="vertical-align: middle;">
+					<span>
+						#foreach($data in $opinionList)
+    						#if("$!data.curNode.nodeName" == "办公室领导审核")
+    							<span>$!{esc.html($!{data.apprOpinion})}</span>
+    							<ul class="span_content_date">
+    								<li><span>$!{data.approver.userName}</span></li>
+    								<li><span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span></li>
+    							</ul>
+    							<div style="clear:both"></div>
+    						#end
+    					#end
+					</span>
+				</td>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">分管领导审批：</td>
+        		<td colspan="3" class="wordLT" style="vertical-align: middle;">
+					<span>
+						#foreach($data in $opinionList)
+    						#if("$!data.curNode.nodeName" == "分管领导审核")
+    							<span>$!{esc.html($!{data.apprOpinion})}</span>
+    							<ul class="span_content_date">
+    								<li><span>$!{data.approver.userName}</span></li>
+    								<li><span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span></li>
+    							</ul>
+    							<div style="clear:both"></div>
+    						#end
+    					#end
+					</span>
+				</td>
+			</tr>
+			<tr class="noPadding">
+        		<td style="width:144px">中心主任审批：</td>
+        		<td colspan="3" class="wordLT" style="vertical-align: middle;">
+					<span>
+						#foreach($data in $opinionList)
+    						#if("$!data.curNode.nodeName" == "中心主任审核")
+    							<span>$!{esc.html($!{data.apprOpinion})}</span>
+    							<ul class="span_content_date">
+    								<li><span>$!{data.approver.userName}</span></li>
+    								<li><span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span></li>
+    							</ul>
+    							<div style="clear:both"></div>
+    						#end
+    					#end
+					</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>

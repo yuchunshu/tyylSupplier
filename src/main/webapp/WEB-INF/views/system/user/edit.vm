@@ -1,0 +1,308 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+                <div class="table-edit-title mynoborder-bottom">
+                    人员信息
+                </div>
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0" style="table-layout: fixed;">
+                  <tbody>
+                    <tr>
+                      <td class="bg-grey" width="150"><span><font color=red>*</font></span>姓名</td>
+                      <td class="bg-white">
+                        <input type="hidden" id="id" name="id" value="$!{obj.id}"/>
+                        <input style="width:100%;" class="easyui-textbox" data-options="required:true,validType:'notBlank'" id="userName" name="userName" maxlength="20" value="$!{obj.userName}"/>
+                      </td>
+                      <td class="bg-grey" width="150"><span><font color=red>*</font></span>登录名</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" data-options="required:true,validType:['notBlank','accountUnique']" name="account" maxlength="20" value="$!{obj.account}"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">所属部门</td>
+                      <td class="bg-white">
+                        <input type="hidden" id="deptId" name="deptId" #if($obj) value="$!obj.department.id" #else value="$!depId" #end />
+##                        #if($obj) $!obj.department.deptName #end
+##                        #if($depId) $lookup.sysdepartment[$!{depId}].deptName #end
+                        #if($obj)
+                        <input style="width:90%;" id="department" name="department" data-options="editable:false" class="easyui-textbox" readonly value="$!{obj.department.deptName}"/>
+                        <a id="selectDepDialog" href="javascript:;" class="easyui-linkbutton" iconcls="icon-search" plain="true"  callback=fnSelectDepCallback
+                        class="easyui-linkbutton" select-dialog="$link.getContextURL()/select/Dep/selectDepTree"></a>
+                        #else
+                        $lookup.sysdepartment[$!{depId}].deptName
+                        #end
+                      </td>
+                      <td class="bg-grey">职务</td>
+                      <td class="bg-white">
+                        <select  class="easyui-combobox" editable=false name="dutyId" style="width:200px;">
+                            <option value="">   </option>
+                            #foreach($duty in $dutys)
+                            <option value="$!{duty.id}" #if("$!{duty.id}" == "$!{obj.dutyId}") selected #end>${duty.dutyName}</option>
+                            #end
+                        </select>
+                      </td>
+                    </tr>
+##                    <tr>
+##                      <td class="bg-grey"><span><font color=red>*</font></span>职务</td>
+##                      <td class="bg-white">
+##                        <input style="width:100%;" class="easyui-textbox" name="duty" data-options="required:true" value="$!{obj.duty}"/>
+##                      </td>
+##                      <td class="bg-grey">办公电话</td>
+##                      <td class="bg-white">
+##                        <input style="width:100%;" class="easyui-numberbox" data-options="validType:'maxLength[11]'" name="tel" id="tel" value=""/>
+##                      </td>
+##                    </tr>
+                    <tr>
+                      <td class="bg-grey">电子信箱</td>
+                      <td class="bg-white" colspan="3">
+                        <input style="width:455px;" class="easyui-textbox" name="email" data-options="validType:'email'" value="$!{obj.email}"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font>密级</td>
+                      <td class="bg-white">
+                        #formradio("miji" "$!obj.miji" $dict.MijiType "1")
+                      </td>
+##                      <td class="bg-grey">身份证</td>
+##                      <td class="bg-white">
+##                        <input style="width:100%;" class="easyui-textbox" name="idCard" data-options="validType:'idCode'" value="$!{obj.idCard}"/>
+##                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>排序号</td>
+                      <td class="bg-white">
+                        <input style="width:200px;" class="easyui-numberbox" data-options="required:true" name="sort" value="$!{obj.sort}"/>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="table-edit-title mynoborder-bottom">
+                    关联角色
+                </div>
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr>
+                      <td class="bg-grey" width="150">角色</td>
+                      <td class="bg-white">
+                          #foreach($r in $roles)
+                            <label class="myselect-user"><input name="roles" type="checkbox" value="$!{r.id}" #if($r.checked) checked #end />$!{r.roleName}</label>
+                          #end
+                      </td>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+
+        <div data-options="region:'south'"  class="bottom-h" height="52px">
+            <div class="bottom-but">
+                <ul>
+                    #if($type != 'new')
+                    <li><a onclick="updPwd()" class="new-but">修改密码</a></li>
+                    <li><a onclick="resetPwd()" class="new-but">重置密码</a></li>
+                    #end
+                    <li><a onclick="save()" class="new-but">保存</a></li>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="editWindow" class="easyui-window" title="设置" style="width:450px;height:210px;padding:5px;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+#@script()
+<script type="text/javascript">
+
+    $(function(){
+        $("#userName").textbox("textbox").focus();
+
+        encodeMobile("$!{obj.mobile}");
+
+##        encodeTel("$!{obj.tel}");
+##
+##        // 电话号码
+##        $("input",$("#tel").next("span")).blur(function(){
+##            encodeTel();
+##        })
+##
+##        $("input",$("#tel").next("span")).focus(function(){
+##            $("#tel").textbox("setText", $("#tel").textbox("getValue"));
+##        })
+
+        // 手机号码
+        $("input",$("#mobile").next("span")).blur(function(){
+            encodeMobile();
+        })
+
+        $("input",$("#mobile").next("span")).focus(function(){
+            $("#mobile").textbox("setText", $("#mobile").textbox("getValue"));
+        })
+    })
+
+    function encodeMobile(mobile) {
+        var mobileValue = "";
+        if (mobile && mobile != "") {
+            mobileValue = mobile;
+        } else {
+            mobileValue = $("#mobile").textbox("getValue");
+        }
+        if (mobileValue.length > 4) {
+            var mobileText = mobileValue.substring(0,3);
+            for(var i = 0; i < (mobileValue.length - 4); i++) {
+                mobileText += "*";
+            }
+            mobileText += mobileValue.substring(mobileValue.length - 1);
+            $("#mobile").textbox("setValue", mobileValue);
+            $("#mobile").textbox("setText", mobileText);
+        } else {
+            $("#mobile").textbox("setValue", mobileValue);
+        }
+    }
+
+    function encodeTel(tel) {
+        var telValue;
+        if (tel && tel != "") {
+            telValue = tel;
+        } else {
+            telValue = $("#tel").textbox("getValue");
+        }
+        if (telValue.length > 2) {
+            var telText = telValue.substring(0,1);
+            for(var i = 0; i < (telValue.length - 2); i++) {
+                telText += "*";
+            }
+            telText += telValue.substring(telValue.length - 1);
+            $("#tel").textbox("setValue", telValue);
+            $("#tel").textbox("setText", telText);
+        }
+    }
+
+    // 修改密码
+    function updPwd() {
+        $('#editWindow').window('open');
+        var userId = $('#id').val();
+        $('#editWindow').window('refresh', '$link.getContextURL()/system/pwd/adminUpdatePwd?userId='+userId);
+    }
+
+    // 重置用户密码
+    function resetPwd(){
+        $.messager.confirm('确认对话框', '您确定要重置该用户的密码吗？', function(r){
+            if (r) {
+                $.post("$link.getContextURL()/system/pwd/dealResetPwd.json",{userId:$('#id').val()},function(result){
+                      if(result.errorMsg == null){
+                        $('#editWindow').window('close');
+                        top.CC.messager({
+                            title:'成功',
+                            msg:'密码重置成功！'
+                        });
+
+                      }else{
+                        top.CC.messager({
+                            title:'错误',
+                            msg:result.error
+                        });
+                      }
+                });
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        if ($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/system/user/save.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                    top.CC.addTab({title:'用户列表',url:'$link.getContextURL()/system/user/list?depId='+result.success});
+                    top.CC.closeTab("人员编辑");
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:result.error
+                    });
+                  }
+            });
+        }
+    }
+    // 关闭
+    function back() {
+        $('#editWindow').window('close');
+    }
+
+    var _account = "";
+    var _returnFlag = true;
+    $.extend($.fn.validatebox.defaults.rules, {
+        accountUnique : { // 判断登录名唯一
+            validator : function(value, param) {
+                value = $.trim(value);
+                if (_account != value) { // 当value改变才进行远程验证
+                    _account = value;
+                    $.post("$link.getContextURL()/system/user/checkAccount.json",{id:$("#id").val(),account:value},function(result){
+                        _returnFlag = result;
+                    },'json');
+                }
+                return _returnFlag;
+            },
+            message : '该登录名已存在!'
+        },
+        notBlank : { // 判断是否为空
+            validator : function(value, param) {
+                value = $.trim(value); //去空格
+                return !(value == "");
+            },
+            message : '不能为空格！'
+        }
+    });
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+<!-----------------------选择部门-------------------------------->
+    function fnSelectDepCallback(obj){
+        $('#deptId').val(obj.id);
+        $('#department').textbox('setValue',obj.text);
+    }
+
+    //选择项目对话框
+         $("a[select-dialogs]").each(function() {
+         $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialogs");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+</script>
+#end
+<style>
+.myselect-user {
+    padding: 5px;
+    background-color: #FFF2E2;
+    border: #F89C25 solid 1px;
+    border-style: dotted;
+    display: block;
+    float: left;
+    margin: 5px;
+    width:300px;
+}
+</style>

@@ -1,0 +1,156 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div class="cc-tableWrap" data-options="region:'west',split:false,collapsible:false" style="width:280px;border: 1px solid #E0E0E0;height:98%;background-color: #F4F4F4;">
+            <div >
+                <ul id="menutree" data-options="url:'$link.getContextURL()/system/dept/treeLazyDep.json',method:'post',fit:true,lines:true"></ul>
+            </div>
+        </div>
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            #if($power.checkShowMenu("公共通讯录修改","/oa/address/public/edit"))<a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" onclick="editPage()" plain="true">修改</a>#end
+            #if($power.checkShowMenu("公共通讯录导出","/oa/address/public/export.json"))<a href="javascript:;" class="easyui-linkbutton" iconCls="icon-download-alt" onclick="exportExcel()" plain="true">导出</a>#end
+            <i></i>
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+                         class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                         class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg" data-options="nowrap:false" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="width:15%" data-options="field:'userName'#if($power.checkShowMenu('公共通讯录详情','/oa/address/public/detail')),formatter:detailUrl#end">姓名</th>
+                        <th style="width:30%" data-options="field:'deptName'">所属部门</th>
+                        <th style="width:10%" data-options="field:'duty'">职务</th>
+                        <th style="width:10%" data-options="field:'tel'">办公电话</th>
+                        <th style="width:15%" data-options="field:'mobile'">手机</th>
+                        <th style="width:18%" data-options="field:'email'">Email</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'" style="width:500px;height:180px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <form id="queryForm">
+            <input type="hidden" id="depId" name="$qc.equal('department.id')">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="text-align: right">姓名：</td>
+                    <td><input id="title" name="$qc.like('userName')" class="easyui-textbox" style="width:350px" /></td>
+                </tr>
+            </table>
+        </form>
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSearch()()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+</div>
+#parse("oa/address/public/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () { // 给查询dialog中的 标题input 绑定回车事件
+        $('#title').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSearch();
+            }
+        });
+    })
+
+    var _baseUrl = '$link.getContextURL()/oa/address/public';
+    var _listJsonUrl = '/list.json';
+
+    function newPage(){
+        var node = $("#menutree").tree("getSelected");
+        if (node) {
+            var url = _baseUrl + '/new?depId=' + node.id;
+            top.CC.addTab({title:'公共通讯录编辑',url:url});
+        }
+    }
+
+    function editPage(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows){
+            if (rows.length < 1) {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '请选择一条数据!'
+                });
+            } else if (rows.length > 1) {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '只能对一条数据进行修改!'
+                });
+            } else {
+                top.CC.addTab({title:'公共通讯录编辑',url:_baseUrl+'/edit?id='+rows[0].id});
+            }
+
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '服务器连接不上!'
+            });
+        }
+    }
+
+    function exportExcel() {
+        $.messager.confirm('提示','确定要导出通讯录吗?',function(r){
+            if (r){
+                window.location = _baseUrl + "/export.json";
+            }
+        });
+    }
+
+    function formDepSearch() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function formSearch() {
+        $('#depId').val("");
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+        $('#menutree').find('.tree-node-selected').removeClass('tree-node-selected'); ##取消树选中
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    var _oneFlag = true;
+    $(function(){
+        $('#menutree').tree({
+            // 绑定部门树单击节点事件
+            onSelect:function(node){
+                // 点击树文字展开树节点
+                if ($(this).tree('getSelected').state=='closed') {
+                    $(this).tree('expand',node.target);
+                }
+                $("#userName").textbox('setValue', '');
+                $('#depId').val(node.id);
+                formDepSearch();
+            },
+            onLoadSuccess:function(node, data){
+                if (_oneFlag) {  // 只在根节点生效
+                    var rootNode = $(this).tree('find', data[0].id);
+                    _oneFlag = false;
+                    $(this).tree('expandAll', rootNode.target);
+                }
+                #if ($depId)
+                var node = $(this).tree('find', '$!{depId}');
+                if (node) {
+                    $(this).tree('expandTo', node.target);
+                    $(this).tree('select', node.target);
+                    $('#button').css('display','inline');
+                }
+                #end
+            }
+        });
+    })
+
+</script>
+#end

@@ -1,0 +1,145 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+                  style="width:500px;height:290px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+                <form id="queryForm">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tb2 default-table" >
+                        <tr>
+                            <td style="text-align: right">类型：</td>
+                            <td><input style="width:330px;" id="title" name="$qc.like('phraseTypeName')" class="easyui-textbox" /></td>
+                        </tr>
+                    </table>
+                </form>
+                <div id="bnts" style="top:0px; height:25px; width:auto;">
+                    <a href="javascript:;" class="new-but" onclick="formSerach()" >查询</a>
+                    <a href="javascript:;" class="new-but" onclick="reset()" >重置</a>
+                </div>
+            </div>
+
+            <div  id="addPhraseDialog" class="easyui-dialog  dialog-tc" title="新增类型" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#phrase-bnts'"
+                  style="width:500px;height:290px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+                <form id="phraseForm">
+                    <input type="hidden" name="smsPhraseTypeId" id="id-phrase-type-id"/>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tb2 default-table" >
+                        <tr>
+                            <td style="text-align: right"><span><font color="red">*</font></span>类型：</td>
+                            <td><input style="width:400px;" id="id-phrase-type-name" name="phraseTypeName" data-options="validType:'maxLength[50]',required:true" class="easyui-textbox" /></td>
+                        </tr>
+                    </table>
+                </form>
+                <div id="phrase-bnts" style="top:0px; height:25px; width:auto;">
+                    <a href="javascript:;" class="new-but" onclick="savePhraseType()" >保存</a>
+                </div>
+            </div>
+
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" onclick="toAddPhrase()" plain="true">新增</a>
+
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+
+            <a  onclick="top.CC.closeCurTab()" class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg"  data-options="nowrap:false" style="width:100%;">
+                <thead>
+                <tr>
+                    <th style="width:80%" data-options="field:'phraseTypeName'">短语类型</th>
+                    <th style="width:19%" data-options="field:'xx',formatter:phraseOpration">操作</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#@script()
+#parse("sms/list-base.js.vm")
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()/sms';
+    var _listJsonUrl = '/listphrasetype.json';
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    function phraseOpration(value,row,index) {
+        return '<a onclick="toEditPhraseType('+index+')" class="easyui-linkbutton l-btn-plain-search l-btn l-btn-small l-btn-plain"><span class="l-btn-left l-btn-icon-left"><span class="l-btn-text"></span><span class="l-btn-icon icon-edit">&nbsp;</span></span></a>&nbsp;&nbsp;&nbsp;<a onclick="toDeletePhraseType('+index+')" class="easyui-linkbutton l-btn-plain-search l-btn l-btn-small l-btn-plain"><span class="l-btn-left l-btn-icon-left"><span class="l-btn-text"></span><span class="l-btn-icon icon-remove">&nbsp;</span></span></a>';
+    }
+
+    function toEditPhraseType(rowIndex) {
+        var rows = $('#dg').datagrid('getRows');
+        var phraseData = rows[rowIndex];
+        $('#id-phrase-type-id').val(phraseData.smsPhraseTypeId);
+
+        $("#id-phrase-type-name").textbox('setValue',phraseData.phraseTypeName);
+
+        $('#addPhraseDialog').css('display','block');
+        $('#addPhraseDialog').window('center');
+        $('#addPhraseDialog').window('open');
+    }
+
+    function toAddPhrase() {
+        //清空数据
+        $('#id-phrase-type-id').val('');
+        $("#id-phrase-type-name").textbox('setValue','');
+
+        $('#addPhraseDialog').css('display','block');
+        $('#addPhraseDialog').window('center');
+        $('#addPhraseDialog').window('open');
+    }
+
+    function toDeletePhraseType(rowIndex) {
+        $.messager.confirm('提示','是否删除短语?',function(r) {
+            if (r) {
+                var rows = $('#dg').datagrid('getRows');
+                var phraseData = rows[rowIndex];
+                $.get("$link.getContextURL()/sms/deletephrasetype.json?typeId=" + phraseData.smsPhraseTypeId, function (result) {
+                    top.CC.loaded();
+                    if (result.success) {
+                        top.CC.messager({
+                            title: '提示',
+                            msg: '删除成功'
+                        });
+                        $('#dg').datagrid('reload');
+                    } else {
+                        top.CC.messager({
+                            title: '提示',
+                            msg: '服务器连接不上'
+                        });
+                    }
+                });
+            }
+        });
+    }
+    
+    //保存短语
+    function savePhraseType() {
+        if ($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/sms/savephrasetype.json", $("#phraseForm").serialize(), function (result) {
+                top.CC.loaded();
+                if (result.success) {
+                    top.CC.messager({
+                        title: '提示',
+                        msg: '保存成功'
+                    });
+                    $('#dg').datagrid('reload');
+                    $('#addPhraseDialog').window('close');
+                } else {
+                    top.CC.messager({
+                        title: '提示',
+                        msg: '服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+</script>
+#end

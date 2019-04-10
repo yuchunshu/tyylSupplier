@@ -1,0 +1,162 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout mainborder-Padding" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+          <form id="editForm" method="post">
+                <input name="id" type="hidden" value="$!{obj.id}">
+              <table class="table-edit" title="转发邮件" width="100%" border="0" cellspacing="1" cellpadding="0">
+              <tbody>
+                <tr>
+                    <td class="fix_td_title">&nbsp;</td>
+                    <td class="fix_td_data">&nbsp;</td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">
+##                        <span><font color=red>*</font></span>
+                    <a id="selectDepDialog" title="选择收件人" href="javascript:;" mans-dialog
+                        callback=fnSelectMansCallback class="easyui-linkbutton">收件人</a>
+                  </td>
+                  <td class="bg-white">
+                    <input style="width:100%;" name="manAddressNames" id="manAddressNames" data-options="required:true"
+                        class="easyui-textbox" readonly value="$!{obj.addressName}"/>
+                    <input id="manAddress" name="manAddress" type="hidden" value="$!obj.address" />
+                  </td>
+                </tr>
+                <tr align="center">
+                  <td class="bg-grey" align="right"><span><font color=red>*</font></span>标题</td>
+                  <td align="left" class="bg-white">
+                    <input style="width:100%;" name="title" data-options="required:true" class="easyui-textbox" value="$!{obj.title}"/>
+                  </td>
+                </tr>
+                <tr align="center">
+                  <td class="bg-grey" align="right">消息提示</td>
+                  <td align="left" class="bg-white">
+                    <label><input type="checkbox" id="receiptFlag" name="receiptFlag" value="1" checked />已读回执</label>
+                  </td>
+                </tr>
+                <tr align="center">
+                    <td class="bg-grey" align="right">内容</td>
+                    <td valign="top" class="bg-white">
+                    <input id="content" name="content" type="hidden"/>
+                    <textarea class="ckeditor" id="mailContent" name="mailContent" cols="" style="resize:none;width:95%;">$!{obj.content}</textarea>
+                    </td>
+                </tr>
+                <tr align="center">
+                  <td class="bg-grey" align="right">附件</td>
+                  <td align="left" attachId="$!obj.id" class="bg-white">
+                    #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$oldMailId")},"#defaultDownloadUrl('emAttach')", true, "#defaultUploadUrl('emAttach')",true,"","","", "cc") ## "cc"为可拖拽区域的dom id
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </form>
+    </div>
+    <div data-options="region:'south'" class="bottom-h">
+       <div class="bottom-but">
+          <ul>
+             <li>  <a id="send" onclick="send()"               class="new-but">发送</a></li>
+             <li>  <a id="back" onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+          </ul>
+       </div>
+    </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+    $(function(){
+        CKEDITOR.replace('mailContent', { height: '340px'});
+    });
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.closeCurTab();
+    }
+
+    //发送
+    function send(){
+        var value = CKEDITOR.instances.mailContent.getData();
+        $('#content').val(value);
+        if($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/oa/mail/send.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'邮件发送成功!'
+                    });
+                    top.CC.addTab({title:'发件箱',url:'$link.getContextURL()/oa/mail/sendbox/list'});
+                    top.CC.closeTab('转发邮件');
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+
+    //草稿
+    function drafts(){
+        var value = CKEDITOR.instances.mailContent.getData();
+        $('#content').val(value);
+        if($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/oa/mail/saveDrafts.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！该邮件已存入草稿箱。'
+                    });
+                    top.CC.addTab({title:'草稿箱',url:'$link.getContextURL()/oa/mail/drafts/list'});
+                    top.CC.closeTab('写邮件');
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+
+
+   //个人邮件选择对话框
+    $("a[mans-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var manAddress = $('#manAddress').val();
+            if (typeof(manAddress) == "undefined") {
+                manAddress = "";
+            }
+            var _url = "$link.getContextURL()/oa/mail/select/getIncepters?userIds=" + manAddress;
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+
+    // 人员选择回调
+    function fnSelectMansCallback(obj){
+        var userNames = "";
+        var userIds = "";
+        for (var i = 0; i < obj.length; i++){
+            userNames += obj[i].dataText + ",";
+            userIds += obj[i].id + ",";
+        }
+        userNames = userNames.substring(0,userNames.length-1);
+        userIds = userIds.substring(0,userIds.length-1);
+        $('#manAddressNames').textbox('setValue', userNames);
+        $('#manAddress').val(userIds);
+    }
+</script>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end

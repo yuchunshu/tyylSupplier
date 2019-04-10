@@ -1,0 +1,36 @@
+<a href="javascript:;" id="menuBtn$!{__name}" class="easyui-linkbutton" iconCls="icon-search" onclick="showMenu$!{__name}()" >个人词条</a>
+
+
+<div id="wordMenu$!{__name}" style="display:none;">
+</div>
+
+#@script()
+<script type="text/javascript">
+
+    $(function(){
+        $.post("$link.getContextURL()/oa/personal/getWordMenu.json",function(menuList){
+            if (menuList) {
+                var menuOptions = '';
+                for (var i = 0; i < menuList.length; i++) {
+                    menuOptions += '<div>' + menuList[i].word + '</div>';
+                }
+                $('#wordMenu$!{__name}').html(menuOptions);
+                initWordMenu$!{__name}();
+            }
+        });
+    })
+
+    function initWordMenu$!{__name}() {
+        $('#wordMenu$!{__name}').menu({
+            #if($__onclick)
+            onClick:$!__onclick
+            #end
+        });
+    }
+
+    function showMenu$!{__name}() {
+        var elmOffset = $('#menuBtn$!{__name}').offset();
+        $('#wordMenu$!{__name}').menu('show',{left:elmOffset.left + 20, top:elmOffset.top + 20});
+    }
+</script>
+#end

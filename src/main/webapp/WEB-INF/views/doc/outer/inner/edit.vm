@@ -1,0 +1,104 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+  <div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" class="mynoborder">
+      #parse("doc/outer/inner/data_edit.vm")
+    </div>
+     <div data-options="region:'south'" class="bottom-h">
+      <div class="bottom-but">
+        <ul>
+          <li><a id="publish" onclick="openNodes()" class="new-but">呈送</a></li>
+          <li><a id="back" onclick="back()" class="new-but">返回</a></li>
+        </ul>
+      </div>
+     </div>
+  </div>
+
+<div id="selNodesWindow" class="easyui-window" title="提交到下一环节" style="width:350px;height:330px;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+
+
+</div>
+
+#@script()
+<script type="text/javascript">
+  var _baseUrl = '$link.getContextURL()';
+
+  var selNodeId = "";
+
+  //返回
+  function back() {
+    top.CC.addTab({title:'公文详情',url:"$link.getContextURL()/doc/outer/detailOuter?id="+ '$!{obj.id}' + "&queryFlag=other"});
+	top.CC.closeTab('转内部公文');
+  }
+
+   function openNodes(){
+   	   var flowId = $('#flowId').combobox('getValue');
+	   if($("#editForm").form('validate')) {
+	        $('#selNodesWindow').window('open');
+	        $('#selNodesWindow').window('refresh',"$link.getContextURL()/workflow/event/getNextNodes?startflow=1&nodeId=N101&flowId=" + flowId);
+	   }
+   }
+
+  function setExpired() {
+      if ($("#expiryDate").val() != "") {
+          $("#expiryDate").val($("#expiryDate").val() + " 23:59:59");
+      }
+  }
+
+  // 提交-------------------------------------------------------------------------------------------
+  function start() {
+    //先主动切换回第一页，以免控件出错
+    $("#docTab").tabs('select',0);
+    // 设置来文字号
+    setExpired();
+
+    if($("#editForm").form('validate')) {
+      var nodeId = selNodeId;
+      var flowId = $('#flowId').combobox('getValue');
+      var _callbackname = "fnSelectMansCallback";
+      var _url = "$link.getContextURL()/workflow/event/selectNextTask?flowId=" + flowId + "&nodeId=" + nodeId;
+      var _callback_fn = window[_callbackname];
+      var dfn = top.window.openSelectDialogFrameDialog;
+      if (typeof dfn === "function") {
+        dfn(_url, _callback_fn);
+      }
+    }
+  }
+  //-----------------------------------------------------------------------------------------------
+
+
+  function fnSelectMansCallback(obj){
+    // 处理公文正文
+    var WebOffice = document.getElementById("WebOffice2009");
+    if(WebOffice){
+      if(window.goldgrid.isIEBrowser()){
+        saveGoldgridFile($('#filepath').val());
+      }
+    }
+
+    //写入下一环节
+    $('#nextNodeId').val(obj.nextNode);
+    //写入下一环节的办理人（多个用逗号分开）
+    $('#nextDealers').val(obj.userIds);
+
+    // 提交，启动流程
+    top.CC.loading('呈送中...');
+    $.post("$link.getContextURL()/doc/event/dealStartflow",$("#editForm").serialize(),function(result){
+      top.CC.loaded();
+      if(result.success){
+        top.CC.messager({ title:'提示', msg:'公文呈送成功！' });
+        var title = top.CC.getCurTab().panel('options').title;
+        top.CC.addTab({ title:'待办公文',url:'$link.getContextURL()/doc/event/tasklist' });
+        top.CC.closeTab(title);
+      }else{
+        top.CC.messager({ title:'提示', msg:result.message });
+      }
+    });
+  }
+
+  $('#title').focus();
+
+</script>
+#end
+#parse("common/easyui/crud.js.vm")

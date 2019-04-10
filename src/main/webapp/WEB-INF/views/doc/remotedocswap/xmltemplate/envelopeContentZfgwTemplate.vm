@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<E_officialdocument>
+    <jhsbxx>
+        <xxzyID>$!{envelopeContent.resourceIden}</xxzyID>
+        <ywlsh>$!{envelopeContent.envelopeUuid}</ywlsh>
+        <letterid>$!{envelopeContent.letterId}</letterid>
+        <ywlx>zfgw</ywlx>
+        <mj>3</mj>
+        <jjcd>$!{envelopeContent.emergencyLevel}</jjcd>
+        <qqf>$!{envelopeContent.sendOrg}</qqf>
+        <fkf>$!{envelopeContent.feedbackOrg}</fkf>
+        <jhdx>
+            <fsf>$!{envelopeContent.sendOrg}</fsf>
+            <fssj>$!{envelope.sendTimeFmt}</fssj>
+            <jsf>$!{envelopeContent.feedbackOrg}</jsf>
+        </jhdx>
+        <jhzt>B</jhzt>
+        <fkyqbsf>Z</fkyqbsf>
+        <fksjyq ></fksjyq>
+        <aqxxx>$!{envelopeContent.digitalSignature}</aqxxx>
+    </jhsbxx>
+    <jhztxx>
+        <zfgw>
+            <lxr>$!{envelopeContent.contactName}</lxr>
+            <lxdh>$!{envelopeContent.contactPhone}</lxdh>
+            <zfsj>$!{envelope.invalidTimeFmt}</zfsj>
+        </zfgw>
+    </jhztxx>
+</E_officialdocument>
+

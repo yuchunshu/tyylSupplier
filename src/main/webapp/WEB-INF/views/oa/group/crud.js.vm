@@ -1,0 +1,129 @@
+#@script()
+<script>
+    //全局变量覆盖：_baseUrl，_delJsonUrl,_newJsonUrl,_editJsonUrl,_listJsonUrl
+    $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-undo']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+        //工具条操作
+        var _btnDelete = $("[iconCls='icon-remove']",_toolbar);
+        if(_btnDelete){
+            _btnDelete.on("click",del);
+        }
+        function del(){
+            var rows = $("#dg").datagrid("getChecked");
+            if(rows && rows.length > 0){
+                $.messager.confirm('警告','确定删除这些群组吗?',function(r){
+                    if (r){
+                        var ids = "";
+                        for(var i=0;i<rows.length;i++){
+                            if(i==rows.length-1){
+                                ids += rows[i].id;
+                            }else{
+                                ids += rows[i].id + ",";
+                            }
+                        }
+                        $.post(_baseUrl + (_delJsonUrl || '/delete.json'),{ids:ids},function(result){
+                            if (result.success){
+                                $('#dg').datagrid('reload'); // reload the user data
+                                top.CC.messager({ // show error message
+                                    title: '成功',
+                                    msg: '删除成功!'
+                                });
+                            } else {
+                                top.CC.messager({ // show error message
+                                    title: '错误',
+                                    msg: result.errorMsg
+                                });
+                            }
+                        },'json');
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '请选择至少一条数据进行删除!'
+                });
+            }
+
+        }
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            fitColumns:false,//列宽自适应
+            fit:true,//自适应
+            nowrap:false, //不可换行
+            rownumbers:true,//行号
+            #if ($!type == 'query')
+                singleSelect:true,//单选
+            #end
+            idField:'id',
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+
+    });
+    var _baseUrl, _delJsonUrl, _newJsonUrl, _editJsonUrl, _listJsonUrl, _detailJsonUrl;
+
+    //行内操作的方法，编辑、详情
+    var _datagrid = $("#dg");
+    var _toolbar = $("#tb");
+    function operaterFormatter(value,row,index){
+        return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html();
+    }
+    function getRowIdByDom(dom){
+
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+    function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        _datagrid.datagrid("selectRow",index);
+        var row = _datagrid.datagrid("getSelected");
+        var url;
+        url = "$link.getContextURL()/oa/personal/group/detail?id="+row.id;
+        $('#editWindow').window('open');
+        $('#editWindow').window('refresh',url);
+    }
+    function detailUrl(value,row) {
+        return "<a href='javascript:;' class='font-titlecolor' onclick='detailRow(getRowIdByDom(this))'>"+value+"</a>";
+    }
+
+</script>
+#end

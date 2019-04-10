@@ -1,0 +1,80 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'">
+        <div id="tab" class="easyui-tabs tabs-trapezoid" fit="true" border="false">
+            <div title="订餐详情" style="padidng:5px;">
+                #parse( "pubaffairs/meal/stat/parse/parse_detail.vm" )
+            </div>
+            <div title="订餐统计" style="padidng:5px;" data-options="href:'$link.getContextURL()/pubaffairs/meal/statAllPersonnel?mealDate=$!{mealDate}&&mealType=$!{mealType}&&mealPlace=2'">
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'south'" class="bottom-h">
+        <div class="bottom-but">
+            <ul>
+				<li><a id="print" onclick="print()" class="new-but" style="display:none;">打印</a></li>
+                <li><a id="back" onclick="back()" class="new-but">返回</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+#@script()
+<script type="text/javascript">
+
+
+    <!-----------------------返回-------------------------------->
+    function back() {
+		top.CC.closeCurTab();
+    }
+	
+	<!-----------------------打印-------------------------------->
+	function print() {
+		var mealPlace = $('input[name="mealPlace"]:checked').val();
+		try{
+			if (document.all) { // IE
+ 				pagesetup_null();
+			}
+			if ($.browser.msie) {
+				if(mealPlace == "1") {##青湖
+					$('#receiveContainersQH').printArea({
+                    	mode: 'popup'
+                  	});
+				}
+				if(mealPlace == "2") {##明秀
+					$('#receiveContainersMX').printArea({
+                    	mode: 'popup'
+                  	});
+				}
+				if(mealPlace == "0") {##全体人员
+					$('#receiveContainers').printArea({
+                    	mode: 'popup'
+                  	});
+				}
+			} else {
+				if(mealPlace == "1") {##青湖
+					$('#receiveContainersQH').printArea({
+                    	mode: 'popup'
+                  	});
+				}
+				if(mealPlace == "2") {##明秀
+					$('#receiveContainersMX').printArea({
+                    	mode: 'popup'
+                  	});
+				}
+                if(mealPlace == "0") {##全体人员
+                  	$('#receiveContainers').printArea({
+                    	mode: 'popup',
+                    	popClose: true
+                  	});
+				}
+			}
+		} catch(e) {
+			alert(e.message);
+			return;
+		}
+	}
+
+</script>
+<script type="text/javascript" src="lib/jqprint/jquery.PrintArea.js"></script>
+#end

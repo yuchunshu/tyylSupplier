@@ -1,0 +1,19 @@
+      <li onClick="SwitchMenu('$!__menuid')"><a class="png_bg $!__menuclass">$!__menutitle</a>
+        <ul class="submenu" id="$!__menuid">
+#foreach($__option in $__menuoptions.keySet())
+          <li><a href="$!{__menuoptions.get($__option)}">· $!__option</a></li>
+          #set($path = ${link.getRequestPath()})
+          #set($model = $path.split('/')[1])
+          #set($menuUrl = $!{__menuoptions.get($__option)})
+          #if($menuUrl.indexOf($model) > -1)
+            #@script()
+                <script type="text/javascript">
+                (function(){
+                    SwitchMenu('$!__menuid');
+                })();
+                </script>
+            #end
+          #end
+#end
+        </ul>
+      </li>

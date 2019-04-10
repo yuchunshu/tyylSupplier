@@ -1,0 +1,283 @@
+<div>
+        <label for="$!__id" class="form-fill-label">$!__title</label>
+        #if($!__uploadable == "true")
+        <a id="$!__id"  type="plupload$!{__name}" class="easyui-linkbutton" icon="icon-add" plain=true href="javascript:;" #if($__uploadurl)uploadurl="$!__uploadurl"#end>上传文件</a>
+        <br/>
+        #end
+        <div class="$!__class filelistmulti">
+            #foreach($attach in $__attachList)
+             #set($url = "$!__downloadurl" + "?id=$attach.id")
+             #set($attachIds = "$!attachIds" + ",$!attach.id")
+           <span class="upload">
+             <div class="uploadedfile">
+                <a target="_blank" href="$url">$!{esc.html($attach.trueName)}</a>
+             </div>
+             <div class="uploadafter">
+             #if($!__deleteable == "true")
+                <a id="$attach.id" class="easyui-linkbutton" icon="icon-remove" plain=true  onclick="removeAttach$!{__name}(this)" href="javascript:;">删除</a>
+             #end
+             </div>
+           </span>
+           <br/>
+            #end
+        </div>
+        #if("$!attachIds" != "")
+        #set($attachIds = $attachIds.substring(1,$attachIds.length()))
+        <input type="hidden" id="$!__name" name="$!__name" value="$!{esc.html($attachIds)}"/>
+        #else
+        <input type="hidden" id="$!__name" name="$!__name" value="$!{esc.html($!__value)}"/>
+        <input type="hidden" id="$!__name1" name="$!__name1" value="$!{esc.html($!__value1)}"/>
+        <input type="hidden" id="$!__name2" name="$!__name2" value="$!{esc.html($!__value2)}"/>
+        #end
+</div>
+
+#@script()
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $('a[type="plupload$!{__name}"]').each(function(){
+        var _this=$(this);
+        var _thisdom = _this.get(0);
+        var _thisurl = _this.attr("uploadurl") || "$!{link.getContextPath()}/plupload/upload.json";
+        var _max_file_size = _this.attr("maxfilesize") || '1000mb';
+        //var _mime_types = _this.attr("mimetypes") || '[{"title":"word文档", "extensions":"doc,docx"}]';
+		var _mime_types = _this.attr("mimetypes") || '[{"title":"gw,gd,tif文件", "extensions":"gw,gd,tif"}]';
+        _mime_types = eval(_mime_types);
+
+        var _filelistdom = $(".filelistmulti", _thisdom.parentNode).get(0);
+
+        //var _targetinput = $("input[id='$!__name']", _thisdom.parentNode);
+        var _gdFileIdInput = $("input[id='$!__name']", _thisdom.parentNode);
+        var _gwFileIdInput = $("input[id='$!__name1']", _thisdom.parentNode);
+        var _tifFileIdInput = $("input[id='$!__name2']", _thisdom.parentNode);
+		
+        var uploader = new plupload.Uploader({
+                runtimes : 'html5,flash',
+
+                browse_button : _thisdom,
+                container : _thisdom.parentNode,
+
+                url : _thisurl,
+
+                multi_selection:true,
+                chunk_size : "1mb",
+
+                filters : {
+                    max_file_size : _max_file_size,
+                    mime_types : _mime_types,
+					prevent_duplicates : true 
+                },
+
+                // Flash settings
+                flash_swf_url : '$!{link.getContextPath()}/lib/plupload/Moxie.swf',
+
+                preinit : {
+                    UploadFile: function(up, file) {
+                        up.setOption('multipart_params', {fileid: file.id})
+                    }
+                },
+
+                init : {
+                    PostInit : function() {
+                        //_filelistdom.innerHTML = '';
+                    },
+                    FilesAdded : function(up, files) {
+                        plupload.each(files, function(file) {
+						var fileName = file.name;
+						var prefix = fileName.substring(fileName.lastIndexOf("."));
+						var s = '';
+						if (prefix == ".gd") {
+                            s += '<span class="upload" id="' + file.id + '" fileidobj><div  class="uploadedfile">' + file.name
+                                    + ' </div><div class="uploadafter"><a icon="icon-remove" plain=true  onclick="removeAttach$!{__name}(this)" href="javascript:;">删除</a>(' + plupload.formatSize(file.size) + ')<b></b></div></span><br/>';
+                        } else if (prefix == ".gw") {
+                            s += '<span class="upload" id="' + file.id + '" fileidobj><div  class="uploadedfile">' + file.name
+                                    + ' </div><div class="uploadafter"><a icon="icon-remove" plain=true  onclick="removeAttach$!{__name1}(this)" href="javascript:;">删除</a>(' + plupload.formatSize(file.size) + ')<b></b></div></span><br/>';
+                        } else if (prefix == ".tif") {
+                            s += '<span class="upload" id="' + file.id + '" fileidobj><div  class="uploadedfile">' + file.name
+                                    + ' </div><div class="uploadafter"><a icon="icon-remove" plain=true  onclick="removeAttach$!{__name2}(this)" href="javascript:;">删除</a>(' + plupload.formatSize(file.size) + ')<b></b></div></span><br/>';
+                        }
+						
+                            $(_filelistdom).append(s);
+                            if (up.state == plupload.STOPPED) {
+                                up.refresh();
+                                up.start();
+                            }
+                        });
+                    },
+                    UploadProgress : function(up, file) {
+                        if (document.getElementById(file.id)){
+                            var d = $('div.uploadafter',$('#' + file.id)).get(0);
+                            var b = $('b',d).get(0);
+                            $(b).html('<span>' + file.percent + '%</span>');
+                        }
+                    },
+                    FileUploaded: function(up, file, info) {
+                        if (info && (info.status == "200")) {
+                            var message='<span>上传完毕</span>';
+                            if (info.response) {
+                                var data = JSON.parse(info.response);
+                                if (data.error) {
+                                    message=null;
+                                    _filelistdom.innerHTML = '上传失败！' + data.error;
+                                } else {
+                                    if (data.id) {
+										
+										var fileName = file.name;
+										var prefix = fileName.substring(fileName.lastIndexOf("."));
+										
+                                        //var _value = _targetinput.attr('value');
+                                        var _value = data.id;
+                                        var _del = document.getElementById(file.id).getElementsByTagName('a')[0];
+                                        $(_del).attr('id',data.id);
+                                        $(_del).linkbutton({});
+									 
+										
+										if (prefix == ".gw") {
+                                            _gwFileIdInput.attr('value', _value);
+                                        } else if (prefix == ".gd") {
+                                            _gdFileIdInput.attr('value', _value);
+                                        } else if (prefix == ".tif") {
+                                            _tifFileIdInput.attr('value', _value);
+                                        }
+                                       
+                                         
+                                    }
+                                }
+                            }
+
+                            if (message && document.getElementById(file.id)){
+                                var d = $('div.uploadafter',$('#' + file.id)).get(0);
+                                var b = $('b',d).get(0);
+                                $(b).html(message);
+                            }
+                        } else {
+                        }
+                    },
+                    Error : function(up, err) {
+                        if (plupload.FILE_SIZE_ERROR == err.code) {
+                            alert("选择的文件大小为 " + plupload.formatSize(err.file.size) + " ，超过了最大上传文件大小 " + _max_file_size + " 的限制。");
+                        }else if(plupload.FILE_DUPLICATE_ERROR == err.code){
+							alert("不能重复上传文件：" +  err.file.name);
+						}else {
+							alert('请上传正文附件(gw,gd,tif)。');
+                            //_filelistdom.innerHTML = '请上传正文附件(gw,gd,tif)。';
+                        }
+                    }
+                }
+            });
+
+            uploader.init();
+
+           _filelistdom.removeFile = function (id) {
+                var file = uploader.getFile(id);
+                if (file) {
+                    uploader.removeFile(file);
+                }
+            }
+    });
+});
+
+
+function removeAttach$!{__name}(obj){
+   var _obj = $(obj);
+   var id = _obj.attr("id");
+   if (!id) {
+     var fileid = _obj.parents("[fileidobj]").attr("id");
+     var filelistdom = _obj.parents(".filelistmulti").get(0);
+     filelistdom.removeFile(fileid);
+   }
+
+   var _span = _obj.parent().parent();
+   var _br = _span.next();
+
+
+   if (id) {
+     var _input = $("input[name='$!__name']", _span.parent().parent());
+     _input.val("");
+	 var fileid = _obj.parents("[fileidobj]").attr("id");
+     var filelistdom = _obj.parents(".filelistmulti").get(0);
+     filelistdom.removeFile(fileid);
+   }
+
+   _span.remove();
+   _br.remove();
+
+   return false;
+}
+
+function removeAttach$!{__name1}(obj){
+   var _obj = $(obj);
+   var id = _obj.attr("id");
+   if (!id) {
+     var fileid = _obj.parents("[fileidobj]").attr("id");
+     var filelistdom = _obj.parents(".filelistmulti").get(0);
+     filelistdom.removeFile(fileid);
+   }
+
+   var _span = _obj.parent().parent();
+   var _br = _span.next();
+
+
+   if (id) {
+     var _input = $("input[name='$!__name1']", _span.parent().parent());
+     _input.val("");
+	 var fileid = _obj.parents("[fileidobj]").attr("id");
+     var filelistdom = _obj.parents(".filelistmulti").get(0);
+     filelistdom.removeFile(fileid);
+   }
+
+   _span.remove();
+   _br.remove();
+
+   return false;
+}
+
+function removeAttach$!{__name2}(obj){
+   var _obj = $(obj);
+   var id = _obj.attr("id");
+   if (!id) {
+     var fileid = _obj.parents("[fileidobj]").attr("id");
+     var filelistdom = _obj.parents(".filelistmulti").get(0);
+     filelistdom.removeFile(fileid);
+   }
+
+   var _span = _obj.parent().parent();
+   var _br = _span.next();
+
+
+   if (id) {
+     var _input = $("input[name='$!__name2']", _span.parent().parent());
+     _input.val("");
+	 var fileid = _obj.parents("[fileidobj]").attr("id");
+     var filelistdom = _obj.parents(".filelistmulti").get(0);
+     filelistdom.removeFile(fileid);
+   }
+
+   _span.remove();
+   _br.remove();
+
+   return false;
+}
+</script>
+<style>
+.filelistmulti{
+    display: block;
+    float: left;
+    line-height:25px;
+    width: 100%;
+}
+.uploadedfile{
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    //width: 300px;
+}
+.uploadafter{
+    display: inline-block;
+    float: right;
+    width: 200px;
+}
+</style>
+#end

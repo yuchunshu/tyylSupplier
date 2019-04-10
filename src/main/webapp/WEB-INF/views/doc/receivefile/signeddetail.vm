@@ -1,0 +1,91 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+         <form id="editForm" method="post">
+
+           <table class="table-edit" width="99%" border="0" style="width:99.9%" cellspacing="1" cellpadding="0">
+             <tbody>
+                <tr>
+                   <td class="fix_td_title" >&nbsp;</td>
+                   <td class="fix_td_data" >&nbsp;</td>
+                   <td class="fix_td_title" >&nbsp;</td>
+                   <td class="fix_td_data" >&nbsp;</td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">文件名称</td>
+                  <td class="bg-white" colspan="3">
+                    $!{esc.html($!{docSigned.title})}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">主办部门</td>
+                  <td class="bg-white" >
+                    $!{esc.html($!{docSigned.mainSend})}
+                  </td>
+                  <td class="bg-grey">来文单位</td>
+                  <td  class="bg-white">
+                     $!{esc.html($!{docSigned.sendDep})}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">来文日期</td>
+                  <td  class="bg-white">
+                    #if(${docSigned.receiveDate})$date.format('yyyy-MM-dd',$!{docSigned.receiveDate})#end
+                  </td>
+                  <td class="bg-grey">签收日期</td>
+                  <td  class="bg-white">
+                    #if(${docSigned.signDate})$!date.format('yyyy-MM-dd',$!{docSigned.signDate})#end
+                  </td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">签收人姓名</td>
+                  <td  class="bg-white">
+                    $!{lookup.sysuser[$!{docSigned.signerId}].userName}
+                  </td>
+                  <td class="bg-grey">签收部门</td>
+                  <td  class="bg-white">
+                    $!{lookup.sysdepartment[$!{docSigned.signerDeptId}].deptName}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">紧急程度</td>
+                  <td  class="bg-white" colspan="3">
+                     $!{docSigned.urgencyLevel.value}
+                  </td>
+                  ## <td class="bg-grey">状态</td>
+                  ## <td  class="bg-white">
+                  ##     $!{docSigned.status.value}
+                  ## </td>
+                </tr>
+                ## <tr>
+                ##   <td class="bg-grey">附件</td>
+                ##   <td  class="bg-white" colspan="3">
+                ##     #formfilemulty("", "", "", "", $!{attach},"#defaultDownloadUrl('sysattach')", false, "",false)
+                ##   </td>
+                ## </tr>
+            </table>
+            </form>
+           </div>
+
+              <div data-options="region:'south'"  class="bottom-h" height="52px">
+                <div class="bottom-but">
+                    <ul>
+                        <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                    </ul>
+                </div>
+              </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //关闭
+    function back() {
+        $('#editWindow').window('close');
+    }
+</script>
+#end
+#parse("common/easyui/crud.js.vm")

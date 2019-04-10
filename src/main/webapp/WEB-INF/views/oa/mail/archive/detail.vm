@@ -1,0 +1,127 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+                 <table class="table-edit" title="存档箱" width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr align="center" id="et1">
+                      <td class="bg-grey" align="right" width="150">发件人</td>
+                      <td align="left" width="90%" class="bg-white">
+                        <input type="hidden" name="id" id="id" value="$!obj.id" />
+                        $!obj.sender.userName
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">标题</td>
+                      <td align="left" class="bg-white">
+                        $!{esc.html($!{obj.title})}
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">存档时间</td>
+                      <td align="left" class="bg-white">
+                        $!date.format('yyyy-MM-dd HH:mm', $!obj.pigeDate)
+                      </td>
+                    </tr>
+                    <tr align="center">
+                        <td class="bg-grey" align="right">内容</td>
+                        <td valign="top" class="bg-white">
+                        <textarea class="ckeditor" id="mailContent" name="mailContent" cols="" style="resize:none;width:95%;">$!{obj.content}</textarea>
+                        <script>
+                            CKEDITOR.on('instanceReady', function(ev) {
+                                ev.editor.setReadOnly(true);
+                            });
+                        </script>
+                        </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">附件</td>
+                      <td align="left" attachId="$!obj.id" class="bg-white">
+                        #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$obj.emailId")},"#defaultDownloadUrl('emAttach')", false, "#defaultUploadUrl('emAttach')",false)
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+           <div class="bottom-but">
+                 <ul>
+                   <li><a id="trash" onclick="trash()" class="new-but">移到垃圾箱</a></li>
+                   <li><a id="del" onclick="del()" class="new-but">删除</a></li>
+                   <li><a id="back" onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+           </div>
+        </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+    $(function(){
+        CKEDITOR.replace('mailContent', { height: '340px'});
+    });
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.closeCurTab();
+    }
+
+    function del(){
+
+        $.messager.confirm('警告','确定彻底删除这条存档记录吗?',function(r){
+            if (r){
+                var arcId = $('#id').val();
+                $.post("$link.getContextURL()/oa/mail/archive/delete.json",{tmpIds:arcId},function(result){
+                    if (result.success){
+                        $('#delId').val('');
+                        top.CC.messager({ // show error message
+                            title: '提示',
+                            msg: '删除成功！'
+                        });
+                        top.CC.addTab({title:'存档箱',url:'$link.getContextURL()/oa/mail/archive/list'});
+                        top.CC.closeTab('查看邮件');
+                    } else {
+                        top.CC.messager({ // show error message
+                            title: '提示',
+                            msg: '服务器连接不上！'
+                        });
+                    }
+                },'json');
+            }
+        });
+
+    }
+
+    function trash(){
+
+        $.messager.confirm('警告','确定要将这条存档记录移到垃圾箱吗?',function(r){
+            if (r){
+                var arcId = $('#id').val();
+                $.post("$link.getContextURL()/oa/mail/archive/dealTrash.json",{tmpIds:arcId},function(result){
+                    if (result.success){
+                        $('#delId').val('');
+                        top.CC.messager({ // show error message
+                            title: '提示',
+                            msg: '删除成功！'
+                        });
+                        top.CC.addTab({title:'存档箱',url:'$link.getContextURL()/oa/mail/archive/list'});
+                        top.CC.closeTab('查看邮件');
+                    } else {
+                        top.CC.messager({ // show error message
+                            title: '提示',
+                            msg: '服务器连接不上！'
+                        });
+                    }
+                },'json');
+            }
+        });
+
+    }
+</script>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end
+<style>.cke_top{display:none !important;}</style>

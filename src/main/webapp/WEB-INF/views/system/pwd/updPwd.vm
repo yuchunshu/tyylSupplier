@@ -1,0 +1,106 @@
+<div id="editWindow" class="easyui-dialog  dialog-tc" title="修改密码" style="width:550px;height:415px;display:none;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false,closable:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mainborder-Padding">
+            <form id="editForm" method="post">
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                    <tr>
+                       <td class="bg-grey" align="right" style="width:120px">
+                            姓名
+                       </td>
+                       <td class="bg-white" align="left">
+                           $!{esc.html($!{user.userName})}
+                       </td>
+                    </tr>
+                    <tr>
+                       <td class="bg-grey" align="right" >
+                            用户名
+                       </td>
+                       <td class="bg-white" align="left">
+                            $!{esc.html($!{user.account})}
+                       </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-grey" align="right">所属部门</td>
+                        <td class="bg-white" align="left">
+                            $!{esc.html($!{user.department.deptName})}
+                        </td>
+                    <tr>
+                    <tr>
+                       <td class="bg-grey" align="right" style="width:120px">
+                            <span><font color=red>*</font></span>原密码
+                       </td>
+                       <td class="bg-white">
+                            <input style="width:180px" type="password" class="easyui-textbox" required="true" id="oldPwd" name="oldPwd"/>
+                       </td>
+                    </tr>
+                    <tr>
+                       <td class="bg-grey" align="right" >
+                            <span><font color=red>*</font></span>新密码
+                       </td>
+                       <td class="bg-white">
+                            <input style="width:180px" type="password" class="easyui-textbox" data-options="validType:'pwdComplexityCheck'" required="true" id="newPwd" name="newPwd"/>
+                            <br><font color="red">新密码长度为6至16，且至少含有一位数字和字母！</font>
+                       </td>
+                    </tr>
+                    <tr>
+                       <td class="bg-grey" align="right" >
+                            <span><font color=red>*</font></span>确认密码
+                       </td>
+                       <td class="bg-white">
+                            <input style="width:180px" type="password" class="easyui-textbox" data-options="validType:'pwdComplexityCheck'" required="true" id="confirmPwd" name="confirmPwd"/>
+                       </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+            <div class="bottom-but-dialog">
+                <ul>
+                    <li><a class="new-but" onclick="save()">保存</a></li>
+                    <li><a class="new-but" onclick="closePage()">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = "$link.getContextURL()";
+    if (_baseUrl.charAt(_baseUrl.length - 1) == "/") {
+        _baseUrl = _baseUrl.substring(0, _baseUrl.length - 1);
+    }
+
+    function closePage(){
+        if (top.CC) {
+            top.CC.closeCurTab();
+        } else {
+            window.location = _baseUrl + "/login.html";
+        }
+    }
+
+    $(function(){
+        $('#editWindow').css("display","block"); // 显示div
+        $('#editWindow').dialog('center'); //定位居中
+        $('#editWindow').dialog('open'); // 打开窗口
+    })
+    //保存
+    function save(){
+        if ($("#editForm").form('validate')) {
+            $.post(_baseUrl + "/system/pwd/update.json",$("#editForm").serialize(),function(result){
+                  if("success" == result.success){
+                     $("#editForm").form("clear");
+                     $.messager.alert('','<br>保存成功,点击确定跳回登录页面!','info',function(){ window.location = _baseUrl + '/login.html'});
+                  }else{
+                     $.messager.show({
+                        title:'提示',
+                        msg:result.errorMsg
+                     });
+                  }
+            });
+        }
+    }
+</script>
+#end

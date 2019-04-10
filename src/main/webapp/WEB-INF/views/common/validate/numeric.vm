@@ -1,0 +1,1 @@
+ data-bv-numeric="true" #if(${__message}) data-bv-numeric-message="$!{__message}" #end

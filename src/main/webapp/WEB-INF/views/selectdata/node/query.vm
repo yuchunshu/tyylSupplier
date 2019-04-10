@@ -1,0 +1,16 @@
+&nbsp;&nbsp;名称：
+<input name="$qc.like('nodeName')" class="easyui-textbox" type="text"/>
+#@script()
+<script>
+    // 重写search方法
+    function formSerach() {
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+        $('#datasDg').datagrid('reload',obj);
+        return false;
+    }
+</script>
+#end

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+>
+    <description>加载属性文件的公共配置 </description>
+
+    <!-- 加载属性文件的配置 -->
+    <!-- localOverride="true" 表示优先使用属性文件里的属性定义 -->
+    <bean
+        class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer"
+        p:fileEncoding="UTF-8"
+        p:ignoreResourceNotFound="false"
+        p:localOverride="true"
+    >
+        <!-- 排在最后的文件的内容最先搜索，即靠后的属性文件里的属性覆盖靠前的属性文件里的同名属性。 -->
+        <property name="locations">
+            <list>
+                <value>classpath*:META-INF/spring/*.properties</value>
+                <value>WEB-INF/spring/**/*.properties</value>
+                <value>WEB-INF/*.spring.properties</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

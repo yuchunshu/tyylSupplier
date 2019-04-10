@@ -1,0 +1,143 @@
+
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" onclick="newPage()"plain="true">新增</a>
+        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" onclick="editPage()" plain="true">修改</a>
+        <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" plain="true" onclick="del()">删除</a>
+        <i></i>
+
+        <a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+            <tr>
+##                <th field="ck" data-options="checkbox:true">序号</th>
+                <th style="width:33%" data-options="field:'word'">词条</th>
+
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</div>
+<div id="editWindow" class="easyui-window" title="设置" style="width:450px;height:230px;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+#parse("doc/personal/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()/oa/personal/';
+    #if( $type == 'query' )
+        var _listJsonUrl = '/querylist.json';
+    #else
+        var _listJsonUrl = '/list.json';
+    #end
+    var _newJsonUrl = '/new';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function newPage(){
+        $('#editWindow').window('open');
+        $('#editWindow').window('refresh','$link.getContextURL()/oa/personal/new');
+    }
+
+
+
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+     function editPage(){
+        var rows = $("#dg").datagrid("getChecked");
+            if(rows){
+                if (rows.length < 1) {
+                    top.CC.messager({
+                        title: '错误',
+                        msg: '请选择至少一条数据进行修改!'
+                    });
+                } else if (rows.length > 1) {
+                    top.CC.messager({
+                        title: '错误',
+                        msg: '只能对一条数据进行修改!'
+                    });
+                } else {
+                    var id = "";
+                    for(var i=0;i<rows.length;i++){
+                        if(i==rows.length-1){
+                            id += rows[i].id;
+                        }
+                    }
+                    $('#editWindow').window('open');
+                    $('#editWindow').window('refresh','$link.getContextURL()/oa/personal/edit?id='+id);
+                }
+
+            } else {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '服务器连接不上!'
+                });
+            }
+
+    }
+
+     function del(){
+            var rows = $("#dg").datagrid("getChecked");
+            if(rows && rows.length > 0){
+                $.messager.confirm('警告','确定删除这些记录吗?',function(r){
+                    if (r){
+                        var ids = "";
+                        for(var i=0;i<rows.length;i++){
+                            if(i==rows.length-1){
+                                ids += rows[i].id;
+                            }else{
+                                ids += rows[i].id + ",";
+                            }
+                        }
+                        $.post('$link.getContextURL()/oa/personal/delete.json',{ids:ids},function(result){
+                            if (result.success){
+                                $('#dg').datagrid('reload'); // reload the user data
+                                $('#dg').datagrid('uncheckAll');
+                                top.CC.messager({ // show error message
+                                    title: '成功',
+                                    msg: result.success
+                                });
+                            } else {
+                                top.CC.messager({ // show error message
+                                    title: '错误',
+                                    msg: result.errorMsg
+                                });
+                            }
+                        },'json');
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '请选择至少一条数据进行删除!'
+                });
+            }
+
+        }
+
+
+
+</script>
+#end

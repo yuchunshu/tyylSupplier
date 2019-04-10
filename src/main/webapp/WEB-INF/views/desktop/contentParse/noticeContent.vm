@@ -1,0 +1,31 @@
+<div class="drag-item" displayModels="noticeContent">
+    <div class="work-title">
+        #if("$!{model.status}" == "block")
+        #set($picture = "work-icon-up.png")
+        #else
+        #set($picture = "work-icon-down.png")
+        #end
+        #if($dict.userprofile.get($!{user.currentUserId}))
+        <img src="$link.getContextURL()/themes/$!dict.userprofile.get($!{user.currentUserId})/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)"/>
+        #else
+        <img src="$link.getContextURL()/themes/default/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)"/>
+        #end
+        <h4>
+            <a href="javascript:;" onclick="top.CC.addTab({title:'公告查询',url:'$link.getContextURL()/oa/notice/query'})" title="点击进入公告查询">通知公告</a>
+            #if($!{noticeContentList.total} > 0) <font color="red">($!{noticeContentList.total})</font> #end
+        </h4>
+        <div class="drag-handle-area"></div>
+        <a href="javascript:;" class="model-shut" title="移除此模块" onclick="removeModels(this)"></a>
+        <a href="javascript:;" onclick="top.CC.addTab({title:'公告查询',url:'$link.getContextURL()/oa/notice/query'})" class="more" title="更多"></a>
+
+    </div>
+    <ul style="display:$!{model.status}">
+        #foreach($notice in $noticeContentList.rows)
+        <li>
+            <a href="javascript:;" onclick="top.CC.addTab({title:'公告详情',url:'$link.getContextURL()/oa/notice/detail?id=$!notice.id'})" title="$!notice.title">$!notice.title</a>
+            <span>$!date.format('yyyy-MM-dd', $!notice.publishDate)</span>
+        </li>
+        #if($velocityCount == 5) #break #end
+        #end
+    </ul>
+</div>

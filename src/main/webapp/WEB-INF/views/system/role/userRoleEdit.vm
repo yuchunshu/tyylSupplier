@@ -1,0 +1,113 @@
+#include("system/role/common.css.html")
+<div class="easyui-layout" fit="true">
+
+    ###############主体内容start  layout>>center################
+    <div class="" data-options="region:'center',border:false">
+        ###############嵌套layout start################
+        <div class="easyui-layout" data-options="fit:true">
+            ###############嵌套layout>>north start################
+            <div class="mainborder-Padding" data-options="region:'north'" style="height:67px">
+                <form id="userRoleEdit">
+                    <input type="hidden" id="roleId" name="id" value="$!{role.id}"/>
+                    <input type="hidden" id="userIds" name="userIds" value=""/>
+                    ##<input type="hidden"  id="userIds" name="userIds" value=""/>
+                    <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                        <tr>
+                            <td style="width:80px" class="bg-grey" align="right">角色名称</td>
+                            <td class="bg-white" style="width:40%;">
+                            <input style="width:100%;" editable="false" data-options="required:true,validType:['isBlank','checkRoleName']" class="easyui-textbox" id="roleName" name="roleName"  value="$!{role.roleName}"/>
+                            </td>
+                           
+                        </tr>
+                        
+                    </table>
+                </form>
+            </div>
+            ###############嵌套layout>>north end################
+            ###############嵌套layout>>center start################
+            <div data-options="region:'center'">
+                <div class="easyui-panel" fit="true" title="关联用户"  border="false">
+                        #parse("/system/role/selectUsers.vm")
+						
+                </div>
+            </div>
+            ###############嵌套layout>>center end################
+            ###############嵌套layout>>west start################
+            #*
+			<div data-options="region:'east'" style="width:40%">
+                 <div class="easyui-panel" fit="true" border="false" title="关联用户" style="padding:5px 5px 5px 0px" style="padding:5px">
+                        #parse("/system/role/parse/linkUser.vm")
+                </div>
+            </div>
+			*#
+            ###############嵌套layout>>west end################
+        </div>
+        ###############嵌套layout end################
+    </div>
+    ###############主体内容end  layout>>center################
+    <div data-options="region:'south'"  class="bottom-h" height="52px">
+        <div class="bottom-but">
+            <ul>
+                <li><a onclick="saveRole()" class="new-but">保存</a></li>
+                <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+##</form>
+#@script()
+<script>
+    $(function(){
+        //$("#roleName").textbox("textbox").focus();
+    })
+
+ 	//保存
+    function saveRole() {
+      
+		var length = $("#peopleSelectShow-list>li").length;
+		
+		if(length<=0){
+		    $.messager.alert('提示','请选择人员！','info');
+            return false;
+		}
+		
+		var userIds ="";
+		//得到每个人的li标签，提取出每个人的id
+		if($("#peopleSelectShow-list>li")!=null&&$("#peopleSelectShow-list>li").length>0){
+    		  $("#peopleSelectShow-list>li").each(function(i){
+    		      if(i<length-1){
+    			     userIds +=this.id+",";
+    			  }else{
+    			      userIds +=this.id;
+    			  }  
+    		
+    		});
+		}
+		
+		
+       	$("#userIds").val(userIds);
+		
+		
+		$.post("$link.getContextURL()/system/role/saveUserRole.json",$("#userRoleEdit").serialize(),function(data){
+            $.easyui.loaded($('body'));
+            if(data.id){
+                $("#roleId").val(data.id);
+                top.CC.messager({title:"提示",msg:"保存成功"});
+                top.CC.refreshTab("角色列表")
+                top.CC.closeCurTab()
+            }else{
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+            }
+        });
+		
+    }
+	
+// 关闭
+function back() {
+    $('#editWin').window('close'); 
+}
+</script>
+#end

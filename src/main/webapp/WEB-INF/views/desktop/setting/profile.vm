@@ -1,0 +1,187 @@
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" class="mynoborder">
+        <form id="editForm" method="post">
+            <input type="hidden" id="background" name="background" value="$!{profile.background}"/>
+            <input type="hidden" id="displayModels" name="displayModels" value="$!{profile.displayModels}"/>
+            <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+            <tr>
+                <td class="fix_td_title" style="width:150px;">&nbsp;</td>
+                <td class="fix_td_data">&nbsp;</td>
+                <td class="fix_td_data" style="width:35px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td class="bg-grey" align="right" width="100">系统主题</td>
+                <td class="bg-white" align="left" colspan="2">
+                    <label><input type="radio" name="themes" value="default" checked>默认</label>
+                    <label><input type="radio" name="themes" value="green" #if("$!profile.themes" == "green") checked #end>绿色</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="bg-grey" align="right">桌面背景</td>
+                <td class="bg-white" align="left" colspan="2">默认（白色）</td>
+            </tr>
+            <tr>
+                <td class="bg-grey" align="right" >手机提醒</td>
+                <td class="bg-white" align="left" colspan="2">
+                    <label><input type="checkbox" name="smsFlag" value="1" #if($profile.smsFlag == 1) checked #end >接收手机短信提醒</label>
+                </td>
+            </tr>
+            <tr>
+                <td class="bg-grey" align="right">
+                    桌面模块
+                </td>
+                <td class="bg-white" align="left" id="modelTd">
+                    #set($allModels={"taskContent" : "待办公文","warnTaskContent" : "预警公文","expireTaskContent" : "超时公文","readContent" : "待阅公文","mailContent" : "我的邮件","passreadContent" : "内部请示"})
+                    #foreach($dm in $!strTool.JSONArrayToList($!profile.displayModels))
+                    <div class="myselect-model" model-key="$!dm.name" status="$!dm.status" location="$!dm.location">
+                        $!allModels.get("$!dm.name")
+                        <img src="images/shortcut-minus.png" style="cursor:pointer;vertical-align: middle;" onclick="removeModel(this)" title="点击移除此模块">
+                    </div>
+                    #end
+                </td>
+                <td class="bg-white">
+                    <a href="javascript:;" id="menuBtn" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="modelMenuShow()" title="点击添加桌面模块"></a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="model-menu">
+    <div id="warnTaskContentItem" model-name="warnTaskContent">预警公文</div>
+    <div id="expireTaskContentItem" model-name="expireTaskContent">超时公文</div>
+    <div id="readContentItem" model-name="readContent">待阅公文</div>
+    <div id="mailContentItem" model-name="mailContent">我的邮件</div>
+    <div id="passreadContentItem" model-name="passreadContent">内部请示</div>
+</div>
+#@script()
+<script type="text/javascript">
+    var leftNum = 0;
+    var rightNum = 0;
+    $(function(){
+        initMenu();
+
+        var divs = $('.myselect-model');
+        if (divs && divs.length > 0) {
+            for (var i = 0; i < divs.length; i++) {
+                if ($(divs[i]).attr("location") == "right") {
+                    rightNum++;
+                } else {
+                    leftNum++;
+                }
+            }
+        }
+    });
+
+    var MODEL_CODE = {"taskContent" : "待办公文","readContent" : "待阅公文","mailContent" : "我的邮件","passreadContent" : "公文传阅"};
+
+    // 添加模块的菜单
+    function modelMenuShow() {
+        var divs = $('.myselect-model');
+        var menuDiv = $('#model-menu');
+        if (divs && divs.length < 8) {
+
+            var elmOffset = $('#menuBtn').offset();
+            menuDiv.menu('show',{left:elmOffset.left + 20, top:elmOffset.top + 20});
+        } else {
+            $.messager.show({
+                title:'提示',
+                msg:'没有可添加的模块。'
+            });
+        }
+    }
+
+    //菜单打开事件
+    function menuOnShowEvent() {
+        var menuDiv = $(this);
+        $.each(MODEL_CODE, function(key){
+            var itemElId = "#" + key + "Item";
+            if ($("div[model-key='" + key + "']").length > 0) {
+                menuDiv.menu('disableItem', $(itemElId)[0]);
+            } else {
+                menuDiv.menu('enableItem', $(itemElId)[0]);
+            }
+        });
+    }
+
+    //点击菜单添加桌面模块
+    function addModels(item) {
+        var location = "left";
+        if (rightNum < leftNum) {
+            location = "right";
+            rightNum++;
+        } else {
+            leftNum++;
+        }
+        var div = '<div class="myselect-model" model-key="' + $(item.target).attr('model-name') + '" status="block" location=' + location + '>' + item.text + '&nbsp;<img src="images/shortcut-minus.png"  style="cursor:pointer;vertical-align: middle;" onclick="removeModel(this)" title="点击移除此模块">'
+        $('#modelTd').append(div);
+
+        // 保持菜单打开状态
+        var divs = $('.myselect-model');
+        var menuDiv = $('#model-menu');
+        if (divs && divs.length < 8) {
+
+            var elmOffset = $('#menuBtn').offset();
+            menuDiv.menu('show',{left:elmOffset.left + 20, top:elmOffset.top + 20});
+        }
+    }
+
+    //菜单初始化
+    function initMenu() {
+        $('#model-menu').menu({
+            minWidth:150,
+            hideOnUnhover:true,
+            onShow:menuOnShowEvent,
+            onClick:addModels
+        })
+    }
+
+    //保存
+    function saveSetting(){
+        var divs = $('.myselect-model');
+        if (divs) {
+            var displayModels = new Array();
+            for (var i = 0; i < divs.length; i++) {
+                var jsonObj = new Object();
+                jsonObj.name = $(divs[i]).attr("model-key");
+                jsonObj.location = $(divs[i]).attr("location");
+                jsonObj.status = $(divs[i]).attr("status");
+                displayModels.push(jsonObj);
+            }
+            $("#displayModels").val(JSON.stringify(displayModels));
+        } else {
+            $("#displayModels").val("");
+        }
+        if ($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/desktop/setting/save.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                      window.location = "$link.getContextURL()/desktop/index";
+                  }else{
+                      top.CC.messager({
+                          title:'提示',
+                          msg:result.error
+                      });
+                  }
+            });
+        }
+    }
+
+    function removeModel(dom) {
+        if ($(dom).parent().attr('location') == 'right')
+            rightNum--;
+        else
+            leftNum--;
+        $(dom).parent().remove();
+    }
+</script>
+#end
+<style>
+.myselect-model {
+    padding: 5px;
+    border: #F89C25 solid 1px;
+    border-style: dotted;
+    display: block;
+    float: left;
+    margin: 5px;
+    width:92px;
+}
+</style>

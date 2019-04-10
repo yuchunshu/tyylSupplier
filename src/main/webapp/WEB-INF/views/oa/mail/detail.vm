@@ -1,0 +1,70 @@
+<form id="editForm" method="post">
+    #validateBegin("editForm")
+    <table id="app_apply_tab" class="form_tab table_no_border" style="table-layout: fixed;" cellSpacing="1" cellpadding="5">
+      <tbody>
+        <tr align="center">
+          <td class="form_gray_unit" align="right" width="120px">邮件类型</td>
+          <td width="85%" align="left">
+            <input type="hidden" name="id" id="id" value="$!obj.id" />
+            $!{obj.emailType.value}
+          </td>
+        </tr>
+        <tr align="center">
+          <td class="form_gray_unit" align="right">#if('1' == $obj.emailType )收件人 #elseif ('2' == $obj.emailType)收件科室 #end</td>
+          <td align="left">
+            $!{obj.addressName}
+          </td>
+        </tr>
+        <tr align="center">
+          <td class="form_gray_unit" align="right">标题</td>
+          <td align="left">
+            $!{esc.html($!{obj.title})}
+          </td>
+        </tr>
+        <tr align="center">
+          <td class="form_gray_unit" align="right">消息提示</td>
+          <td align="left">
+            $!{obj.receiptFlag.value}
+          </td>
+        </tr>
+        <tr align="center">
+            <td class="form_gray_unit" align="right">内容</td>
+            <td valign="top">
+            <textarea class="ckeditor" id="mailContent" name="mailContent" readonly style="resize:none;width:95%;">$!{obj.content})</textarea>
+            <script>
+                CKEDITOR.on('instanceReady', function(ev) {
+                    ev.editor.setReadOnly(true);
+                });
+            </script>
+            </td>
+        </tr>
+        <tr align="center">
+          <td class="form_gray_unit" align="right">附件</td>
+          <td align="left">
+            #formfilemulty("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", false, "#defaultUploadUrl('emAttach')",false)
+          </td>
+        </tr>
+      </tbody>
+    </table>
+</form>
+<br><br><br>
+#validateEnd("editForm")
+<div class="fixed_box">
+    #if('drafts' == $!type)
+    <a id="send" onclick="send()" class="easyui-linkbutton" data-options="iconCls:'icon-envelope',width:120,height:30">发送</a>
+    <a id="drafts" onclick="drafts()" class="easyui-linkbutton" data-options="iconCls:'icon-save',width:120,height:30">存草稿</a>
+    <a id="trash" onclick="trash()" class="easyui-linkbutton" data-options="iconCls:'icon-trash',width:120,height:30">移到垃圾箱</a>
+    <a id="back" onclick="top.CC.closeCurTab()" class="easyui-linkbutton" data-options="iconCls:'icon-back',width:120,height:30">关闭</a>
+    #end
+</div>
+#@script()
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+<script>
+    $(function(){
+        CKEDITOR.replace('mailContent', { height: '340px'});
+    });
+</script>
+#end
+<style>.cke_top{display:none !important;}</style>
+

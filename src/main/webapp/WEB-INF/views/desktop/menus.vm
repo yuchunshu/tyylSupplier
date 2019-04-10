@@ -1,0 +1,59 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="menuDiv" menussize="#if($menus)$!menus.size()#end" border="false">
+        #foreach($m in $menus)
+            #if($m.children)
+            <div class="nnrd-main #if($velocityCount != 1) nnrd-main-cut-f #end">
+                <div class="title">
+                    #if("$!{m.icon}"!="")
+                        #if($strTool.StrIndexOf("$!{m.icon}", "power-icon") == 0)
+                    <i class="power-icon $!{m.icon}"></i>
+                        #else
+                    <i>
+                        <img src="$!{m.icon}"/>
+                    </i>
+                        #end
+                    #else
+                    <i>
+                        <img src="images/menu/item-default.png"/>
+                    </i>
+                    #end
+                    <span>$!{esc.html($!{m.powerName})}</span>
+                </div>
+                <ul>
+                #foreach($c in $m.children)
+                    <li>
+                        #if("$!{c.icon}"!="")
+                            #if($strTool.StrIndexOf("$!{c.icon}", "power-icon") == 0)
+                        <i class="power-icon $!{c.icon} small"></i>
+                            #else
+                        <i>
+                            <img src="$!{c.icon}"/>
+                        </i>
+                            #end
+                        #else
+                        <i>
+                            <img src="images/menu/item-default.png"/>
+                        </i>
+                        #end
+                        <a href="javascript:;" onclick="top.CC.addTab({title:'$!c.powerName',url:'$link.getContextURL()$!{c.url}'})">$!{esc.html($!{c.powerName})}</a>
+                    </li>
+                #end
+                </ul>
+            </div>
+            #end
+        #end
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+
+// 算导航菜单宽度
+$(document).ready(function(){
+    var menusize = $("#menuDiv").attr("menussize");
+    var width = menusize * 202 - 1;
+    $("#menuDiv").width(width);
+});
+
+</script>
+#end

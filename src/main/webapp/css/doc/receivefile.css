@@ -1,0 +1,61 @@
+@charset "utf-8";
+/* CSS Document */
+
+#receiveContainer { width:620px; margin: 0 auto; color: #FF0000; font-size: 18px; }
+#receiveContainer p {  font-size: 18px; font-weight:normal;  color: #000;}
+#receiveContainer span {font-size: 14px;font-weight:normal;color: #000;}
+#receiveContainer table td {padding:0px 4px;}
+#receiveContainer .content {width:620px;margin: 0 auto;font-size: 16px;font-weight: bold;}
+
+#receiveContainer .content .title { height: 60px; line-height: 60px; font-size: 28px; padding-top: 10px; font-weight: bold; text-align: center;}
+
+#receiveContainer .content .nyr {height: 30px;}
+#receiveContainer .content .nyr .nyr_title {height: 20px; line-height: 20px; float: right; margin-right:80px; font-weight: normal;}
+#receiveContainer .content .nyr .nyr_title td{  font-size: 16px; font-weight: normal;}
+
+#receiveContainer .content .row1 { height: 40px; padding-top: 20px; }
+#receiveContainer .content .row1 td{ height: 30px; }
+#receiveContainer .content .row2 td{ height: 20px; }
+#receiveContainer .content .row3 td{ height: 20px; }
+#receiveContainer .content .row4 td { height: 40px; }
+#receiveContainer .content .row5 td { height: 200px;}
+#receiveContainer .content .row6 td { height: 200px;}
+#receiveContainer .content .row7 td { height: 180px;}
+
+#receiveContainer .content .row_td{ border: #FF0000 solid 1px;}
+
+#receiveContainer .content .row_no_topborder { border: #FF0000 solid 1px; border-top: 0px;}
+#receiveContainer .content .row_border { border: #FF0000 solid 1px;}
+#receiveContainer .content .row_no_border_topOrRight {border-left: #FF0000 solid 1px; border-bottom: #FF0000 solid 1px;}
+#receiveContainer .content .row_no_leftborder { border: #FF0000 solid 1px; border-left: 0px;}
+#receiveContainer .content .row_no_rightborder { border: #FF0000 solid 1px; border-right: 0px;}
+#receiveContainer .content .row_leftborder { border-left: #FF0000 solid 1px;}
+#receiveContainer .content .grid_rightborder { border-right: #FF0000 solid 1px;}
+
+#receiveContainer .title { height: 20px; padding-top: 8px; padding-left: 1px; font-size: 18px; font-weight: bold; text-align: left;}
+#receiveContainer .title1 { width:290px; height: 20px; padding-left: 1px;  font-size: 18px; text-align:left; word-wrap:break-word}
+#receiveContainer .title2 {height: 20px; padding-top: 8px;padding-left: 1px; padding-bottom: 8px; font-size: 16px;font-family: "华文中宋"!important;text-align: left;}
+#receiveContainer .title3 { width:290px; height: 15px; padding-top: 8px; padding-left: 1px; padding-bottom: 8px; font-size: 18px; font-weight: bold; text-align:left;}
+#receiveContainer .title4 {height: 20px;padding-left: 1px;font-size: 16px;font-family: "华文中宋"!important;text-align: left;}
+#receiveContainer .title5 {height: 20px; padding-top: 8px;padding-left: 1px; padding-bottom: 8px; font-size: 16px;font-family: "华文中宋"!important;text-align: center;}
+
+#receiveContainer .tag_right span { float:right; text-align: right; padding-right: 20px;}
+#receiveContainer .tag_right2 span { text-align: right; padding-right: 20px;}
+#receiveContainer .tag_right2 {text-align: right;padding-right: 20px;}
+
+#receiveContainer .content .span_padding{padding-left: 20px;}
+
+#receiveContainer li {list-style-type:none;}
+
+/***********************广西样式 *************************************/
+#receiveContainers .receive_table {width: 620px; text-align: center; margin:0 auto}
+#receiveContainers .receive_table table {width: 100%; border-collapse: collapse;}
+#receiveContainers .receive_table table tr th {font-size: 28px;font-weight: bold;color: #FF0000;height: 60px;line-height: 60px;padding-top: 10px;font-family: '微软雅黑'!important;}
+#receiveContainers .receive_table table tr {height: 50px;}
+#receiveContainers .receive_table table td {border: 1px solid red;padding: 8px 4px;font-weight: bold;color: #FF0000;font-size: 16px;font-family: '微软雅黑';}
+#receiveContainers .receive_table table .minTitle {font-family: none;font-weight: normal;font-size: 14px;}
+#receiveContainers .receive_table table .minTitle span {display: inline-block;float:left; text-align:left;font-size:16px;font-weight:bold;}
+#receiveContainers .receive_table table .td_narrow div {width: 20px;padding-left: 30px;padding-right: 30px;font-weight: bold;font-size:16px;}
+#receiveContainers .receive_table table .noBorder td {border: 0;}
+#receiveContainers .receive_table table .wordLT {text-align: left;vertical-align: top;font-weight: normal;font-size: 14px;font-family: none;color: #000;}
+#receiveContainers .receive_table table .noPadding td {padding-top: 0;padding-bottom: 0;}

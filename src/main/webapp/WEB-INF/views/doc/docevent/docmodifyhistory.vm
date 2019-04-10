@@ -1,0 +1,52 @@
+<div class="easyui-layout" fit="true">
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:0;">
+        <form id = "editForm"  method = "post">
+            <input type="hidden" name="fileId" value="$!{fileId}" />
+            <input type="hidden" name="itemId" value="$!{itemId}" />
+        </form>
+        <table id="tg-select" data-options="nowrap:false" style="width:99%;"  >
+            <thead>
+            <tr>
+                <th style="width:38%" data-options="field:'oldContent'">旧数据</th>
+                <th style="width:38%" data-options="field:'newContent'">新数据</th>
+                <th style="width:8%" data-options="field:'modCreater'">修改人</th>
+                <th style="width:14%" data-options="field:'modTimeShow'">修改时间</th>
+            </tr>
+            </thead>
+        </table>
+        </table>
+    </div>
+    <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="close" onclick="doClose()" class="new-but">关闭</a></li>
+        </ul>
+    </div>
+</div>
+</div>
+#@script()
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#tg-select").datagrid({
+            loadFilter: datagridHtmlEncode,
+            fitColumns:false,//列宽自适应
+            fit:true,//自适应
+            nowrap:false, //不可换行
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            toolbar:'#queryForm',//工具条
+            pagination:true,//显示分页工具条
+            pageSize:10,//每页记录数
+            pageList:[10,20],//可选每页记录数
+            url:'$link.getContextURL()/doc/modify/list.json?__EQ__fileId=$!{fileId}&__EQ__itemId=$!{itemId}'//获取数据的url
+        });
+     });
+
+    function doClose(){
+        $('#editWindow').window('close');
+    }
+
+
+</script>
+#end

@@ -1,0 +1,65 @@
+<div style="padding:5px 5px;width:350px;height:410px;">
+    <ul id="deptree" data-options="url:'$link.getContextURL()/${url}',method:'post',fit:true,lines:true"></ul>
+</div>
+<div style="position:absolute;left:33%;bottom: 5px;" >
+    &nbsp;<a href="javascript:;" class="easyui-linkbutton" iconcls="icon-ok" onclick="doselect()">确定</a>
+    &nbsp;<a href="javascript:;" class="easyui-linkbutton" iconcls="icon-redo" onclick="doclose()">取消</a>
+</div>
+#@script()
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script>
+    $(document).ready(function() {
+        if (top.setSelectDialogFrameDialogTitle) {
+            top.setSelectDialogFrameDialogTitle("$!{selectDialogTitle}");
+        }
+    });
+
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+
+    //选择
+    function doselect() {
+        var node = $('#deptree').tree('getChecked');
+        if (node) {
+            top.okSelectDialogFrameDialog(node);
+        } else {
+            alert("请先选择数据。");
+        }
+        return false;
+    }
+    var _oneFlag = true;
+    $(document).ready(function(){
+        $('#deptree').tree({
+            checkbox:true,
+            cascadeCheck:false,
+            onSelect:function(node){
+                // 点击树文字展开、关闭树节点
+                if ($(this).tree('getSelected').state=='closed') {
+                    $(this).tree('expand',node.target);
+                }
+                if (node.checked) {
+                    $(this).tree('uncheck',node.target);
+                } else {
+                    $(this).tree('check',node.target);
+                }
+            },
+            onLoadSuccess:function(node, data){
+                if (_oneFlag) {  // 只在根节点生效
+                    var rootNode = $(this).tree('find', data[0].id);
+                    _oneFlag = false;
+                    $(this).tree('expandAll', rootNode.target);
+                }
+            }
+        });
+    });
+</script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

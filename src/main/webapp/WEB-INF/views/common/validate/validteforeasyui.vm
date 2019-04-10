@@ -1,0 +1,1 @@
+name="$__name" data-options="$!{__validateObj[$__name].req} #if($!{__validateObj[$__name].valid} && $!{__validateObj[$__name].req}),#end #if($!{__validateObj[$__name].valid})validType:[$!{__validateObj[$__name].valid}.substring(1)]#end" class="easyui-validatebox $__className"

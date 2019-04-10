@@ -1,0 +1,172 @@
+#set($layout="/layout/choose.vm")
+<div style="display: block; margin: 0px; padding: 0px;">
+    <div class="choose-box">
+        <div class="choose-box-title">$!__title<input type="button" class="btn-close" value="关闭" /></div>
+#if($__nodeinfomap)
+#set($__selectfirst=!${__nodeinfomap.isEmpty()})
+        <div class="choose-a-select">
+          <label class="form-fill-label">$!__selecttitle</label>
+          <select id="selectsome" class="form-control1 form-fill-sm1">
+            <option></option>
+#foreach($__key in $__nodeinfomap.keySet())
+            <option value="$!__key" #if($__selectfirst)selected="selected"#end>$!{__nodeinfomap.get($__key)}</option>
+#set($__selectfirst=false)
+#end
+          </select>
+        </div>
+#end
+        <div class="choose-a-province">
+        </div>
+        <div class="choose-a-department">
+        </div>
+        <div class="choose-box-bottom">
+##            <input class="input-search" type="text" /> <input class="btn-search" value="搜索" type="button" />
+            <span>当前选择：</span> <span id="showselect"></span>
+            <input class="btn-close" value="选择" type="button" />
+        </div>
+    </div>
+</div>
+
+#@script()
+<script>
+$(document).ready(function() {
+
+    var onlyselectlevel2 = #if($__selectlevel2)true#{else}false#{end};
+
+    var selectedDataId = null;
+    var selectedDataName = null;
+
+    showLevel1();
+
+    //添加选择的click事件
+    $('.choose-box-title .btn-close').bind('click', function(){
+            top.dialoginstance.close(null);
+        }
+    );
+    $('.choose-box-bottom .btn-close').bind('click', function(){
+#if($__nodeinfomap)
+            var selectid="";
+            var selectname="";
+            var selectresult = $("#selectsome");
+            if (selectresult) {
+                selectid=selectresult.val();
+                selectname=$("option[value='" + selectid + "']", selectresult).text();
+            }
+#end
+            var returndata={
+#if($__nodeinfomap)
+                "selectid" : selectid,
+                "selectname": selectname,
+#end
+                "id":selectedDataId,
+                "name": selectedDataName
+            };
+            top.dialoginstance.close(returndata);
+        }
+    );
+
+    function doSelectDataItem(id, name) {
+        selectedDataId = id;
+        selectedDataName = name;
+
+        $("#showselect").text(name);
+    }
+
+    function showLevel1()
+    {
+        //原先的列表清空
+        $('.choose-a-province').html('');
+        for(key in dataList)
+        {
+            data = dataList[key];
+            $('.choose-a-province').append('<a class="province-item" data-id="'+data.id+'">'+data.name+'</a>');
+        }
+        //添加省份列表项的click事件
+        $('.province-item').bind('click', function(){
+                var item=$(this);
+                if (!onlyselectlevel2) {
+                    doSelectDataItem(item.attr('data-id'), item.text());
+                }
+                var choosenItem = item.parent().find('.choosen');
+                if(choosenItem)
+                    $(choosenItem).removeClass('choosen');
+                item.addClass('choosen');
+                //更新二层列表
+                showLevel2(item.attr('data-id'));
+            }
+        );
+    }
+
+    function showLevel2(parentId)
+    {
+        //原先的列表清空
+        $('.choose-a-department').html('');
+        if(parentId) {
+            var dataitem = dataList[parentId];
+            var children = dataitem.children;
+            if (children) {
+                for(i=0;i<children.length;i++)
+                {
+                    $('.choose-a-department').append('<a class="school-item" data-id="'+children[i].id+'">'+children[i].name+'</a>');
+                }
+                //添加列表项的click事件
+                $('.school-item').bind('click', function(){
+                        var item=$(this);
+                        doSelectDataItem(item.attr('data-id'), item.text());
+
+                        var choosenItem = item.parent().find('.choosen');
+                        if(choosenItem)
+                            $(choosenItem).removeClass('choosen');
+                        item.addClass('choosen');
+                    }
+                );
+            } else if (dataitem.childurl) {
+                $.get(dataitem.childurl, function(result){
+                    if (result) {
+                        var data = eval(result);
+                        if (data) {
+                            if (data.length && (data.length > 0)) {
+                                dataitem.children = data;
+                                showLevel2(parentId);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+});
+
+</script>
+
+<script>
+#set($__first=true)
+    var dataList ={
+#foreach($__d in $__dataList)
+#if(!$__first),#end
+#set($__first=false)
+            "$!{__d.id}":{
+                "id":"$!{__d.id}",
+                "name":"$!{__d.name}",
+                "childurl":"$!{__d.childurl}"
+  #if (${__d.children} && !${__d.children.isEmpty()})
+                ,
+                "children":[
+#set($__first2=true)
+
+    #foreach($__c in ${__d.children})
+#if(!$__first2),#end
+#set($__first2=false)
+                {
+                  "id":"$!{__c.id}",
+                  "name":"$!{__c.name}"
+                }
+    #end
+                ]
+  #end
+            }
+#end
+};
+</script>
+#end

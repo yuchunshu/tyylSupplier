@@ -1,0 +1,77 @@
+@charset "utf-8";
+/* CSS Document */
+/* 返回 */
+.icon-back {
+	background-image:url(../js/themes/icons/back.png);
+	background-repeat:no-repeat;
+	}
+/* 取消,关闭,清除 */
+.icon-clear {
+	background-image:url(../js/themes/icons/clear.png);
+	background-repeat:no-repeat;
+	}
+/* 剪贴 */
+.icon-cut {
+	background-image:url(../js/themes/icons/cut.png);
+	background-repeat:no-repeat;
+	}
+/* 新增 */
+.icon-add{
+	background-image:url(../js/themes/icons/edit_add.png);
+	background-repeat:no-repeat;
+	}
+/* 重置 */
+.icon-remove{
+	background-image:url(../js/themes/icons/edit_remove.png);
+	background-repeat:no-repeat;
+	}
+/* 文件柜 */
+.icon-file{
+	background-image:url(../js/themes/icons/file.png);
+	background-repeat:no-repeat;
+	}
+/* 保存 */
+.icon-filesave{
+	background-image:url(../js/themes/icons/filesave.png);
+	background-repeat:no-repeat;
+	}
+/* 帮助 */
+.icon-help{
+	background-image:url(../js/themes/icons/help.png);
+	background-repeat:no-repeat;
+	}
+/* 确定 */
+.icon-ok{
+	background-image:url(../js/themes/icons/ok.png);
+	background-repeat:no-repeat;
+	}
+/* 打印 */
+.icon-print{
+	background-image:url(../js/themes/icons/print.png);
+	background-repeat:no-repeat;
+	}
+/* 重做 */
+.icon-redo{
+	background-image:url(../js/themes/icons/redo.png);
+	background-repeat:no-repeat;
+	}
+/* 刷新 */
+.icon-reload{
+	background-image:url(../js/themes/icons/reload.png);
+	background-repeat:no-repeat;
+	}
+/* 搜索 */
+.icon-search{
+	background-image:url(../js/themes/icons/search.png);
+	background-repeat:no-repeat;
+	}
+/* 文件单页 */
+.icon-file-sub{
+	background-image:url(../js/themes/icons/file-sub.png);
+	background-repeat:no-repeat;
+	}
+/* 选择器 */
+.icon-select{
+	background-image:url(../js/themes/icons/select.png);
+	background-repeat:no-repeat;
+	}

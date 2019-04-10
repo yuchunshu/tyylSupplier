@@ -1,0 +1,289 @@
+<div id="cc" class="easyui-layout" style="width:650px;height:400px;" fit="true">
+    <div data-options="region:'east',split:false" style="width:285px;">
+        #parse("/oa/message/im/imUser.vm")
+    </div>
+    <div data-options="region:'center',border:false" style="background:white;">
+        <div class="easyui-layout" fit="true">
+            <div data-options="region:'center'" style="padding:5px;background:white;">
+                <div class="easyui-layout" fit="true">
+                    <div id="show" data-options="region:'center'" style="overflow-y:auto;"></div>
+                    <div data-options="region:'south'" style="height:120px;padding:1px;">
+                        <textarea class="textareaborder" data-options="" id="message" name="message" cols="" style="width:90%;height:90%; border:1px; overflow-y:auto;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'south',split:false" class="bottom-h" style="height:42px;border-top:0px;">
+                <div class="bottom-but">
+                    <ul style="padding:11px 15px 0 0">
+                        <li><a onclick="openHistory()" class="new-but">历史记录</a></li>
+                        <li><a onclick="closeIm()" class="new-but">关闭</a></li>
+                        <li><a onclick="sendMsg()" class="new-but" title="按CTRL+回车发送">发送</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="hisWin" class="easyui-dialog" title="历史记录" style="width:800px;height:485px;padding:5px;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false,closable:true,buttons:'#his_btns'">
+</div>
+<div id="his_btns" style="top:0px; height:25px; width:auto;">
+    <a class="new-but" onclick="$('#hisWin').dialog('close')">关闭</a>
+</div>
+#@script()
+<script>
+
+    // 历史消息
+    function openHistory(){
+        $('#hisWin').window('open');
+        $('#hisWin').window('center');
+        var node = $("#tree").tree("getSelected");
+        var condition = '';
+        if (node && $("#node").tree("isLeaf", node.target)) {
+            condition = '?senderId=' + node.id;
+        }
+        $('#hisWin').window('refresh','$link.getContextURL()/oa/immessage/popupHistory' + condition);
+    }
+
+    // 接收消息的 setInterval 返回的key; 用于关闭定时
+    var _key_receive;
+    // 消息提醒的key
+    var _key_alert;
+
+    // CTRL+回车发送
+    $(function(){
+        document.onkeydown = function(e){
+            var event = document.all ? window.event : e;
+            if(event.ctrlKey && event.keyCode == 13) {
+               sendMsg();
+            }
+        }
+    });
+
+    (function(){
+        // 进页面后2秒刷新
+        setTimeout(receive, 1000 * 2);
+        setTimeout(newMsgAlert, 1000 * 2);
+
+        // 每隔5秒刷新
+        _key_receive = setInterval(receive, 1000 * 8); // 接收选中人员的消息
+        _key_alert = setInterval(newMsgAlert, 1000 * 8);// 检查
+    })();
+
+    // 滚动条置底
+    function scrollBottom() {
+        $("#show").scrollTop($("#show")[0].scrollHeight);
+    }
+
+    // 关闭定时事件
+    function closeItv() {
+        clearInterval(_key_receive);
+        clearInterval(_key_alert);
+    }
+
+    // 发送
+    function sendMsg() {
+        var content = $("#message").val();
+
+        if (content == "") {
+            return ;
+        }
+
+        var userId = getCheckUser();
+
+        if (!userId) {
+            $.messager.alert('提示','请先选择人员!');
+            return;
+        }
+
+        // 清空textarea
+        $("#message").val("");
+
+        // 发送前先检查并接收新的消息
+        receive();
+
+        $.ajax({
+               url         : '$link.getContextURL()/oa/immessage/send.json',
+               async       : false, // 同步
+               cache       : false,
+               type        : 'post',
+               dataType    : 'json',
+               data        : {
+                               'incepterId': getCheckUser,
+                               'content'   : content
+                             }
+        });
+
+##        $.post("$link.getContextURL()/oa/immessage/send.json",{incepterId:getCheckUser,content:content},function(msgList){
+##
+##        },"json");
+
+        var html = "<div style='text-align:left'><span style='color:green;'>$!curUserName &nbsp;&nbsp;&nbsp;"
+            + new Date().format("yyyy-MM-dd HH:mm:ss") + "</span><br></div>";
+
+        // 页面显示
+        $("#show").append(html);
+        $("#show").append("&nbsp;&nbsp;&nbsp;<code>" + html2Escape(content) + "</code>");
+        $("#show").append("<br>");
+
+        // 滚动条置底
+        scrollBottom();
+    }
+
+    // 接收
+    function receive() {
+        var senderId = getCheckUser();
+        if (senderId) {
+            var node = $("#tree").tree("getSelected");
+            // 子节点才做以下操作
+            if (node && $("#tree").tree("isLeaf", node.target)) {
+
+                $.ajax({
+                       url         : '$link.getContextURL()/oa/immessage/getReceive.json',
+                       async       : false, // 同步
+                       cache       : false,
+                       type        : 'post',
+                       dataType    : 'json',
+                       data        : {
+                                       'senderId': senderId,
+                                     },
+                       success     : function(msgList){
+                                        if (msgList && msgList.length > 0) {
+                                            for (var i = 0; i < msgList.length; i++) {
+
+                                                // 去重
+                                                if ($("#receive_" + msgList[i].id).length > 0) {
+                                                    continue;
+                                                }
+                                                var html = "<div style='text-align:left' id='receive_" + msgList[i].id + "'><span style='color:blue;'>"
+                                                   + msgList[i].senderName + "&nbsp;&nbsp;&nbsp;" + msgList[i].createTimeShow + "</span><br></div>"
+
+                                                // 页面显示
+                                                $("#show").append(html);
+                                                $("#show").append("&nbsp;&nbsp;&nbsp;<code>" + html2Escape(msgList[i].content) + "</code>");
+                                                $("#show").append("<br>");
+                                            }
+                                            // 隐藏新消息图标
+                                            var divId = "#new_icon_" + node.id;
+                                            $(divId).hide();
+                                            var parentNode = $("#tree").tree("getParent", node.target);
+                                            var parDivId = "#new_icon_" + parentNode.id;
+                                            $(parDivId).hide();
+                                            scrollBottom(); // 滚动条置底
+                                            return true;
+                                        }
+                                     }
+                });
+
+##                $.post("$link.getContextURL()/oa/immessage/getReceive.json",{senderId:senderId},function(msgList){
+##                    if (msgList && msgList.length > 0) {
+##                        for (var i = 0; i < msgList.length; i++) {
+##
+##                            // 去重
+##                            if ($("#receive_" + msgList[i].id).length > 0) {
+##                                continue;
+##                            }
+##                            var html = "<div style='text-align:left' id='receive_" + msgList[i].id + "'><span style='color:blue;'>"
+##                               + msgList[i].senderName + "&nbsp;&nbsp;&nbsp;" + msgList[i].createTimeShow + "</span><br></div>"
+##
+##                            // 页面显示
+##                            $("#show").append(html);
+##                            $("#show").append("&nbsp;&nbsp;&nbsp;<code>" + html2Escape(msgList[i].content) + "</code>");
+##                            $("#show").append("<br>");
+##                        }
+##                        // 隐藏新消息图标
+##                        var divId = "#new_icon_" + node.id;
+##                        $(divId).hide();
+##                        var parentNode = $("#tree").tree("getParent", node.target);
+##                        var parDivId = "#new_icon_" + parentNode.id;
+##                        $(parDivId).hide();
+##                        scrollBottom(); // 滚动条置底
+##                        return true;
+##                    }
+##
+##                },"json");
+            }
+        }
+    }
+
+    // 获取3条已读历史消息
+    function threeHistory() {
+        var senderId = getCheckUser();
+        if (senderId) {
+            var node = $("#tree").tree("getSelected");
+            // 子节点才做以下操作
+            if (node && $("#tree").tree("isLeaf", node.target)) {
+
+                $.ajax({
+                       url         : '$link.getContextURL()/oa/immessage/getThreeHistory.json',
+                       async       : false, // 同步
+                       cache       : false,
+                       type        : 'post',
+                       dataType    : 'json',
+                       data        : {
+                                       'senderId': senderId
+                                     },
+                       success     : function(msgList){
+                                        if (msgList && msgList.length > 0) {
+                                            for (var i = msgList.length - 1; i >= 0; i--) {
+
+                                                // 去重
+                                                if ($("#receive_" + msgList[i].id).length > 0) {
+                                                    continue;
+                                                }
+                                                var color = "blue";
+                                                if ('$!curUserName' == msgList[i].senderName) {
+                                                    color = "green";
+                                                }
+                                                var html = "<div style='text-align:left' id='receive_" + msgList[i].id + "'><span style='color:" + color + ";'>"
+                                                   + msgList[i].senderName + "&nbsp;&nbsp;&nbsp;" + msgList[i].createTimeShow + "</span><br></div>"
+
+                                                // 页面显示
+                                                $("#show").append(html);
+                                                $("#show").append("&nbsp;&nbsp;&nbsp;<code>" + html2Escape(msgList[i].content) + "</code>");
+                                                $("#show").append("<br>");
+                                            }
+                                            $("#show").append("<br><div style='text-align:center'><span style='color:grey;'>——————&nbsp;&nbsp;&nbsp;以上是历史消息&nbsp;&nbsp;&nbsp;——————</span></div><br>");
+                                            scrollBottom(); // 滚动条置底
+                                            return true;
+                                        }
+                                     }
+                });
+            }
+        }
+    }
+
+    // 消息提醒
+    function newMsgAlert() {
+        $.post("$link.getContextURL()/oa/immessage/getAlert.json",function(idList){
+            if (idList) {
+                for (var i = 0; i < idList.length; i++) {
+                    // 显示节点的图标
+                    var divId = "#new_icon_" + idList[i];
+                    $(divId).css("display", "block");
+                    $(divId).css("float", "right");
+                    // 显示父节点图标
+                    var node = $("#tree").tree("find", idList[i]);
+                    var parentNode = $("#tree").tree("getParent", node.target);
+                    var parDivId = "#new_icon_" + parentNode.id;
+                    $(parDivId).css("display", "block");
+                    $(parDivId).css("float", "right");
+                }
+            }
+        },"json");
+    }
+
+    // 关闭
+    function closeIm() {
+        $('#imMsg').window('close');
+        closeItv();
+    }
+
+    // 对html进行转码
+    function html2Escape(sHtml) {
+        return sHtml.replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});
+    }
+
+</script>
+#end

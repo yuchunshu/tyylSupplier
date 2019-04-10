@@ -1,0 +1,116 @@
+<style type="text/css">
+<!--
+.datagrid-cell,
+.datagrid-cell-group,
+.datagrid-header-rownumber,
+.datagrid-cell-rownumber {
+  line-height: 30px;
+}
+-->
+</style>
+
+#set($bodyattr="class='easyui-layout'  style='border:0px;width:450px;height:250px;margin-left:5px;margin-right:10px;margin-top:5px;'")
+
+<div id="cc" class="easyui-layout" data-options="fit:true">
+<div class="cc-tableWrap" data-options="region:'center',border:false,collapsible:false">
+     <form id="editForm" method="post">
+        <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+          <tbody>
+            <tr align="right">
+              <td class="bg-grey"  width="120" align="right"><span><font color=red>*</font></span>流程</td>
+              <td align="left" class="bg-white">
+                <input id="processName" name="processName" type="hidden"  value="$!{obj.processName}"/>
+                <input id="flowId" name="flowId" type="hidden"  value="$!{obj.flowId}"/>
+                <input name="taskName" type="hidden" id="taskName" value="$!{obj.taskName}"/>
+                <input name="taskKey" type="hidden" id="taskKey" value="$!{obj.taskKey}"/>
+                $!{obj.processName}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey" align="right" width="120"><span><font color=red>*</font></span>节点</td>
+              <td  align="left" class="bg-white">
+                $!{obj.taskName}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey" align="right" width="120">显示按钮</td>
+              <td  align="left" class="bg-white">
+                #foreach($bt in $dict.ButtonType.keySet())
+                 <input type="checkbox"  name="buttons"   value="$bt" #if($!buttons.contains("$bt") ) checked #end/>$dict.ButtonType.get($bt)
+                #end
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey" align="right" width="120">文档编辑方式</td>
+              <td  align="left" class="bg-white">
+                #formradio("wordEdit" "$!obj.wordEdit" $dict.wordedittype "")
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey" align="right" width="120">是否可批注</td>
+              <td  align="left" class="bg-white">
+                #formradio("wordComment" "$!obj.wordComment" $dict.wordcommenttype "")
+              </td>
+            </tr>
+            <tr>
+              <td class="bg-grey" align="right" width="120">显示编辑页</td>
+              <td  align="left" class="bg-white">
+                #formradio("wordShow" "$!obj.wordShow" $dict.wordshowtype "")
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    </form>
+
+    <div class="cc-operateColum" id="delButton" style="height: auto; padding: 5px 0px 5px 5px;">
+            <a href='javascript:;' class="easyui-linkbutton l-btn-plain-remove" style="position: absolute; right: 20px;" plain="true" iconCls="icon-remove" onclick="delMan(getRowIdByDom(this))" style="float: right;"></a>
+    </div>
+</div>
+
+    <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="saveTemp" onclick="dosave()" class="new-but">保存</a></li>
+            <li><a id="back" onclick="doclose()" class="new-but">取消</a></li>
+        </ul>
+    </div>
+    </div>
+</div>
+
+#@script()
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script>
+
+    function doclose() {
+         $('#editWindow').window('close');
+    }
+
+    function dosave() {
+       if($("#editForm").form('validate')) {
+        top.CC.loading("保存中，请稍后。。。");
+            $.post("$link.getContextURL()/doc/nodesetting/save.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                  top.CC.loaded();
+                    $('#id').val(result.id);
+                    $('#dg_nodes').datagrid('reload');
+                    $('#editWindow').window('close');
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+</script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

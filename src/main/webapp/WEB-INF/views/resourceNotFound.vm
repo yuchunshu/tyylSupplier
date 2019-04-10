@@ -1,0 +1,40 @@
+#if($exception)
+${exception.printStackTrace()}
+#begintab()
+
+    #@tablayout()
+
+        #@tabheadlayout("myTab1")
+            #tabtitle("问题描述", "active")
+            #tabtitle("详细信息", "normal")
+        #end
+
+        #@tabcontentlayout()
+            #@tabcontent()
+<b>系统执行出现问题,问题信息如下：</b><br/>
+<div>
+$!{exception.message}
+</div>
+            #end
+
+            #@tabcontent()
+<pre>
+#foreach($__stacktrace in $!{exception.getStackTrace()})
+$__stacktrace
+#end
+</pre>
+            #end
+        #end
+
+    #end
+
+#endtab()
+#else
+
+<br/>
+<center><h2><font color=red>访问的页面不存在！</font></h2></center>
+<br/>
+<br/>
+<br/>
+
+#end

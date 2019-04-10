@@ -1,0 +1,129 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit" title="发件箱" width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr align="center">
+                      <td class="bg-grey" align="right" width="120px">发件人</td>
+                      <td align="left" width="90%" class="bg-white">
+                        <input type="hidden" name="mailId" id="mailId" value="$!obj.id" />
+                        $!{obj.sender.userName}
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">收件人</td>
+                      <td align="left" class="bg-white">
+                        $!{obj.addressName}
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">标题</td>
+                      <td align="left" class="bg-white">
+                        $!{esc.html($!{obj.title})}
+                      </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">发送时间</td>
+                      <td align="left" class="bg-white">
+                        $!date.format('yyyy-MM-dd HH:mm', $!obj.sendDate)
+                      </td>
+                    </tr>
+                    <tr align="center">
+                        <td class="bg-grey" align="right">内容</td>
+                        <td valign="top" class="bg-white">
+                        <textarea class="ckeditor" id="mailContent" name="mailContent" readonly style="resize:none;width:95%;">$!{obj.content}</textarea>
+                        <script>
+                            CKEDITOR.on('instanceReady', function(ev) {
+                                ev.editor.setReadOnly(true);
+                            });
+                        </script>
+                        </td>
+                    </tr>
+                    <tr align="center">
+                      <td class="bg-grey" align="right">附件</td>
+                      <td align="left" class="bg-white">
+                        #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", false, "#defaultUploadUrl('emAttach')",false)
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+             <div class="bottom-but">
+                 <ul>
+                     <li> <a id="send" onclick="forwarding()" class="new-but" >转发</a>  </li>
+                     <li> <a id="drafts" onclick="getback()" class="new-but">撤回</a>   </li>
+                     <li> <a id="trash" onclick="delMails()" class="new-but">删除</a>   </li>
+                     <li> <a id="back" onclick="top.CC.closeCurTab()" class="new-but">关闭</a>   </li>
+                 </ul>
+             </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+        CKEDITOR.replace('mailContent', { height: '340px'});
+    });
+    //撤回
+    function getback(){
+        var mailId = $("#mailId").val();
+        $.messager.confirm('警告','确定要撤回这封邮件吗?',function(r){
+            if (r){
+                $.post("$link.getContextURL()/oa/mail/sendbox/getback.json",{emailId:mailId},function(result){
+                    if(result.id){
+                        top.CC.messager({
+                          title:'提示',
+                          msg: '邮件已撤回至草稿箱'
+                        });
+                        top.CC.addTab({title:'发件箱',url:'$link.getContextURL()/oa/mail/sendbox/list'});
+                        top.CC.closeTab('查看邮件');
+                    }else{
+                      top.CC.messager({
+                          title:'提示',
+                          msg: result.error
+                      });
+                    }
+                });
+            }
+        });
+
+    }
+
+    //转发
+    function forwarding(){
+        var mailId = $("#mailId").val();
+        top.CC.addTab({title:'转发邮件',url:'$link.getContextURL()/oa/mail/dealForwarding?emailId='+mailId});
+    }
+
+    //批量删除
+    function delMails(){
+        $.messager.confirm('警告','确定不再保存这封邮件吗?',function(r){
+            if (r){
+                var mailId = $("#mailId").val();
+                $.post("$link.getContextURL()/oa/mail/sendbox/delete.json",{emailIds:mailId},function(result){
+                    if(result.id){
+                        top.CC.messager({
+                          title:'提示',
+                          msg: '删除成功'
+                        });
+                        top.CC.addTab({title:'发件箱',url:'$link.getContextURL()/oa/mail/sendbox/list'});
+                        top.CC.closeTab('查看邮件');
+                    }else{
+                      top.CC.messager({
+                          title:'提示',
+                          msg: result.error
+                      });
+                    }
+                });
+            }
+        });
+    }
+</script>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end
+<style>.cke_top{display:none !important;}</style>
+

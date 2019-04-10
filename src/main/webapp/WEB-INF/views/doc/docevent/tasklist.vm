@@ -1,0 +1,458 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/doc/listicon.css"/>
+<div class="easyui-layout" fit="true">
+<div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+<a class="easyui-linkbutton l-btn-plain-search"
+	iconCls="icon-entrust" plain="true" onclick ="docTransfer()">办理委托</a>
+<a class="easyui-linkbutton l-btn-plain-search"
+	iconCls="icon-transfer" plain="true" onclick ="docMove()">办理迁移</a>
+    <i></i>
+<a onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+    class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+<a onclick="top.CC.closeCurTab()"
+    class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+</div>
+
+<div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+    <table id="dg" data-options="nowrap:false" style="width:99%;">
+        <thead>
+        <tr>
+			<th field="ck" data-options="checkbox:true"></th>
+            <th data-options="field:'title',width:150,editor:'text',formatter:detailUrl,sortable:true">待办标题</th>
+            <th data-options="field:'sncode',width:40,sortable:true">自然编号</th>
+            ##<th data-options="field:'businessType',width:20,formatter:businessTypeFormatter">类型</th>
+            <th data-options="field:'preDealerName',width:30">发送人</th>
+            <th data-options="field:'arrivalTimeShow',width:50,sortable:true">发送时间</th>
+            <th data-options="field:'nodeName',width:50">状态</th>
+            <th data-options="field:'startTimeShow',width:50,sortable:true">发文时间</th>
+            <th data-options="field:'restTime',formatter:restTimeFormatter,width:60,sortable:true">限办日期</th>
+            <th data-options="field:'operate',align:'center',formatter:operaterFormatter,width:30">操作列</th>
+        </tr>
+        </thead>
+    </table>
+    <div class="cc-operateColum">
+        <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+            plain="true" onclick="deal('__id__', '__fileId__','__type__','__flowId__')">__operateTag__</a>
+    </div>
+
+     <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+     style="width:500px;height:380px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+	 <form id="queryForm">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="right">待办标题：</td>
+                    <td align="left" colspan="3"><input id="title" name="title" style="width:330px;" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+                    <td align="right">自然编号：</td>
+                    <td align="left" style="width:150px;"><input name="sncode" style="width:150px;" class="easyui-textbox" /></td>
+                    <td align="right" style="width:80px;">发送人：</td>
+                    <td align="left"><input name="preDealerName" style="width:100px;" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+                    <td align="right">发送时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="$qc.greaterThanOrEqualTo('arrivalTime')" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+                        至
+                        <input name="$qc.lessThanOrEqualTo('arrivalTime')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">发文时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="$qc.greaterThanOrEqualTo('flowInst.startTime')" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+                        至
+                        <input name="$qc.lessThanOrEqualTo('flowInst.startTime')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">限办日期：</td>
+                    <td align="left" colspan="3">
+                        <input name="$qc.greaterThanOrEqualTo('flowInst.expiryDate')" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+                        至
+                        <input name="$qc.lessThanOrEqualTo('flowInst.expiryDate')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+                    </td>
+                </tr>
+				<tr>
+                    <td align="right">公文类型：</td>
+                    <td align="left">
+                        <select name="businessType" id="businessType" class="easyui-combobox" data-options="editable:false" style="width:150px;" panelheight="auto">
+							#set($arr = [1, 2, 3])
+							#formoptioncontain("" $dict.WfBusinessType $arr)
+                        </select>
+                    </td>
+                </tr>
+		</table>
+	</form>
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="formSerach()">确定</a>
+        <a class="new-but" onclick="reset()">重置</a>
+    </div>
+</div>
+</div>
+<div id="editWindow" class="easyui-window" title="设置" style="width:450px;height:80%;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/doc/event/listTask.json';
+
+    function operaterFormatter(value,row,index){
+        var optag = "";
+        if (row.curNodeId == "N888") {
+            optag = "阅知";
+        } else {
+            optag = "办理";
+        }
+        return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html()
+            .replace(new RegExp("__id__",'gm'),row.id)
+            .replace(new RegExp("__fileId__",'gm'),row.entityId)
+            .replace(new RegExp("__type__",'gm'),row.businessType)
+            .replace(new RegExp("__flowId__",'gm'),row.flowId)
+            .replace(new RegExp("__operateTag__",'gm'),optag);
+     }
+
+    function restTimeFormatter(value,row,index) {
+		var expiryDate = row.expiryDateShow;
+		if (value != null && value != undefined) {
+            var display = "";
+			//是否超时,1：是；0：否
+			var isTimeOut = "0";
+			if (value < 0) {
+                 isTimeOut = "1"
+				 value = -value;
+            }
+			
+            var day = Math.floor(value / (24 * 60 * 60));
+            display += day + "天";
+            var hour = Math.round((value - day * 24 * 60 * 60) / (60 * 60));
+            display += hour + "小时";
+            if (isTimeOut == "1") {
+				var title = '限办日期：' + expiryDate  + '&#10;剩余时间：超时' +display;
+                return '<span title="' + title + '"><font style="color:red;">超时'+display+'</font>' + '<br>[' +expiryDate + ']</span>';
+            } else {
+                var title = '限办日期：' + expiryDate  + '&#10;剩余时间：' +display;
+                return '<span title="' + title + '">'+display + '<br>[' +expiryDate + ']</span>';
+            }
+        }
+        return "";
+		 
+    }
+
+    function fnDemoSelectDepCallback(obj){
+        $("#dep").textbox("setValue",obj.depName);
+    }
+
+    function deal(id, fileId,type,flowId) {
+        if($.trim(type)=="2"){
+            var url = _baseUrl + "/doc/sendfile/task/deal?id=" + id + "&fileId=" + fileId + "&opflag=deal&flowId=" + flowId ;
+            top.CC.addTab({title:'公文办理',url:url});
+        }else if ($.trim(type)=="1"){
+            var url = _baseUrl + "/doc/receivefile/task/deal?id=" + id + "&fileId=" + fileId + "&opflag=deal&flowId=" + flowId ;
+            top.CC.addTab({title:'公文办理',url:url});
+        } else {
+            var url = _baseUrl + "/doc/simplefile/task/deal?id=" + id + "&fileId=" + fileId + "&opflag=deal&flowId=" + flowId ;
+            top.CC.addTab({title:'便函办理',url:url});
+        }
+
+    }
+
+
+     $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:false,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/runninglist.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            if($("#editForm").form('validate')){
+                var dfn = top.window.openSelectDialogFrameDialog;
+            }else{
+                return false;
+            }
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepQueryCallback(obj){
+        $('#dep').textbox('setValue',obj.id);
+        $('#dep').textbox('setText',obj.text);
+    }
+
+
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+    function traceRow(index){
+        $('#dg').datagrid('clearSelections');
+        _datagrid.datagrid("selectRow",index);
+        var row = _datagrid.datagrid("getSelected");
+        var url;
+        //url = "$link.getContextURL()/workflow/showtrace?pid="+row.flowInstId;
+        url = "$link.getContextURL()/diagram-viewer/index.html?processDefinitionId="+row.flowId+"&processInstanceId="+row.flowInstId;
+
+        top.CC.addTab({title:'流程图跟踪',url:url});
+    }
+
+    function traceUrl(value,row) {
+        return "<a href='javascript:;' style='color:blue' onclick='traceRow(getRowIdByDom(this))' title='点击查看流程图' >"+value+"</a>";
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    function detailUrl(value,row) {
+        var content = "<a href='javascript:;' onclick='deal(\""+row.id+"\", \""+row.entityId+"\", \""+row.businessType+"\", \""+row.flowId+row.optag+"\")' class='font-titlecolor'>" + value + "</a>";
+		
+        var icostr1="";
+        if ($.trim(row.businessType) == "1") {
+            if (row.taskId != "N888") {
+                icostr1 = '<span class="icon-receivefile" title="收文"></span> '+icostr1;
+            } else {
+                icostr1 = '【阅】' + icostr1;
+            }
+        } else if ($.trim(row.businessType) == "2") {
+            if (row.taskId != "N888") {
+                icostr1= '<span class="icon-sendfile" title="发文"></span> '+icostr1;
+            } else {
+                icostr1 = '【阅】' + icostr1;
+            }
+        } else if ($.trim(row.businessType) == "3") {
+            icostr1= '<span class="icon-simplefile" title="便函"></span> '+icostr1;
+        }
+
+        var icostr2="";
+
+        if ($.trim(row.urgencyLevel) == "2") {
+            icostr2= '<span class="icon-urgent" title="急件"></span>'+icostr2;
+        } else if ($.trim(row.urgencyLevel) == "1") {
+            icostr2= '<span class="icon-emergency" title="特急"></span>'+icostr2;
+        }
+        if (row.expiryDate != null) {
+            icostr2= '<span class="icon-limit" title="限时办结"></span>'+icostr2;
+        }
+
+        if (row.dense == "秘密") {
+            icostr2= '<span class="icon-secret" title="秘密"></span>'+icostr2;
+        } else if (row.dense == "机密") {
+            icostr2= '<span class="icon-undercover" title="机密"></span>'+icostr2;
+        } else if (row.dense == "绝密") {
+            icostr2= '<span class="icon-confidential" title="绝密"></span>'+icostr2;
+        }
+
+        if (row.specFlag == "退回") {
+            icostr2 += '<span class="icon-fordoback" title="退回"></span>';
+        }
+        if(row.status == "未阅"){
+            // icostr1= icostr1 + '<span class="icon-doc-new" title="新"></span> ';
+            icostr2 += '<span class="icon-doc-new" title="新"></span>';
+        }
+
+        content=icostr1+icostr2+content;
+
+        return content;
+    }
+
+	function businessTypeFormatter(value,row) {
+		var result = '';
+        if (row.businessType == "1") {
+             result = '收文';
+        } else if (row.businessType == "2") {
+             result = '发文';
+        } else if (row.businessType == "3") {
+			result = '便函';
+        }
+        return result;
+    }
+
+	
+	//办理委托
+	function docTransfer(){
+		var rows = $("#dg").datagrid("getChecked");
+            if(rows && rows.length > 0){
+                $.messager.confirm('警告','是否委托勾选的公文?',function(r){
+                    if (r){
+                        var _callbackname = 'fnDocTransferCallback';
+                        var _url = "$link.getContextURL()/select/selectSingleManClassify";
+                        var _callback_fn = window[_callbackname];
+                        var dfn = top.window.openSelectDialogFrameDialog;
+                        if (typeof dfn === "function") {
+                            dfn(_url, _callback_fn);
+                        }
+                        return false;
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title: '提示',
+                    msg: '请选择至少一条数据进行委托!'
+                });
+            }
+	
+	}
+	
+	
+	// 办理委托-人员选择回调
+    function fnDocTransferCallback(obj){
+        var userName = obj.userName;
+        var userId = obj.id;
+		
+		var rows = $("#dg").datagrid("getChecked");
+		var nodeInstIds = "";
+		var flowInstIds = "";
+        for(var i=0;i<rows.length;i++){
+            if(i==rows.length-1){
+                nodeInstIds += rows[i].id;
+                flowInstIds += rows[i].flowInstId;
+            }else{
+                nodeInstIds += rows[i].id + ",";
+                flowInstIds += rows[i].flowInstId + ",";
+            }
+        }
+		
+		// 委托
+        top.CC.loading('委托中...');
+        $.post("$link.getContextURL()/doc/event/dealDocTransfer",{nodeInstIds:nodeInstIds,flowInstIds:flowInstIds,userId:userId},function(result){
+          top.CC.loaded();
+          if(result.success){
+            top.CC.messager({ title:'提示', msg:'公文委托成功！' });
+            var title = top.CC.getCurTab().panel('options').title;
+            top.CC.addTab({ title:'待办公文',url:'$link.getContextURL()/doc/event/tasklist' });
+            top.CC.closeTab(title);
+          }else{
+            top.CC.messager({ title:'提示', msg:result.message });
+          }
+        });
+		
+    }
+	
+	//办理迁移
+	function docMove(){
+		var rows = $("#dg").datagrid("getChecked");
+            if(rows && rows.length > 0){
+                $.messager.confirm('警告','是否迁移勾选的公文?',function(r){
+                    if (r){
+                        var _callbackname = 'fnDocMoveCallback';
+                        var _url = "$link.getContextURL()/select/selectSingleManClassify";
+                        var _callback_fn = window[_callbackname];
+                        var dfn = top.window.openSelectDialogFrameDialog;
+                        if (typeof dfn === "function") {
+                            dfn(_url, _callback_fn);
+                        }
+                        return false;
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title: '提示',
+                    msg: '请选择至少一条数据进行迁移!'
+                });
+            }
+	
+	}
+	
+	// 办理迁移-人员选择回调
+    function fnDocMoveCallback(obj){
+        var userName = obj.userName;
+        var userId = obj.id;
+		
+		var rows = $("#dg").datagrid("getChecked");
+		var nodeInstIds = "";
+		var flowInstIds = "";
+        for(var i=0;i<rows.length;i++){
+            if(i==rows.length-1){
+                nodeInstIds += rows[i].id;
+                flowInstIds += rows[i].flowInstId;
+            }else{
+                nodeInstIds += rows[i].id + ",";
+                flowInstIds += rows[i].flowInstId + ",";
+            }
+        }
+		
+		// 迁移
+        top.CC.loading('迁移中...');
+        $.post("$link.getContextURL()/doc/event/dealDocMove",{nodeInstIds:nodeInstIds,flowInstIds:flowInstIds,userId:userId},function(result){
+          top.CC.loaded();
+          if(result.success){
+            top.CC.messager({ title:'提示', msg:'公文迁移成功！' });
+            var title = top.CC.getCurTab().panel('options').title;
+            top.CC.addTab({ title:'待办公文',url:'$link.getContextURL()/doc/event/tasklist' });
+            top.CC.closeTab(title);
+          }else{
+            top.CC.messager({ title:'提示', msg:result.message });
+          }
+        });
+    }
+</script>
+#end

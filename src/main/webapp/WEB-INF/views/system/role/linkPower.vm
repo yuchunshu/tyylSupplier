@@ -1,0 +1,104 @@
+<div class="easyui-layout" fit="true">
+    <div data-options="region:'center'" class="mynoborder">
+        <table id="linktg" style="width:97%;">
+            <thead>
+                <tr>
+                    <th style="width:40%" data-options="field:'powerName',formatter:ckbox"><input name="checkAll" id="checkAll" type="checkbox" onclick="selectAll()" />权限名称</th>
+                    <th style="width:45%" data-options="field:'url'">权限url</th>
+                    <th style="width:10%" data-options="field:'isMenu'">菜单</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+        <div class="bottom-but-dialog">
+            <ul>
+                <li><a id="saveTemp" onclick="saveLinkPower()" class="new-but">保存</a></li>
+                <li><a id="back" onclick="$('#linkPowerWin').window('close')" class="new-but">关闭</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+#@script()
+<script>
+$(function(){
+    $("#linktg").treegrid({
+        onLoadSuccess:function(data){
+            var powers = [$!{powers}];
+            $('#linktg').treegrid('selectAll');
+            var rows = $("#linktg").treegrid('getSelections');
+            var datas = rows.slice(0); // 相当于deepCopy
+            $('#linktg').treegrid('unselectAll');
+            if(datas && datas.length>0){
+                for(var i = 0;i<datas.length;i++){
+                    if(jQuery.inArray(datas[i].id,powers)>=0){
+                        $("#linktg").treegrid('select',datas[i].id);
+                    }
+                }
+            }
+        },
+        onSelect:function(rowData){
+            $('#power_checkbox_'+rowData.id).attr("checked",true);
+        },
+        onUnselect:function(rowData){
+            $('#power_checkbox_'+rowData.id).attr("checked",false);
+        },
+        fitColumns:true,//列宽自适应
+        nowrap:false,
+        rownumbers:true,//行号
+        singleSelect:false,
+        idField: 'id',
+        treeField: 'powerName',
+        url:'$link.getContextURL()/system/power/allNeedPower.json'//获取数据的url
+    });
+});
+
+// 全选
+function selectAll() {
+    $("input[name='ck_power']").attr("checked",$(this).attr("checked"));
+    if ($('#checkAll').attr("checked")) {
+        $("input[name='ck_power']").attr("checked",true);
+    } else {
+        $("input[name='ck_power']").attr("checked",false);
+    }
+}
+
+function ckbox(value,row) {
+    return "<input type='checkbox' id='power_checkbox_" + row.id +"' name='ck_power' />" + value;
+}
+
+function saveLinkPower(){
+    var check = $("#linktg").treegrid('getChecked');
+    var powerIds = "";
+    var indeterminate = $("#linktg").treegrid('getChecked','indeterminate');
+
+    if(check && check.length>0){
+        for(var i=0;i<check.length;i++){
+            powerIds += check[i].id + ",";
+        }
+    }
+
+    if(indeterminate && indeterminate.length>0){
+        for(var i=0;i<indeterminate.length;i++){
+            powerIds += indeterminate[i].id + ",";
+        }
+    }
+    if (powerIds && powerIds.length>0) {
+        powerIds = powerIds.substring(0, powerIds.length-1);
+    }
+
+    $.post("$link.getContextURL()/system/role/saveLinkPower.json",{roleId:"$!{roleId}",powerIds:powerIds},function(result){
+        if(result.id){
+            $('#linkPowerWin').window('close');
+            $("#dg").datagrid('reload');
+        }else{
+            top.CC.messager({
+                title:'提示',
+                msg:'服务器连接不上'
+            });
+        }
+    });
+
+}
+</script>
+#end

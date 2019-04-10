@@ -1,0 +1,317 @@
+#set($bodyattr="class='easyui-layout' style='border:0px;#if($dialogWidth) width:$!{dialogWidth}px; #else width:760px; #end #if($dialogHeight) height:$!{dialogHeight}px; #else height:500px; #end margin-left:5px;margin-right:5px;margin-top:5px; padding:0 5px 3px 0; '")
+<div title="我的桌面图标" id="shortcutWest" data-options="region:'west',split:true,collapsible:false" style="width:540px;">
+    <ul id="drag-contain">
+    </ul>
+</div>
+<div title="菜单选择" id="curAllMenusRegion" data-options="region:'center',border:true,collapsible:false">
+    <table id="curAllMenus" fit="true" border="false" singleSelect="true"  showHeader="true">
+        <thead>
+            <tr>
+                <th data-options="field:'powerName',width:200,formatter:formatterPower">权限名称</th>
+                <th data-options="field:'url',width:190,hidden:true">url</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+#@script()
+<script>
+    // var icons = ["images/shortcut/desk-icon-01.png","images/shortcut/desk-icon-02.png","images/shortcut/desk-icon-03.png","images/shortcut/desk-icon-04.png","images/shortcut/desk-icon-05.png","images/shortcut/desk-icon-06.png","images/shortcut/desk-icon-07.png","images/shortcut/desk-icon-08.png","images/shortcut/desk-icon-09.png","images/shortcut/desk-icon-10.png","images/shortcut/desk-icon-11.png","images/shortcut/desk-icon-12.png","images/shortcut/desk-icon-13.png"];
+    var icons = ["images/shortcut/desk-icon-15.png"];
+    var curAllMenusData =  $!{curAllMenus};
+    var curShortcutsData = $!{curShortcuts};
+##    if(curAllMenusData && curAllMenusData.length>0 && curShortcutsData && curShortcutsData.length>0){
+##        for(var j=0;j<curShortcutsData.length;j++){
+##            for(var i = curAllMenusData.length-1;i>=0;i--){
+##                if(curShortcutsData[j].title == curAllMenusData[i].powerName && curShortcutsData[j].url == curAllMenusData[i].url){
+##                   curAllMenusData.splice(i,1);
+##                }
+##            }
+##        }
+##    }
+    //动态添加图标
+    function appendDrgLi(shortcut){
+        var icon = "";
+        if (shortcut.icon && shortcut.icon.indexOf("power-icon") == 0) {
+            icon = "<i class='icon-item power-icon large " +  shortcut.icon+ "'></i>";
+        } else {
+            icon = "<img class='icon-item' src='"+shortcut.icon+"'/>";
+        }
+        return "<li class='drag-item' title='"+shortcut.title+"' url='"+shortcut.url+"' icon='"+shortcut.icon+"' appurl='"+(shortcut.appurl||'')+"' appicon='"+(shortcut.appicon||'')+"' appcolor='"+(shortcut.appcolor||'')+"'>"+"<div class='img-item'><a href='javascript:;'>" + icon + "</a><div class='minus-item'><img src='images/shortcut/shortcut-minus.png' /></div></div><div class='handleDrg-item'>"+shortcut.title+"</div></li>"
+    }
+    $(function(){
+        if(curShortcutsData.length){
+            for(var i=0;i<curShortcutsData.length;i++){
+                $("#drag-contain").append(appendDrgLi(curShortcutsData[i]));
+            }
+        }
+        init();
+
+        $("#drag-contain .minus-item").live("click",function(){
+            var shortcutLi = $(this).parent().parent();
+            var shortcut = {title:shortcutLi.attr("title"),url:shortcutLi.attr("url"),appurl:shortcutLi.attr("appurl"),appicon:shortcutLi.attr("appicon"),appcolor:shortcutLi.attr("appcolor"),icon:shortcutLi.attr("icon")};
+            shortcutLi.remove();
+            $("#curAllMenus").datagrid("appendRow",{powerName:shortcut.title,url:shortcut.url,appurl:shortcut.appurl,appicon:shortcut.appicon,appcolor:shortcut.appcolor,icon:shortcut.icon});
+
+        });
+        $("#drag-contain .icon-item").live("click",function(){
+            $("#drag-contain li[changeIcon]").removeAttr("changeIcon");
+            $(this).parent().parent().parent().attr("changeIcon","true");
+            $("#iconDialog").window("open").window("center");
+        });
+
+        $("#preIcon li").on("click",function(){
+            var icon = $(this).find("img").attr("src");
+            $("#drag-contain li[changeIcon=true]").attr("icon",icon);
+            $("#drag-contain li[changeIcon]").find(".icon-item").attr("src",icon)
+            $("#iconDialog").window("close");
+        });
+
+        Array.prototype.indexOf = function(val) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == val) return i;
+            }
+            return -1;
+        };
+        Array.prototype.remove = function(val) {
+            var index = this.indexOf(val);
+            if (index > -1) {
+                this.splice(index, 1);
+            }
+        };
+        $("#curAllMenus").datagrid({
+            data:curAllMenusData,
+            loadFilter:function(datas) {
+                var data = {
+                   total : 0,
+                   rows  : []
+                };
+                if (typeof(datas.rows) !== "undefined") {
+                    data = datas;
+                } else {
+                    data.total = datas.length;
+                    data.rows  = datas;
+                }
+
+                var selecteds = $(".drag-item");
+
+                for (var i = data.rows.length - 1; i >= 0; i--) {
+                    var flag = false;
+                    for (var k = 0; k < selecteds.length; k++) {
+                        if (data.rows[i].url == $(selecteds[k]).attr("url") && data.rows[i].powerName == $(selecteds[k]).attr("title")) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        data.rows.remove(data.rows[i]);
+                        data.total--;
+                    }
+                }
+                return data;
+            }
+        });
+        $("#curAllMenus").datagrid('enableFilter');
+
+        $("#desktopIcon").datagrid({
+            onLoadSuccess:function(){
+               $(this).datagrid('enableDnd');
+            },
+            data:curShortcutsData
+        });
+    });
+
+    function init(){
+            $('.drag-item').draggable({
+                handle:'.handleDrg-item',
+                revert:true,
+                deltaX:0,
+                deltaY:0,
+                onStopDrag:function(e){
+                    $("#indicator").remove();
+                }
+            }).droppable({
+                onDragOver:function(e,source){
+                    $("#indicator").remove();
+                    $("<li id='indicator'></li>").insertBefore(this);
+                    source.style.zIndex = this.style.zIndex+1;
+                },
+                onDrop:function(e,source){
+                    $(source).insertBefore(this);
+                    $("#indicator").remove();
+                }
+            });
+
+            $('#shortcutWest').droppable({
+                onDrop:function(e,source){
+                    $(source).replaceAll($("#indicator"));
+                }
+            });
+
+        }
+
+    // 设置dialog标题
+    $(document).ready(function() {
+        if (top.setSelectDialogFrameDialogTitle) {
+            top.setSelectDialogFrameDialogTitle("自定义快捷图标");
+        }
+    });
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+    //选择
+    function doselect() {
+        var value = [];
+        $("#drag-contain li").each(function(i){
+            value.push({name:'shortcut['+i+'].title',value:$(this).attr("title")});
+            value.push({name:'shortcut['+i+'].url',value:$(this).attr("url")});
+            value.push({name:'shortcut['+i+'].icon',value:$(this).attr("icon")});
+            value.push({name:'shortcut['+i+'].appurl',value:$(this).attr("appurl")});
+            value.push({name:'shortcut['+i+'].appicon',value:$(this).attr("appicon")});
+            value.push({name:'shortcut['+i+'].appcolor',value:$(this).attr("appcolor")});
+            value.push({name:'shortcut['+i+'].sort',value:i});
+        });
+
+        $.post("$link.getContextURL()/desktop/saveShortcut.json",value,function(result){
+            if(result){
+                top.window.location = "$link.getContextURL()/desktop/index?_t="+new Date().getTime();
+                top.okSelectDialogFrameDialog(true);
+            }else{
+                top.CC.messager({title:'提示',msg:'操作失败'});
+            }
+        });
+
+        return false;
+    }
+
+function formatterPower(value,row,index){
+    return value+'<div style="float:right;padding:2px 5px" onclick="addShortcut('+index+')"><a href="javascript:;"><img  src="images/shortcut/shortcut-add.png"/></a></div>';
+}
+//添加图标
+function addShortcut(index){
+    $("#curAllMenus").datagrid("selectRow",index);
+    var row =$("#curAllMenus").datagrid("getSelected");
+    var powerIcon = icons[parseInt((icons.length-1)*Math.random())];
+    if (row.icon && row.icon.indexOf("power-icon") == 0) {
+        powerIcon = row.icon;
+    }
+    var data = {title:row.powerName,url:row.url,icon:powerIcon,appurl:row.appurl,appcolor:row.appcolor,appicon:row.appicon};
+    $("#drag-contain").append(appendDrgLi(data));
+    init();
+    $("#curAllMenus").datagrid("deleteRow",index);
+##    var rows =  $("#curAllMenus").datagrid('getRows');
+    $("#curAllMenus").datagrid("loadData", curAllMenusData);
+    $("#shortcutWest").scrollTop($("#shortcutWest").get(0).scrollHeight);
+}
+</script>
+<style>
+#curAllMenusRegion .datagrid-htable tr:first-child{
+    display:none
+}
+</style>
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script src="lib/jquery/easyui/datagrid-filter.js" type="text/javascript"></script>
+<script src="lib/jquery/easyui/datagrid-dnd.js" type="text/javascript"></script>
+<style>
+.drag-item{
+    text-align:center;
+    float:left;
+    margin: 5px;
+    width: 90px;
+    height: 80px;
+}
+.img-item{
+    position: relative;
+}
+.minus-item{
+    position: absolute;
+    right: 0px;
+    float: right;
+    bottom: -5px;
+    padding: 5px;
+}
+
+#indicator{
+    border: 2px dotted red;
+    float: left;
+    margin: 5px;
+    width: 70px;
+    height: 60px;
+}
+ul.shortCutIconUl li {
+    float: left;
+    list-style: outside none none;
+    padding: 10px;
+}
+</style>
+#end
+<div class="easyui-dialog" title="选择图标" closed="true" id="iconDialog" style="width:380px;height:360px;padding:10px">
+        <ul class="shortCutIconUl" id="preIcon">
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-01.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-02.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-03.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-04.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-05.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-06.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-07.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-08.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-09.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-10.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-11.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-12.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-13.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-15.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-16.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-17.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-18.png"/></a>
+            </li>
+            <li>
+                <a href="javascript:;"><img src="images/shortcut/desk-icon-19.png"/></a>
+            </li>
+        </ul>
+</div>
+</div>
+<div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="saveTemp" onclick="doselect()" class="new-but">确定</a></li>
+            <li><a id="back" onclick="doclose()" class="new-but">取消</a></li>
+        </ul>
+    </div>
+</div>

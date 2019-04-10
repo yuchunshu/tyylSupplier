@@ -1,0 +1,241 @@
+@charset "utf-8";
+
+    html,
+    body,
+    div,
+    ol,
+    ul,
+    li,
+    img,
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    span,
+    i,
+    a {
+        margin: 0;
+        padding: 0;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .styles {
+        background: #1694d9;
+        width: 220px;
+    }
+    /*展开样式覆盖(因为是覆盖，所以可能会有影响到其他同class的div)start*/
+
+    .layout-panel-west {
+        position: relative;
+    }
+
+    .layout-panel-west .panel-header {
+        position: absolute!important;
+        right: 30px!important;
+        top: 0!important;
+        width: 0!important;
+        height: 0!important;
+        padding: 0!important;
+        background: none!important;
+        z-index: 99;
+        border: 0;
+        filter:none;
+    }
+
+    .layout-panel-west .panel-header .panel-title {
+        display: none;
+    }
+
+    .layout-panel-west .panel-header .panel-tool {
+        position: relative;
+        top: 0;
+        right: 0!important;
+        margin: 0;
+        width: 30px;
+        height: 30px;
+    }
+
+/*    .layout-panel-west .panel-header .panel-tool a:hover {
+        background-color: #1694d9;
+    }*/
+
+    .layout-panel-west .panel-header .panel-tool a {
+        width: 100%;
+        height: 100%;
+    }
+
+    .layout-panel-west .panel-header .panel-tool .layout-button-left {
+        background: url(../images/menu/cctree-icon-contract.png) no-repeat center center;
+    }
+    /*展开样式覆盖end*/
+    /*收缩后的样式覆盖 start*/
+
+    .layout-expand-west {
+        background-color: #1694d9;
+    }
+
+    .layout-expand-over {
+        background-color: #1694d9;
+    }
+
+    .layout-expand-west .panel-header {
+        background: #1694d9!important;
+    }
+
+    .layout-expand-west .panel-header,
+    .layout-expand-west .panel-body {
+        border: 0;
+        background-color: #1694d9;
+    }
+
+    .layout-expand-west .panel-tool a:hover {
+        background-color: #1694d9;
+    }
+
+    .layout-expand-west .layout-button-right {
+        background: url(../images/menu/cctree-icon-open.png) no-repeat center center;
+    }
+    /*收缩后的样式覆盖 end*/
+
+    .cctree {
+        width: 100%!important;
+        height: 100%!important;
+        user-select: none;
+        overflow: hidden;
+    }
+    .cctree .cc-admin {
+        height: 92px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+    }
+    .cctree .cc-admin >a{
+        width: 100%!important;
+        height:100%!important;
+        display:block;
+    }
+    .cctree .cc-admin .cc-touxiang {
+        width: 64px;
+        height: 64px;
+        float: left;
+        margin: 10px 0 0 10px;
+    }
+
+    .cctree .cc-admin .cc-selfInfo {
+        width: 100px;
+        float: left;
+        margin: 12px 0 0 10px;
+    }
+
+    .cctree .cc-admin .cc-selfInfo span {
+        height: 30px!important;
+        text-align: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .cctree >ul {
+        width: 100%!important;
+        height: auto!important;
+        padding: 10px 0 20px 0!important;
+        margin: 0!important;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
+    .cctree ul ul {
+        width: 100%!important;
+        margin: 0!important;
+        padding: 0!important;
+    }
+
+    .cctree li {
+        width: 100%!important;
+        height: auto!important;
+        min-height: 37px;
+        line-height: 37px;
+        list-style: none;
+        padding: 0!important;
+        margin: 0!important;
+        text-align: left!important;
+    }
+
+    .cctree >ul>li ul {
+        display: none;
+    }
+
+    .cctree span,
+    .cctree a {
+        width: 100%!important;
+        height: 37px!important;
+        line-height: 37px!important;
+        display: block;
+        font-size: 14px;
+        color: #fff!important;
+        cursor: pointer;
+        padding: 0!important;
+        margin: 0!important;
+        text-decoration: none;
+        text-align: left!important;
+    }
+    /*Êó±ê»¬¹ý×ÖÌåºÍ±³¾°±ä»¯*/
+
+    /*.cctree a span:hover {
+        color: #fff!important;
+    }*/
+
+    .cctree a:hover {
+        background-color: #25a4e9!important;
+    }
+    /*Êó±êµã»÷ºó×ÖÌåºÍ±³¾°ÑÕÉ«±ä»¯*/
+
+    .cctree .has-hover span {
+        color: #fff!important;
+        background: url("../images/side-hover.png") right center no-repeat!important;
+    }
+
+    .cctree .cctree-first {
+        text-indent: 2.5em;
+    }
+
+    .cctree .cctree-second {
+        text-indent: 3em;
+    }
+
+    .cctree .cctree-three {
+        text-indent: 4.2em;
+    }
+    /*²Ëµ¥Õ¹¿ªºÍÊÕËõÍ¼±ê*/
+
+    .cctree .has-child {
+        background: url(../images/menu/cctree-icon-right.png) 170px center no-repeat;
+    }
+
+    .cctree .has-child-open {
+        background: url(../images/menu/cctree-icon-down.png) 170px center no-repeat;
+    }
+    /*ÎÄ¼þ¼ÐÍ¼±ê±³¾°*/
+
+    .cctree .folder-bg {
+        background: url(../images/ÎÄ¼þ¼Ð.png) 6px center no-repeat;
+    }
+    /*ÎÄ¼þÍ¼±ê±³¾°*/
+
+    .cctree .file-bg {
+        background: url(../images/ÎÄ¼þ.png) 6px center no-repeat;
+    }
+    /*  ¶þ¼¶±³¾°Î»ÖÃ
+   .cctree .second-bg-position {
+       background-position: 36px center;
+   }
+   Èý¼¶±³¾°Î»ÖÃ
+   .cctree .three-bg-position {
+       background-position: 66px center;
+   } */

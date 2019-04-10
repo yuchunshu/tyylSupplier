@@ -1,0 +1,17 @@
+<form id="editForm">
+<table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+    <tr>
+        <td class="bg-grey" style="width:150px"><font color=red>*</font></span>职务名称：</td>
+        <td class="bg-white">
+            <input type="hidden" name="id" value="$!{duty.id}"/>
+            <input name="dutyName" style="width:100%;" required="true" value="$!{duty.dutyName}" validType=length[1,10] class="easyui-textbox"  />
+        </td>
+    </tr>
+    <tr>
+        <td class="bg-grey">排序号：</td>
+        <td class="bg-white">
+            <input name="dutyDesc" style="width:100%;" value="$!{duty.dutyDesc}" class="easyui-textbox" />
+        </td>
+    </tr>
+</table>
+</form>

@@ -1,0 +1,25 @@
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/effect.css">
+<link rel="stylesheet" type="text/css" href="lib/jquery/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="lib/jquery/easyui/themes/default/edit_rd.css">
+<link rel="stylesheet" type="text/css" href="lib/jquery/easyui/themes/icon.css">
+#if($dict.userprofile.get($!{user.currentUserId}))
+<link href="themes/$!dict.userprofile.get($!{user.currentUserId})/style_xoa.css" rel="stylesheet" type="text/css"/> ##内部样式
+<link href="themes/$!dict.userprofile.get($!{user.currentUserId})/icons_Custom.css" rel="stylesheet" type="text/css"> ##图标CSS
+#else
+<link href="themes/default/style_xoa.css" rel="stylesheet" type="text/css"/>
+<link href="themes/default/icons_Custom.css" rel="stylesheet" type="text/css">
+#end
+<link href="css/content.css" rel="stylesheet" type="text/css" />
+#if($__customcsstplist)
+#foreach($__csstpl in $__customcsstplist.keySet())
+#parse($__csstpl)
+#end
+#end
+
+
+##easyui��չ��ʽ
+<link rel="stylesheet" type="text/css" href="lib/jquery/easyui-ext/css/jeasyui.extensions.base.css">
+
+
+<link href="css/power-icon.css" rel="stylesheet" type="text/css"> ## 系统权限图标css

@@ -1,0 +1,160 @@
+
+######################################################
+###  html页面的form字段校验处理相关宏
+######################################################
+
+
+######################################################
+###  调用所有的校验宏之前必须调用一次（仅一次）validateBegin
+######################################################
+#macro(validateBegin $__formid)
+#usePluginValidate()
+#set($__validateObj={"__formid":"$!{__formid}"})
+#end
+
+#macro(validateEnd $__formid $__customscript)
+#if(!$__customscript)#parse('/common/validate/default.script.vm')#end
+#set($__validateObj={})
+#end
+
+#macro(initRule $__fieldname)
+#if(!$__validateObj[$__fieldname])
+#set($__validateObj[$__fieldname]={"rule":{}, "rulestr":""})
+#end
+#end
+
+#macro(addRule $__fieldname $__rulename)
+#initRule($__fieldname)
+#set($__tmpobj=$__validateObj[$__fieldname])
+#if(!$__tmpobj.rule.containsKey("$__rulename"))
+#if(!$__tmpobj.rule.isEmpty())#set($__tmpobj.rulestr="$!{__tmpobj.rulestr};")#end
+#set($__dummy=$__tmpobj.rule.put("$__rulename", 1))
+#set($__tmpobj.rulestr="$!{__tmpobj.rulestr}$!__rulename")
+#end
+#end
+
+######################################################
+###  非空串校验
+###    例子：
+###      #validateRequired("name")
+###      #validateRequired("name", "本字段必须输入，并且不能全为空格")
+###
+######################################################
+
+#macro(validateRequired $__fieldname $__message)
+#addRule($__fieldname, "required")
+#set($__validateObj[$__fieldname].other=" $!{__validateObj[$__fieldname].other} #parse('/common/validate/notempty.vm') ")
+#end
+
+######################################################
+###  整数校验
+###    例子：
+###      #validateInteger("name")
+###      #validateInteger("name", "输入的内容必须是整数")
+###
+######################################################
+#macro(validateInteger $__fieldname $__message)
+#addRule($__fieldname, "integer")
+#set($__validateObj[$__fieldname].other=" $!{__validateObj[$__fieldname].other} #parse('/common/validate/integer.vm') ")
+#end
+
+######################################################
+###  通过远程ajax调用来校验字段内容
+###    例子：
+###      #validateRemote("oldpassword", "userpwd/checkselfpassword", "password", "原密码不正确")
+###
+######################################################
+#macro(validateRemote $__fieldname $__url $__remotename $__message)
+#if($__remotename)#addRule($__fieldname, "remote[$__url, $__remotename:$__fieldname]")#{else}#addRule($__fieldname, "remote[$__url]")#{end}
+#set($__validateObj[$__fieldname].other=" $!{__validateObj[$__fieldname].other} #parse('/common/validate/remote.vm') ")
+#end
+
+######################################################
+###  两字段内容必须相同，例如用于修改密码时校验新密码和确认新密码是否相同
+###    例子：
+###      #validateIdentical("newpassword", "retypenewpassword", "新密码应和确认新密码相同")
+###      #validateIdentical("retypenewpassword", "newpassword", "确认新密码应和新密码相同")
+###
+######################################################
+#macro(validateIdentical $__fieldname $__otherfieldname $__message)
+#addRule($__fieldname, "match($!{__otherfieldname})")
+#set($__validateObj[$__fieldname].other=" $!{__validateObj[$__fieldname].other} #parse('/common/validate/identical.vm') ")
+#end
+
+######################################################
+###  两字段内容必须不相同，例如用于修改密码时原密码和新密码是否相同
+###    例子：
+###      #validateNotIdentical("newpassword", "oldpassword", "新密码不能和原密码相同")
+###
+######################################################
+#macro(validateNotIdentical $__fieldname $__otherfieldname $__message)
+#addRule($__fieldname, "match(neq, $!{__otherfieldname})")
+#set($__validateObj[$__fieldname].other=" $!{__validateObj[$__fieldname].other} #parse('/common/validate/identical.vm') ")
+#end
+
+######################################################
+###  通过回调函数调用来校验字段内容
+###    例子：
+###      #validateCallback("newpassword", "checkpassword", "密码不正确")
+###
+######################################################
+#macro(validateCallback $__fieldname $__callback $__message)
+#addRule($__fieldname, "callback")
+#set($__validateObj[$__fieldname].other=" $!{__validateObj[$__fieldname].other} #parse('/common/validate/callback.vm') ")
+#end
+
+######################################################
+###  字符串长度校验
+###    例子：
+###      #validateStringLength("text1", "8")
+###      #validateStringLength("text1", "8", false, "至少输入8个字符")
+###      #validateStringLength("text1", "6", "12")
+###      #validateStringLength("text1", "6", "12", "输入的内容长度应为6至12个字符")
+###
+######################################################
+#macro(validateStringLength $__fieldname $__min $__max $__message)
+#if(!$__min && $__max)#set($__targetlength="~$!{__max}")
+#elseif($__min && !$__max)#set($__targetlength="$!{__min}~")
+#elseif($__min == $__max)#set($__targetlength="$__min")
+#else#set($__targetlength="$!{__min}~$!{__max}")#end
+#addRule($__fieldname, "length[$!__targetlength]")
+#set($__validateObj[$__fieldname].other=" $!{__validateObj[$__fieldname].other} #parse('/common/validate/stringlength.vm') ")
+#end
+
+######################################################
+###   以下由其他宏内部调用
+######################################################
+#macro(usePluginValidate)
+#if(!$__customcsstplist)
+#set($__customcsstplist={})
+#end
+#set($__dummy=$__customcsstplist.put("/common/template/validatecss.vm", ""))
+#if(!$__customscripttplist)
+#set($__customscripttplist={})
+#end
+#set($__dummy=$__customscripttplist.put("/common/template/validatescript.vm", ""))
+#end
+
+#macro(validateValue $__fieldname)
+#if($__validateObj[$__fieldname].rulestr)data-rule="$!{__validateObj[$__fieldname].rulestr}" $!{__validateObj[$__fieldname].other}#end
+#end
+
+
+####################################
+##  easyui使用的宏
+##
+####################################
+#macro(validateRequiredEasy $__fieldname)
+#addRule($__fieldname, "required")
+#set($__validateObj[$__fieldname].req="required:true")
+#end
+
+#macro(validateMailEasy $__fieldname)
+#addRule($__fieldname, "mail")
+#set($__validateObj[$__fieldname].valid="$!{__validateObj[$__fieldname].valid},'email'")
+#end
+
+#macro(validateLengEasy $__fieldname $__mix $__max)
+#addRule($__fieldname, "length")
+#set($__validateObj[$__fieldname].valid="$!{__validateObj[$__fieldname].valid},'length[$__mix,$__max]'")
+#end

@@ -1,0 +1,117 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+                 class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                 class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg" data-options="nowrap:false" style="width:100%;">
+                <thead>
+                <tr>
+                    <th style="width:5" data-options="field:'attachFlag',formatter:attFlag"><img src='images/attach.png' title='有附件'/></th>
+                    <th style="width:28%" data-options="field:'title'#if($power.checkShowMenu('新闻详情','/oa/news/detail')),formatter:detailUrl#end">标题</th>
+					<th style="width:20%" data-options="field:'publishDeptName'">接收部门</th>
+					<th style="width:5%" data-options="field:'newsType'">新闻类型</th>
+                    <th style="width:8%" data-options="field:'author'">作者</th>
+                    <th style="width:15%" data-options="field:'createDateShow'">录入时间</th>
+                    <th style="width:15%" data-options="field:'publishDateShow'">发布时间</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+        <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+             style="width:500px;height:320px;padding:20px 10px; background-color:#f4f4f4;display:none">
+            <form id="queryForm">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right">标题：</td>
+                        <td colspan="3"><input id="title" name="title" style="width:350px;" class="easyui-textbox" /></td>
+                    </tr>
+                    <tr>
+                        <td align="right">接收部门：</td>
+                        <td colspan="3">
+                            <input id="department" name="department" class="easyui-textbox" style="width:350px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">发布日期：</td>
+                        <td align="left" colspan="3">
+                            <input name="fromDate" class="easyui-datebox" value="$!{firstDay}" data-options="editable:false" style="width:150px;">
+                            至
+                            <input name="toDate" class="easyui-datebox" value="$!{lastDay}" data-options="editable:false" style="width:150px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">类型：</td>
+                        <td align="left" style="width:170px;">
+                            <select name="newsType" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                                panelheight="auto">
+                                #formoption('' $dict.NewsType)
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+             </form>
+            <div id="bnts" style="top:0px; height:25px; width:auto;">
+                <a class="new-but" onclick="formSerach()">确定</a>
+                <a class="new-but" onclick="reset()">重置</a>
+            </div>
+        </div>
+    </div>
+</div>
+#parse("oa/news/crud.js.vm")
+#@script()
+<script type="text/javascript">
+    $(function () { // 给查询dialog中的 标题input 绑定回车事件
+        $('#title').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+
+    //对详细查询的Url
+    var _baseUrl = '$link.getContextURL()/oa/news/';
+    var _listJsonUrl = '/querylist.json';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+     });
+
+     function fnSelectDepCallback(obj){
+        $("#departmentId").val(obj.id);
+        $("#department").textbox('setText',obj.text);
+     }
+
+     function attFlag(value,row,index){
+        if(value == '有附件') {
+            return "<img src='images/attach.png' title='有附件'/>";
+        }
+     }
+
+     function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+     }
+
+     function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+     }
+</script>
+#end

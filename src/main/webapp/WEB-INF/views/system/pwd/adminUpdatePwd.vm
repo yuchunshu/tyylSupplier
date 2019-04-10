@@ -1,0 +1,68 @@
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" class="mynoborder">
+        <form id="editForm" method="post">
+            <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                <tr>
+                   <td class="bg-grey" align="right" width="100px" >
+                        <span><font color=red>*</font></span>新密码
+                   </td>
+                   <td class="bg-white">
+                        <input style="width:100%" type="password" class="easyui-textbox" required="true" id="newPwd" name="newPwd"/>
+                   </td>
+                </tr>
+                <tr>
+                   <td class="bg-grey" align="right" >
+                        <span><font color=red>*</font></span>确认密码
+                   </td>
+                   <td class="bg-white">
+                        <input style="width:100%" type="password" class="easyui-textbox" required="true" id="confirmPwd" name="confirmPwd"/>
+                   </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+        <div class="bottom-but-dialog">
+            <ul>
+                <li><a onclick="savePwd()" class="new-but">保存</a></li>
+                <li><a onclick="backBwd()" class="new-but">关闭</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    //保存
+    function savePwd(){
+        if ($("#editForm").form('validate')) {
+            var pwd = $('#newPwd').textbox('getValue');
+            var confirm = $('#confirmPwd').textbox('getValue');
+            if (pwd == confirm) {
+                $.post("$link.getContextURL()/system/pwd/updatePwdByAdmin.json",{newPwd:pwd,userId:$('#id').val()},function(result){
+                      if(result.errorMsg == null){
+                        $('#editWindow').window('close');
+                        top.CC.messager({
+                            title:'成功',
+                            msg:'保存成功！'
+                        });
+
+                      }else{
+                        top.CC.messager({
+                            title:'提示',
+                            msg:result.error
+                        });
+                      }
+                });
+            } else {
+                $.messager.alert('错误','确认密码与新密码不一致,请重新输入!','error');
+                $('#newPwd').textbox('setValue', '');
+                $('#confirmPwd').textbox('setValue', '');
+            }
+        }
+    }
+    // 关闭
+    function backBwd() {
+        $('#editWindow').window('close');
+    }
+</script>
+#end

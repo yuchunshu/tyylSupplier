@@ -1,0 +1,140 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    #set($returnPage="list")
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            #if($type != "query")
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" onclick="newPage()"
+                    plain="true">新增</a>
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit"  onclick="editPage()"
+                    plain="true">修改</a>
+            <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+                    plain="true">删除</a>
+            <i></i>
+            #end
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+                     class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                     class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+                <table id="dg"  data-options="nowrap:false" fit="true">
+                    <thead>
+                        <tr>
+                            #if($type != "query")<th field="ck" data-options="checkbox:true"></th>#end
+                            <th style="width:20%" data-options="field:'groupName',formatter:detailUrl">群组名称</th>
+                            <th style="width:35%" data-options="field:'groupMembers'">群组成员</th>
+                            <th style="width:15%" data-options="field:'userName'">创建人</th>
+                            <th style="width:15%" data-options="field:'createDateShow'">创建时间</th>
+                            <th style="width:10%" data-options="field:'orderNum'">排序号</th>
+                        </tr>
+                    </thead>
+                </table>
+        </div>
+        <div id="editWindow" class="easyui-window" title="设置" style="width:550px;height:285px;padding:5px"
+                data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+        </div>
+
+        <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+             style="width:500px;height:290px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+            <form id="queryForm">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td style="text-align: right">群组名称：</td>
+                        <td><input id="groupName" style="width:320px;" name="$qc.like('groupName')" class="easyui-textbox textbox" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">创建人：</td>
+                        <td><input id="user.userName" style="width:320px;" name="$qc.like('user.userName')" class="easyui-textbox textbox" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">创建日期：</td>
+                        <td>
+                            <input name="$qc.greaterThanOrEqualTo('createDate')" class="easyui-datebox" value="$!{firstDay}" style="width:150px;" data-options="editable:false">
+                            至
+                            <input name="$qc.lessThanOrEqualTo('createDate')" class="easyui-datebox" value="$!{lastDay}" style="width:150px;" data-options="editable:false">
+                        </td>
+                    </tr>
+                </table>
+             </form>
+            <div id="bnts" style="top:0px; height:25px; width:auto;">
+                <a class="new-but" onclick="formSerach()">确定</a>
+                <a class="new-but" onclick="reset()">重置</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("oa/group/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/oa/personal/group/list.json';
+    var _delJsonUrl = '/oa/personal/group/delete.json';
+
+    function newPage(){
+        $('#editWindow').window('open');
+        $('#editWindow').window('refresh','$link.getContextURL()/oa/personal/group/new');
+    }
+
+    function editPage(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows){
+            if (rows.length < 1) {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '请选择至少一条数据进行修改!'
+                });
+            } else if (rows.length > 1) {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '只能对一条数据进行修改!'
+                });
+            } else {
+                var rowId = "";
+                for(var i=0;i<rows.length;i++){
+                    if(i==rows.length-1){
+                        rowId += rows[i].id;
+                    }
+                }
+                $('#editWindow').window('open');
+                $('#editWindow').window('refresh','$link.getContextURL()/oa/personal/group/edit?id='+rowId);
+            }
+
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '服务器连接不上!'
+            });
+        }
+    }
+</script>
+#end

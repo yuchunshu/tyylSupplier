@@ -1,0 +1,106 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center'" class="mynoborder">
+            <form id="editForm" method="post">
+				<input name="id" type="hidden" value="$!{basic.id}"/>
+                <table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <td class="fix_td_title">&nbsp;</td>
+                            <td class="fix_td_data">&nbsp;</td>
+                        </tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>类型</td>
+					  <td class="bg-white">
+                        <label><input type="radio" name="basicType" id="basicType1" value="1" checked #if('1' == $!{basic.basicType.key}) checked #end/>档案柜&nbsp;</label>
+                        <label><input type="radio" name="basicType" id="basicType2" value="2" #if('2' == $!{basic.basicType.key}) checked #end/>案卷类型&nbsp;</label>
+                        <label><input type="radio" name="basicType" id="basicType3" value="3" #if('3' == $!{basic.basicType.key}) checked #end/>介质类型</label>							
+                      </td>
+                        </tr>
+                         <tr align="center">
+                            <td class="bg-grey" align="right"><span><font color=red>*</font></span>名称</td>
+                            <td align="left" class="bg-white">
+                                <input style="width:99%;" name="basicName" min="0" max="999" class="easyui-textbox" data-options="required:true" value="$!{basic.basicName}"/>
+                            </td>
+                        </tr>
+                         <tr align="center">
+                            <td class="bg-grey" align="right" style="display:block" id="s1"><span><font color=red>*</font></span>柜号</td>
+							<td class="bg-grey" align="right" style="display:none" 	id="s2"><span><font color=red>*</font></span>简称</td>
+							<td class="bg-grey" align="right" style="display:none" 	id="s3"><span><font color=red>*</font></span>编号</td>
+                            <td align="left" class="bg-white">
+                                <input style="width:99%;" name="basicCode" id="basicCode" min="0" max="999" class="easyui-textbox" data-options="required:true"  value="$!{basic.basicCode}"/>
+                            </td>
+                        </tr>						
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+            <div class="bottom-but-dialog">
+                <ul>
+                    <li><a id="saveTemp" onclick="save()" class="new-but">保存</a></li>
+                    <li><a id="back" onclick="back()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()';
+	
+	//设置radio点击事件
+	$(function(){ 
+		$("#basicType1").change(function() { 
+			$("#s1" ).css("display", "block");
+			$("#s2" ).css("display", "none");
+			$("#s3" ).css("display", "none");
+		}); 
+		$("#basicType2").change(function() { 
+			$("#s1" ).css("display", "none");
+			$("#s2" ).css("display", "block");
+			$("#s3" ).css("display", "none");
+		}); 
+		$("#basicType3").change(function() { 
+			$("#s1" ).css("display", "none");
+			$("#s2" ).css("display", "none");
+			$("#s3" ).css("display", "block");
+		}); 
+	}); 
+	
+
+    //返回
+    function back() {
+        $('#editWindow').window('close');
+    }
+    //保存
+    function save(){
+        if($("#editForm").form('validate')) {
+			$.post('$link.getContextURL()/doc/archives/basic/checkBasicCode.json', $("#editForm").serialize(), function(result) {
+				if(result.success){
+        			top.CC.loading("保存中，请稍后...");
+            		$.post("$link.getContextURL()/doc/archives/basic/save.json",$("#editForm").serialize(),function(result){
+                 		top.CC.loaded();
+                  		if(result.id){
+                    		$('#id').val(result.id);
+                    		$('#dg').datagrid('reload');
+                    		$('#editWindow').window('close');
+                    		top.CC.messager({
+                        		title:'提示',
+                        		msg:'保存成功！'
+                    		});
+                  		}else{
+                    		top.CC.messager({
+                        		title:'提示',
+                        		msg:'服务器连接不上'
+                    		});
+                  		}
+            		});
+				}else{
+           			top.CC.messager({title:'提示',msg:result.error});
+           		}
+			});	
+        }
+    }
+</script>
+#end

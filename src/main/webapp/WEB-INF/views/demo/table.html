@@ -1,0 +1,29 @@
+#set($bodyattr="class='easyui-layout' style='border:0px'")
+<div class="cc-tableWrap" data-options="region:'center',border:false">
+<table id="dg" title="人员列表" style="width:100%;"
+       data-options="fitColumns:true,fit:true,rownumbers:true,singleSelect:true,pagination:true,toolbar:'#tb',url:'crud/list.json'">
+    <thead>
+    <tr>
+        <th data-options="field:'userName',width:20,formatter:testTooltip">姓名</th>
+        <th data-options="field:'departmentName',width:40">部门名称</th>
+        <th data-options="field:'sex',align:'center',width:5">性别</th>
+        <th data-options="field:'account',width:20">登录账号</th>
+        <th data-options="field:'mobile',width:20">移动电话</th>
+        <th data-options="field:'regDate',align:'center',width:20">注册日期</th>
+        <th data-options="field:'email',align:'center',width:20">email</th>
+        <th data-options="field:'operate',align:'center',formatter:operaterFormatter,width:15">操作</th>
+    </tr>
+    </thead>
+</table>
+<div class="cc-operateColum">
+    <a href='javascript:;' onclick='editRow(getRowIdByDom(this))'>编辑</a>&emsp;&emsp;
+    <a href='javascript:;' onclick='delRow(getRowIdByDom(this))'>删除</a>
+</div>
+</div>
+#@script()
+<script>
+function testTooltip(value,row,index){
+    return "<a class='cc-tooltip'>" + value + "</a>";
+}
+</script>
+#end

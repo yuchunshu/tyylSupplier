@@ -1,0 +1,87 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table id="app_apply_tab" class="table-edit"  width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">姓名</td>
+                      <td class="bg-white">
+                        $!{esc.html($!{obj.pname})}
+                      </td>
+                      <td class="bg-grey">所属部门</td>
+                      <td class="bg-white">
+                        $!{esc.html($!obj.unitName)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">职务</td>
+                      <td class="bg-white">
+                        $!{obj.duty}
+                      </td>
+                      <td class="bg-grey">传真</td>
+                      <td class="bg-white">
+                        $!{obj.fax}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">办公电话</td>
+                      <td class="bg-white">
+                        $!{obj.phone}
+                      </td>
+                      <td class="bg-grey">手机</td>
+                      <td class="bg-white">
+                        $!{obj.mobile}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">住宅电话</td>
+                      <td class="bg-white">
+                        $!{obj.homePhone}
+                      </td>
+                      <td class="bg-grey">Email</td>
+                      <td class="bg-white">
+                        $!{obj.email}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">家庭地址</td>
+                      <td class="bg-white">
+                        $!{esc.html($!{obj.address})}
+                      </td>
+                      <td class="bg-grey">邮编</td>
+                      <td class="bg-white">
+                        $!{obj.postcode}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">排序号</td>
+                      <td class="bg-white" colspan="3">
+                        $!{obj.orderNum}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">备注</td>
+                      <td class="bg-white" colspan="3">
+                        $!{esc.html($!{obj.remark})}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

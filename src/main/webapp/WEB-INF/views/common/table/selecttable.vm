@@ -1,0 +1,69 @@
+<div class="table-responsive">
+<form name="checkboxform">
+<table class="table table-bordered table-hover text-center" >
+    <thead>
+        <tr>
+            <th class="text-center"><input type="checkbox" onClick="switchAll(this)"></th>
+#foreach($__header in $__headers)
+            <th class="text-center">$!{__header.label}</th>
+#end
+        </tr>
+    </thead>
+    <tbody>
+#foreach($__aline in $__bodys)
+        <tr #if($__idname)rowid="$!{__aline.get($__idname)}"#end>
+            <td class="forcheckbox text-center w29"><input type="checkbox" name="cb_$!{__aline.get($__idname)}" #if($__idname)rowid="$!{__aline.get($__idname)}"#end #if($__selectedMap.containsKey(${__aline.get($__idname)}))checked="checked"#end></td>
+#foreach($__header in $__headers)
+            <td #if($__header.get('class'))class="$__header.get('class')"#end><div #if($__header.get('class'))class="$__header.get('class')"#end>$!{__aline.get($__header.property)}</div></td>
+#end
+        </tr>
+#end
+    </tbody>
+</table>
+</form>
+
+</div>
+
+#@script()
+<script type="text/javascript">
+    function switchAll(obj) {
+        var checked=($(obj).attr('checked') == "checked");
+
+        $("td.forcheckbox > input[type='checkbox']", $(obj).parents('table')).each(function(){
+            var $this=$(this);
+
+            if (checked) {
+                $this.attr('checked','checked');
+            } else {
+                $this.removeAttr('checked');
+            }
+
+        });
+
+        getCheckboxFormSelectedIds();
+    }
+
+    function getCheckboxFormSelectedIds(range) {
+        var targetrange;
+        if (range) {
+            targetrange=$(range);
+        } else {
+            targetrange=$("form[name='checkboxform'] > table");
+        }
+
+        var selected =  new Array();
+
+        if (targetrange) {
+            $("td.forcheckbox > input[type='checkbox']", targetrange).each(function(){
+                var $this=$(this);
+
+                if ($this.attr('checked') == 'checked') {
+                    selected.push($this.attr('rowid'));
+                }
+            });
+        }
+
+        return selected;
+    }
+</script>
+#end

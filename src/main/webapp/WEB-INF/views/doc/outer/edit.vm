@@ -1,0 +1,300 @@
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center',border:false" class="mynoborder mainborder-Padding">
+        <form id="editForm" method="post">
+            <input type="hidden" id="id" name="id" value="$!{obj.id}"/>
+            <input type="hidden" id="documentType" name="documentType" value="$!{obj.documentType}"/>
+            <table class="table-edit">
+				<tr>
+                    <td class="fix_td_title">&nbsp;</td>
+                    <td class="fix_td_data">&nbsp;</td>
+                    <td class="fix_td_title">&nbsp;</td>
+                    <td class="fix_td_data">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="bg-grey"><span><font color=red>*</font></span>公文标题</td>
+                    <td class="bg-white" colspan="3">
+						$!{esc.html($!{obj.title})}
+					</td>
+                </tr>
+                <tr>
+                    <td class="bg-grey"><span><font color=red>*</font></span>限时办结要求</td>
+                    <td class="bg-white" id="emergencyLevel">
+						<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="1"/>特急&nbsp;</label>
+						<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="2"/>急件</label>
+						<label><input type="radio" class="easyui-validatebox" checked data-options="required:true" name="deadlineType" value="4"/>普通一类</label>
+						<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="5"/>普通二类</label>
+						<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="6"/>普通三类</label>
+						<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="7"/>其它</label>
+					</td>
+					<td class="bg-grey"><span><font color=red>*</font></span>类型</td>
+                    <td class="bg-white">
+                        $!{obj.documentType.value}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey"><font color=red>*</font></span>限办工日</td>
+                    <td class="bg-white">
+						<div id="ltday1" style="float:left; witdh:60px; display:block">
+                		<input style="width:50px;" id="limitDay"  name="limitDay" editable="false" data-options="validType:'integer',onChange:showworktime" class="easyui-textbox"  value="">
+                        &nbsp;个工作日&nbsp;
+                        <span id="receiveFileDisplayLimitTime" style="color:red; font-weight: bold;"></span>
+                        ##<input type="hidden" id="expiryDate" name="expiryDate" value="">
+                  		</div>
+						<div id="ltday2" style="float:left; witdh:200px; display:none">
+                		<input style="width:100px;" id="expiryDate" name="expiryDate" class="easyui-datebox"  data-options="required:true,editable:false" />
+                		</div>
+                    </td>
+					<td class="bg-grey">紧急程度</td>
+                    <td class="bg-white">
+						<input type="hidden" name="urgencyLevel" id="eme_lv" value="3">
+                        <input style="width:99%;" id="emergencyLevelName" name="emergencyLevel" editable="false" class="easyui-textbox" value="无"/>
+                    </td>
+                </tr>
+                <tr>
+					<td class="bg-grey" style="width:150px;"><span><font color=red>*</font></span>收文单位</td>
+                    <td class="bg-white" colspan="3">
+						<input type="hidden" name="deptIds" id="deptIds" value="">
+                        <input style="width:40%;" id="deptNames" name="deptNames" editable="false" data-options="required:true"
+                          class="easyui-textbox" value=""/>
+                          <a class="easyui-linkbutton unitSelDlg" callback="selectHandleUnitCallback" select-dialog="$link.getContextURL()/select/Dep/selectDepsSelected"
+                          data-options="iconCls:'icon-search',plain:true" title="选择"></a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div data-options="region:'south'" class="bottom-h">
+        <div class="bottom-but">
+            <ul>
+                <li><a onclick="publish()" class="new-but">发送</a></li>
+                <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    $(function(){
+		//类型和限时办结联动效果
+		initEmergencyLevelRadio();
+		initRemoteDocSwapTypeRadio();
+
+    })
+		
+	//根据类型  生成 限时办结要求  按钮
+	function initRemoteDocSwapTypeRadio(){
+		 var type = $('#documentType').val();
+		 $("#emergencyLevel").html('');
+		 var str = '';
+		 if(1 == type){
+			 str += '<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="1"/>特急&nbsp;</label>';
+			 str += '<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="2"/>急件</label>';
+			 str += '<label><input type="radio" class="easyui-validatebox" checked data-options="required:true" name="deadlineType" value="3"/>普通</label>';
+			 $("#emergencyLevel").html(str);
+			 initEmergencyLevelRadio();
+			 $('input[name="deadlineType"][value=3]').click();
+			 $("#eme_lv").val(3);
+		 }else{
+			 str += '<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="1"/>特急&nbsp;</label>';
+			 str += '<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="2"/>急件</label>';
+			 str += '<label><input type="radio" class="easyui-validatebox" checked data-options="required:true" name="deadlineType" value="4"/>普通一类</label>';
+			 str += '<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="5"/>普通二类</label>';
+			 str += '<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="6"/>普通三类</label>';
+			 str += '<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="deadlineType" value="7"/>其它</label>';
+			 $("#emergencyLevel").html(str);
+			 initEmergencyLevelRadio();
+			 $('input[name="deadlineType"][value=4]').click();
+			 $("#eme_lv").val(3);
+		 }
+					 
+				
+	}
+	
+	//限时办结要求 变化时触发事件
+	function initEmergencyLevelRadio(){
+		$('input[name="deadlineType"]').on('click',function(){
+			var level = $(':radio[name="deadlineType"]:checked').val();
+			var type = $('#documentType').val();
+			var map = {};
+			
+			#foreach($item in $deadLineTypeMap.entrySet())  
+			   map[$item.key] = $item.value; 
+            #end
+			var value = map[level + type];
+			
+			$('#limitDay').textbox('textbox').attr('readonly',true); 
+			if(level == 1){
+				$('#limitDay').textbox('setValue','1');
+				$('#emergencyLevelName').textbox('setValue','特急');
+				$("#eme_lv").val(1);
+				showLimitDaySpan(1);
+			}else if(level == 2){
+				$('#limitDay').textbox('setValue','5');
+				$('#emergencyLevelName').textbox('setValue','急件');
+				$("#eme_lv").val(2);
+				showLimitDaySpan(1);
+			}else if(level == 3){
+				$('#limitDay').textbox('setValue','15');
+				$('#emergencyLevelName').textbox('setValue','无');
+				$("#eme_lv").val(3);
+				showLimitDaySpan(1);
+			}else if(level == 4){
+				$('#limitDay').textbox('setValue','15');
+				$('#emergencyLevelName').textbox('setValue','无');
+				$("#eme_lv").val(3);
+				showLimitDaySpan(1);
+			}else if(level == 5){
+				$('#limitDay').textbox('setValue','30');
+				$('#emergencyLevelName').textbox('setValue','无');
+				$("#eme_lv").val(3);
+				showLimitDaySpan(1);
+			}else if(level == 6){
+				$('#limitDay').textbox('setValue','120');
+				$('#emergencyLevelName').textbox('setValue','无');
+				$("#eme_lv").val(3);
+				showLimitDaySpan(1);
+			}else if(level == 7){
+				$('#limitDay').textbox('setValue','');
+				$('#emergencyLevelName').textbox('setValue','无');
+				$('#limitDay').textbox('textbox').attr('readonly',false); 
+				$("#eme_lv").val(3);
+				showLimitDaySpan(0);
+			}
+			
+			//如果初始化设置了限时办结要求对应天数，则使用设置的值
+			if(value!=""&&value!=undefined){
+				$('#limitDay').textbox('setValue',value);
+			}
+        });
+	}
+	
+	//根据限时办结要求 切换限时工日
+	function showLimitDaySpan(p){
+     var span1 = $("#ltday1");
+     var span2 = $("#ltday2");
+     if (p == 1) {
+        span1.css("display", "block");
+        span2.css("display", "none");
+        //$("#expiryDate").textbox("setValue","");
+     } else {
+        span1.css("display", "none");
+        span2.css("display", "block");
+        $("#limitDay").textbox("setValue","");
+     }
+  }
+  
+    function showworktime(newValue, oldValue){
+        var day =newValue;
+        ##替换非数字
+        //day=day.replace(/\D/g,"");
+        if (day== ""|| day =="0") {
+            $("#limitDay").val("");
+            $("#receiveFileDisplayLimitTime").text("");
+			$('#expiryDate').datebox('setValue','');
+            return false;
+        }
+        jQuery.ajax({
+            url:"$link.getContextURL()/doc/event/getLimitTime.json",
+            data:{
+                limitDay: day
+            },
+            type:"post",
+            async:false,
+            dataType:"text",
+            success:function(data) {
+				$("#expiryDate").textbox("setValue",data);
+                var value = data.substr(0, data.indexOf(' ')).split("-");
+                var displayLimitTime = "";
+                displayLimitTime = value[0] + "年" + value[1] + "月" + value[2] + "日";
+                $("#receiveFileDisplayLimitTime").text(" 至  " + displayLimitTime);
+            }
+        });
+    }
+
+	//发送
+    function publish(){
+        if($("#editForm").form('validate')) {
+			
+            top.CC.loading("正在保存数据!");
+	        $.post("$link.getContextURL()/doc/outer/saveOuterDoc",$("#editForm").serialize(),function(result){
+            //$.post("$link.getContextURL()/remotedocswap/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'发送成功！'
+                    });
+                    //top.CC.addTab({title:'发送查询',url:'$link.getContextURL()/remotedocswap/send/list'});
+                    //top.CC.closeTab('新建公文交换');
+					top.CC.closeCurTab();
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+	//选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+	//收文单位选择回填
+    function selectHandleUnitCallback(obj) {
+		var ids = "";
+		var deptNames = "";
+		for(var i=0;i<obj.length;i++){
+			if(i == obj.length-1){
+    			ids += obj[i].id;
+    			deptNames += obj[i].name;
+			}else{
+    			ids += obj[i].id+',';
+    			deptNames += obj[i].name+',';
+			}
+		}
+		
+		$('#deptNames').textbox('setValue',deptNames);
+    	$('#deptIds').val(ids);
+    }
+
+  
+</script>
+<link href="themes/default/style_xoa.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+<style>
+.filelistmulti{
+    display: block;
+    float: left;
+    line-height:25px;
+    width: 100%;
+}
+.uploadedfile{
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 300px;
+}
+.uploadafter{
+    display: inline-block;
+    float: right;
+    width: 200px;
+}
+</style>
+#end

@@ -1,0 +1,85 @@
+
+###########################
+#macro(add_crudbutton_del $__property $__title $__id $__class $__url)
+#set($__tr["$__property"]=$!{__tr["$__property"]} + " #parse('/common/table/crudbutton_del.vm')")
+#end
+
+#macro(add_crudbutton_edit $__property $__title $__id $__class $__url)
+#set($__tr["$__property"]=$!{__tr["$__property"]} + " #parse('/common/table/crudbutton_edit.vm')")
+#end
+
+###########################
+#macro(pagination $__page $__url $__showcount $__params)
+#parse("/common/table/pagination.vm")
+#end
+
+#macro(beginsimpletable)
+#set($__headers_stable=[])
+#set($__bodys_stable=[])
+#set($__tail_stable=[])
+#end
+
+#macro(addcol $__label $__property $__class)
+#set($__tmp=$__headers_stable.add({'label':"$!__label",'property':"$!__property",'class':"$!__class"}))
+#end
+
+#macro(beginline)
+#set($__tr={})
+#end
+
+#macro(adddata $__property $__value)
+#if($__value && $__no_esc_html)#set($__tr["$__property"]="$!__value")#{else}#set($__tr["$__property"]="$esc.html($!__value)")#end
+#set($__no_esc_html=false)
+#end
+
+#macro(addclickdata $__property $__value $__url)
+#set($__tr["$__property"]="<a href='$!__url' target='_self' title=${esc.quote}$esc.html($!__value)${esc.quote}>$esc.html($!__value)</a>")
+#end
+
+#macro(addiconbtn $__property $__iconclass $__url $__btnclass $__style)
+#set($__tr["$__property"]="<a class='btn $!__btnclass' #if($__style) style='$!__style' #end href='$!__url' target='_blank'><i class='png_bg $!__iconclass'></i></a>")
+#end
+
+#macro(endline)
+#set($__tmp=$__bodys_stable.add($__tr))
+#set($__tr={})
+#end
+
+#macro(begintailline)
+#set($__tailtr=[])
+#end
+
+#macro(addtailcell $__label $__class $__colspan)
+#if($__label && $__no_esc_html)#set($__tailcell={'label':"$!__label"})#{else}#set($__tailcell={'label':"$esc.html($!__label)"})#end
+#if($__class)#set($__tmp=$__tailcell.put("class", $__class))#end
+#if($__colspan)#set($__tmp=$__tailcell.put("colspan", $__colspan))#end
+#set($__tmp=$__tailtr.add($__tailcell))
+#set($__no_esc_html=false)
+#end
+
+#macro(endtailline)
+#set($__tmp=$__tail_stable.add($__tailtr))
+#set($__tailtr=[])
+#end
+
+#macro(simpletable $__idname)
+#calltabletemplate("/common/table/simpletable.vm", $__headers_stable, $__bodys_stable, $__idname, $__tail_stable)
+#end
+
+#macro(selecttable $__idname, $__selectedMap)
+#calltabletemplate("/common/table/selecttable.vm", $__headers_stable, $__bodys_stable, $__idname, $__tail_stable)
+#end
+
+#macro(calltabletemplate $__templatename $__headers $__bodys $__idname $__tails)
+#parse($__templatename)
+#end
+
+#macro(endsimpletable)
+#set($__headers_stable=[])
+#set($__bodys_stable=[])
+#set($__tail_stable=[])
+#end
+
+#macro(repeatertable $__headers $__bodys)
+#parse("/common/table/repeater.vm")
+#end

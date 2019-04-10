@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/task  http://www.springframework.org/schema/task/spring-task-3.1.xsd
+   	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+    >
+ 	<description>Spring 定时器配置 </description>
+ 
+ 	<task:annotation-driven></task:annotation-driven>
+ 	<!-- 用定时器  -->
+ 	<context:component-scan base-package="cn.com.chaochuang.doc.remotedocswap.schedule"/>  
+ 	
+ 	
+ 	<!-- 定时任务 -->
+	<bean id="remoteDocSwapEnvelopeServiceImpl" class="cn.com.chaochuang.doc.remotedocswap.service.RemoteDocSwapEnvelopeServiceImpl">
+       		 <property name="envelopeFieldMap">
+	            <map>
+                    <!--key:xml文件中的标签 value:实体字段名称-->
+                    <!--信封类型，用于区分信件处理的业务类型。
+						电子公文请求方发送封首文件时，填写Cooperate；
+						电子公文反馈方发送回执或办理情况等信息时，封首文件是，填写Feedbac
+                    -->
+	                <entry key="type"><value>envelopeType</value></entry>
+	                <!--业务流水号-->
+	                <entry key="business_id"><value>envelopeUuid</value></entry>
+	                <!--单位标识符-->
+	                <entry key="secondary_unit_identifier"><value>secondaryUnitIdentifier</value></entry>
+	                <!--资源标识符 
+                		电子公文：007565768-N-2014G001000000003
+						纸质登记：007565768-N-2016G001000000128
+	                -->
+	                <entry key="identifier"><value>identifier</value></entry>
+	                <!--意见-->
+	                <entry key="opinion"><value>remark</value></entry>
+	                <!--封内信息-->
+	                <entry key="file"><value>List</value></entry>
+	                <!--封内文件名称-->
+	                <entry key="path"><value>envelopeContentPath</value></entry>
+	                <!--封内文件md5-->
+	                <entry key="md5"><value>envelopeContentMD5</value></entry>
+	                <!--休止符-->
+	                <entry key="end"><value>envelopeEnd</value></entry>
+	            </map>
+        	</property>
+	        <property name="envelopeContentFieldMap">
+	            <map>
+                    <!--key:xml文件中的标签 value:实体字段名称-->
+                    <!--信息资源标识符   dzgw：表示电子公文业务-->
+	                <entry key="xxzyID"><value>resourceIden</value></entry>
+	                <!--业务流水号 由请求方电子公文系统生成，用于标识一次电子公文交换往来业务-->
+	                <entry key="ywlsh"><value>envelopeUuid</value></entry>
+	                <!--密级 1表示机密，2表示秘密，3表示非涉密-->
+	                <entry key="mj"><value>secretLevel</value></entry>
+	                <!--紧急程度 1表示特急，2表示急件，3表示无-->
+	                <entry key="jjcd"><value>emergencyLevel</value></entry>
+	                <!--发送单位-->
+	                <entry key="fsf"><value>sendOrg</value></entry>
+	                <!--接收单位-->
+	                <entry key="jsf"><value>feedbackOrg</value></entry>
+	                <!--发送时间-->
+	                <entry key="fssj"><value>sendTime</value></entry>
+	                <!--交换状态-->
+	                <entry key="jhzt"><value>status</value></entry>
+	                <!--反馈要求标识符-->
+	                <entry key="fkyqbsf"><value>feedbackFlag</value></entry>
+	                <!--安全性信息-->
+	                <entry key="aqxxx"><value>digitalSignature</value></entry>
+	                <!--份号-->
+	                <entry key="fh"><value>numIden</value></entry>
+	                <!--发文机关-->
+	                <entry key="fwjg"><value>sendOrgName</value></entry>
+	                <!--发文文号-->
+	                <entry key="fwwh"><value>docNumber</value></entry>
+	                <!--签发人-->
+	                <entry key="qfr"><value>signSendMan</value></entry>
+	                <!--标题-->
+	                <entry key="bt"><value>title</value></entry>
+	                <!--主送机关-->
+	                <entry key="zsjg"><value>mainSend</value></entry>
+	                <!--电子印章-->
+	                <entry key="dzyz"><value>digitalSeal</value></entry>
+	                <!--附注-->
+	                <entry key="fz"><value>copySend</value></entry>
+	                <!--公开方式-->
+	                <entry key="gkfs"><value>publishType</value></entry>
+	                <!--抄送-->
+	                <entry key="cs"><value>copySend</value></entry>
+	                <!--印发机关-->
+	                <entry key="yfjg"><value>printOrg</value></entry>
+	                <!--印发日期-->
+	                <entry key="yfrq"><value>printDate</value></entry>
+	                <!--二维条码-->
+	                <entry key="ewtm"><value>twoDimensionCode</value></entry>
+	                <!--电子公文版式文件-->
+	                <entry key="dzgwbswj"><value>List</value></entry>
+	                <!--版式文件文件名-->
+	                <entry key="bswjwjm"><value>fileName</value></entry>
+	                <!--版式文件文件体-->
+	                <entry key="bswjwjt"><value>fileBase64</value></entry>
+	                <!--版式文件格式说明-->
+	                <entry key="bswjgssm"><value>filePrefix</value></entry>
+<!-- 	                <entry key="dzgwbswjwjm"><value>fileName</value></entry> -->
+<!-- 	                <entry key="dzgwbswjwjt"><value>fileBase64</value></entry> -->
+					
+					<!--公文附件-->
+	                <entry key="gwfj"><value>List</value></entry>
+	                <!--附件文件名-->
+	                <entry key="fjwjm"><value>fileName</value></entry>
+	                <!--附件文件体-->
+	                <entry key="fjwjt"><value>fileBase64</value></entry>
+	                <!--收文回执：签收部门-->
+	                <entry key="qsbm"><value>signReceiveDept</value></entry>
+	                <!--收文回执：签收人-->
+	                <entry key="qsr"><value>signReceiveMan</value></entry>
+	                <!--收文回执：签收时间-->
+	                <entry key="qssj"><value>signReceiveDate</value></entry>
+	                <!--反馈时间要求 紧急程度-->
+                    <entry key="fksjyq.type"><value>deadlineType</value></entry>
+                    <!--反馈时间要求-->
+                    <entry key="fksjyq"><value>limitTime</value></entry>
+                    <!--信封标识-->
+                    <entry key="letterid"><value>letterId</value></entry>
+                    <!--业务类型-->
+                    <entry key="ywlx"><value>bussinessType</value></entry>
+                    <!--联系人-->
+                    <entry key="lxr"><value>contactName</value></entry>
+                    <!--联系电话-->
+                    <entry key="lxdh"><value>contactPhone</value></entry>
+                    <!--元素属性：type=0表示办件，type=1表示阅件-->
+                    <entry key="dzgw.type"><value>documentType</value></entry>
+                    <!--办结信息-->
+                    <!--<entry key="lxfs"><value>contactPhone</value></entry>-->
+                    <!--<entry key="bzsj"><value>finishTime</value></entry>-->
+                    <!--<entry key="bzsm"><value>finishMemo</value></entry>-->
+                    <!--处理情况-->
+                    <entry key="cljg"><value>dealResultType</value></entry>
+                    <!--原因-->
+                    <entry key="yy"><value>dealResult</value></entry>
+                    <!--处理时间-->
+                    <entry key="clsj"><value>finishTime</value></entry>
+                    <!--修改时限-->
+                    <entry key="cgsj"><value>modifyDeadlineTime</value></entry>
+                    <!--作废时间-->
+                    <entry key="zfsj"><value>invalidTime</value></entry>
+                    <!--撤销时间-->
+                    <entry key="cxsj"><value>undoTime</value></entry>
+                    <!--阅件-->
+                    <!--送阅对象-->
+                    <entry key="sydx"><value>docReadBody</value></entry>
+                    <!--送阅时间-->
+                    <entry key="sysj"><value>docReadTime</value></entry>
+                    <!--归档时间-->
+                    <entry key="gdsj"><value>docFileTime</value></entry>
+                    <!--退文-->
+                    <!--退文时间-->
+                    <entry key="twsj"><value>backTime</value></entry>
+                    <!--退文原因-->
+                    <entry key="twyy"><value>backReason</value></entry>
+
+	            </map>
+	        </property>
+    </bean>
+</beans>

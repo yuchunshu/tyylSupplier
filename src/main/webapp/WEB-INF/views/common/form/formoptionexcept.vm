@@ -1,0 +1,11 @@
+<option value="" >&nbsp;</option>
+#foreach($__option in $__options.keySet())
+	#set( $notExp = true )
+	#foreach( $__exp in $__except)
+		#if($__exp == $__option) #set( $notExp = false ) #end
+	#end
+	#if($notExp == true)
+    <option value="$__option" #if("$__value"=="$!{__option}")selected="selected"#end>$!{__options.get($__option)}</option>
+    #end
+#end
+

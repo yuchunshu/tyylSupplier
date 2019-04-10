@@ -1,0 +1,250 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+		<a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+            <tr>
+                ##<th style="width:5" data-options="field:'attachFlag',formatter:attFlag"><img src='images/attach.png' title='有附件'/></th>
+				<th style="width:35%" data-options="field:'title',formatter:detailUrl,sortable:true">公文标题</th>
+                <th style="width:16%" data-options="field:'senderAncestorName'">来文单位</th>
+				<th style="width:11%" data-options="field:'sendTime',formatter:sendTimeFormatter,sortable:true">发送时间</th>
+				<th style="width:6%" data-options="field:'signerName'">签收人</th>
+				<th style="width:11%" data-options="field:'signDate',formatter:signDateFormatter,sortable:true">签收时间</th>
+				<th style="width:5%" data-options="field:'documentType'">公文类型</th>
+				<th style="width:5%" data-options="field:'receiveFlag',formatter:receiveFlagFormatter">分类</th>
+				<th style="width:5%" data-options="field:'envStatus'">办结情况</th>
+				<th style="width:5%" data-options="field:'limitTime',formatter:limitTimeFormatter">超时情况</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:420px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <form id="queryForm">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="right">公文标题：</td>
+                    <td colspan="3"><input id="title" name="title" style="width:320px;" class="easyui-textbox" /></td>
+                </tr>
+				<tr>
+                    <td align="right">来文单位：</td>
+                    <td align="left" style="width:150px;">
+						<input id="secondaryUnitIdentifierName" name="senderAncestorName" style="width:150px;" class="easyui-textbox" />
+					</td>
+                    <td align="right" style="width:80px;">签收人：</td>
+                    <td align="left">
+						<input id="secondaryUnitIdentifierName" name="signerName" style="width:90px;" class="easyui-textbox" />
+					</td>
+                </tr>
+				<tr>
+                    <td align="right">发送时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="sendBeginTime" class="easyui-datebox" value="$!{firstDay}" data-options="editable:false" style="width:150px;">
+							至
+                        <input name="sendEndTime" class="easyui-datebox" value="$!{lastDay}" data-options="editable:false" style="width:150px;">
+                    </td>
+                </tr>
+				<tr>
+                    <td align="right">限办时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="limitBeginTime" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+							至
+                        <input name="limitEndTime" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+                    </td>
+                </tr>
+				<tr>
+                    <td align="right">签收时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="signBeginDate" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+							至
+                        <input name="signEndDate" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+                    </td>
+                </tr>
+				<tr>
+                    <td align="right">公文类型：</td>
+                    <td align="left" style="width:150px;">
+                        <select id="envStatus" name="documentType" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                            panelheight="auto">
+                            #formoption("" $dict.RemoteDocSwapType)
+                        </select>
+                    </td>
+					<td align="right">反馈情况：</td>
+                    <td align="left">
+                        <select name="envStatus" class="easyui-combobox" data-options="editable:false" style="width:90px;"
+                            panelheight="auto">
+							<option value="" selected>全部</option>
+                            <option value="3">已办结</option>
+                            <option value="4">已撤销</option>
+                            <option value="5">已作废</option>
+                            <option value="6">不办理</option>
+                            <option value="7">转阅件</option>
+                            <option value="8">办结（传阅）</option>
+                            <option value="9">办结（归档）</option>
+                            <option value="10">已退回</option>
+                        </select>
+                    </td>
+                </tr>
+				<tr>
+					<td align="right">公文分类：</td>
+                    <td align="left">
+                        <select name="receiveFlag" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                            panelheight="auto">
+							<option value="" selected>全部</option>
+                            <option value="1">电子</option>
+                            <option value="3">纸质</option>
+                        </select>
+                    </td>
+					<td align="right">是否超时：</td>
+                    <td align="left" >
+                        <select id="overTimeFlag" name="overTimeFlag" class="easyui-combobox" data-options="editable:false" style="width:90px;"
+                            panelheight="auto">
+                            <option value="" selected>全部</option>
+                            <option value="0">超时</option>
+                            <option value="1">未超时</option>
+                        </select>
+                    </td>
+					
+                </tr>
+            </table>
+         </form>
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+</div>
+#parse("doc/remotedocswap/crud.js.vm")
+#@script()
+<script type="text/javascript">
+    $(function () { // 给查询dialog中的 标题input 绑定回车事件
+        $('#title').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+
+    var _baseUrl = '$link.getContextURL()/remotedocswap';
+    var _listJsonUrl = '/listDocReceiveFinish.json';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+       
+    /*发送时间格式化*/
+    function sendTimeFormatter(value, row, index) {
+		return new Date(value).toLocaleString(); 
+    }
+
+    /* 签收时间格式化*/
+    function signDateFormatter(value, row, index) {
+		 if(null != value){
+  	     	return new Date(value).toLocaleString(); 
+		 }else{
+		 	return '';
+		 }
+    }
+ 
+
+    /*分类格式化*/
+    function receiveFlagFormatter(value, row, index) {
+		if("接收" == value){
+			return "电子";
+		}
+		else if("纸质公文" == value){
+			return "纸质";
+		}
+    }
+	
+    /*超时情况格式化*/
+    function limitTimeFormatter(value, row, index) {
+		if(row.limitTime && row.finishTime){
+            var day = daysBetween(row.finishTime,row.limitTime);
+            if(day<0)
+                return '<span style="color: red;">超时</span>';
+			else
+                return '<span style="color: green;">未超时</span>';;
+		}
+    }
+	 
+	/**
+    * 根据两个日期，判断相差天数
+    * @param sDate1 开始日期 如：2016-11-01
+    * @param sDate2 结束日期 如：2016-11-02
+    * @returns {number} 返回相差天数
+    */
+	function daysBetween(sDate1,sDate2){
+        //Date.parse() 解析一个日期时间字符串，并返回1970/1/1 午夜距离该日期时间的毫秒数
+        var time1 = Date.parse(new Date(sDate1));
+        var time2 = Date.parse(new Date(sDate2));
+        var nDays = parseInt((time2 - time1)/1000/3600/24);
+        return  nDays;
+    };
+
+    function fnSelectDepCallback(obj){
+        $("#department").textbox('setValue',obj.id);
+        $("#department").textbox('setText',obj.text);
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+	
+	//列表操作
+	function rowformater(value, row, index){
+		return $(".cc-operateColum").html().replace(new RegExp("__id__",'gm'),row.id);
+	} 
+ 
+	function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+	
+    function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        _datagrid.datagrid("selectRow",index);
+        var row = _datagrid.datagrid("getSelected");
+		
+		if("纸质公文" == row.receiveFlag){
+			url = "$link.getContextURL()/remotedocswap/detailDocSwap?id="+row.id + "&queryFlag=paperDoc";
+		}else{
+			url = "$link.getContextURL()/remotedocswap/detailDocSwap?id="+row.id + "&queryFlag=send";
+		}
+        
+        top.CC.addTab({title:'公文交换详情',url:url});
+    }
+	
+    function detailUrl(value,row) {
+        var display = "<span><font color=red>[置顶]</font></span>";
+        if ("置顶" == row.displayType) {
+            return display + "<a href='javascript:;' class='font-titlecolor' onclick='detailRow(getRowIdByDom(this))'>"+value+"</a>";
+        } else {
+            return "<a href='javascript:;' class='font-titlecolor' onclick='detailRow(getRowIdByDom(this))'>"+value+"</a>";
+        }
+    }
+</script>
+#end

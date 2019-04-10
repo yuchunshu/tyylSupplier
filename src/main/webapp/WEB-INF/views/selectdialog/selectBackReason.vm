@@ -1,0 +1,210 @@
+<style type="text/css">
+.datagrid-cell,
+.datagrid-cell-group,
+.datagrid-header-rownumber,
+.datagrid-cell-rownumber {
+  line-height: 30px;
+}
+</style>
+
+#set($bodyattr="class='easyui-layout' style='border:0px;width:550px;height:480px;margin-left:5px;margin-right:5px;margin-top:5px; padding:0 5px 3px 0;'")
+<div class="cc-tableWrap" data-options="region:'center',border:true,collapsible:false">
+    <table id="wordTable" style="width:100%;height:100%;"
+        data-options="border:false,toolbar:'#queryForm',rownumbers:true, singleSelect:true,pagination:false,collapsible:false,toolbar:'#tb'">
+        <thead>
+            <tr>
+                ##<th checkbox=true field="ck"></th>
+                <th data-options="field:'word',editor:{type:'textbox',options:{id:'wordEditor',required:true}},width:450">词条</th>                
+            </tr>
+        </thead>
+        <tbody >
+            #foreach($key in $dict.backreason.keySet())
+                <tr >
+                    ##<td ></td>
+                    <td >${dict.backreason.get($key)}</td>
+                </tr>
+            #end
+        </tbody>
+    </table>
+</div>
+##<div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+    ##<form id="queryForm">
+        ##<input name="$qc.like('word')" id="word" type="text" style="width:50%;" class="easyui-textbox" prompt="请输入要查询或添加的词条"/>       
+        ##<a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="formSearch()">查询</a>
+        ##<a  class="easyui-linkbutton" plain="true" onclick="doAddWord()" iconCls="icon-add" >添加</a>
+    ## <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+    ##         plain="true" onclick='editRow()'>修改</a>
+    ## <a  href='javascript:;' class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+    ##         plain="true" onclick='delRow()'>删除</a>
+    ##</form>
+##</div>
+
+<div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="saveTemp" onclick="doselect()" class="new-but">选择</a></li>
+            <li><a id="back" onclick="doclose()" class="new-but">取消</a></li>
+        </ul>
+    </div>
+</div>
+#@script()
+<script>
+    // 设置dialog标题
+    $(document).ready(function() {
+        if (top.setSelectDialogFrameDialogTitle) {
+            top.setSelectDialogFrameDialogTitle("$!{selectDialogTitle}");
+        }
+    });
+
+    // 获取row的index
+    function getRowIdByDom(dom){
+
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+
+    //选择
+    function doselect() {
+        //var rows = $('#wordTable').datagrid('getSelections');
+        var row = $('#wordTable').datagrid('getSelected');
+        if (row) {
+            // 单选
+            top.okSelectDialogFrameDialog(row);
+        } else {
+            alert("请先选择数据。");
+        }
+        return false;
+    }
+
+
+    String.prototype.trim=function(){
+        return this.replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+
+    // 最后编辑的索引
+    var _lastIndex = "";
+
+    function insertRow() {
+        var dg = $('#wordTable');
+        var row = {id:"",word:""};
+        dg.datagrid('insertRow', {index:0, row:row});
+        $('#wordTable').datagrid('selectRow',0);
+        dg.datagrid('beginEdit', 0);
+        var target = $(dg.datagrid('getEditors', 0)[0].target);
+        _lastIndex = 0;
+        editorBlur(target, row);
+        $(target).textbox('textbox').focus();
+    }
+
+    function editRow() {
+        var dg = $('#wordTable');
+        var row = dg.datagrid('getSelected');
+        if (row) {
+            var index = dg.datagrid('getRowIndex', row);
+            dg.datagrid('beginEdit', index);
+            _lastIndex = index;
+            var target = $(dg.datagrid('getEditors', index)[0].target);
+            editorBlur(target, row);
+            $(target).textbox('textbox').focus();
+        }
+    }
+
+    function delRow() {
+        $.messager.confirm('确认对话框', '您确认要删除该词条吗？', function(r){
+            if (r){
+                var row = $('#wordTable').datagrid('getSelected');
+                if (row) {
+                    // 保存
+                    $.post("$link.getContextURL()/oa/personal/delete.json",{ids:row.id},function(result){
+                        if (result.id){
+                            $('#wordTable').datagrid('reload');
+                        }
+                    },'json');
+                }
+            }
+        });
+    }
+
+    function formSearch() {
+        $('#wordTable').datagrid('reload');
+    }
+    var _isCheckFlag = false;
+    var _oneFlag = true;
+    $(document).ready(function(){
+
+        // // 回车事件
+        // document.onkeydown = function(e){
+        //     var ev = document.all ? window.event : e;
+        //     if(ev.keyCode==13) {
+        //           formSerach();
+        //     }
+        // }
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var _querForm = $("#queryForm");
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        //获取词条列表
+        $('#wordTable').datagrid({
+            // 单选
+            onClickRow:function(rowIndex,rowData){
+                $(this).datagrid('selectRow',rowIndex);
+            },
+            onDblClickRow:function(rowIndex,rowData){
+                $(this).datagrid('selectRow',rowIndex);
+                doselect();
+            },
+            //singleSelect:false,
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+
+        // $('#peopleSelect').datagrid({
+        //     #if($peopleSelectUrl) url: "$link.getContextURL()$!peopleSelectUrl ",#end
+        // });
+    });
+
+    function doAddWord() {
+        var newWord = $('#word').textbox('getValue');
+        if ($.trim(newWord)!=="") {
+            $.post('$link.getContextURL()/oa/personal/save.json', {userId:'$!{user.currentUserId}',word:newWord}, function(result) {
+                if (result.success) {
+                    $('#word').textbox('setValue','');
+                    $('#wordTable').datagrid('reload');
+                } else {
+                    top.CC.messager({ title:'提示', msg:result.error });
+                }
+            });
+        } else {
+            top.CC.messager({ title:'提示', msg: '请输入要添加的词条。' });
+        }
+    }
+
+    // function operaterFormatter(value,row,index){
+    //     return '<span class="value-span">' + value + '</span>' + $('#delButton').html();
+    // }
+
+</script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

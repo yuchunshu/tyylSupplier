@@ -1,0 +1,2 @@
+<th style="width:80px">部门名称：</th>
+<td width="100px"><input name="$qc.like('deptName')" class="easyui-textbox" type="text" style="width:100px;"/></td>

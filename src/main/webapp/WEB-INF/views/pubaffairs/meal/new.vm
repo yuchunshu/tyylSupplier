@@ -1,0 +1,428 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/doc/listicon.css"/>
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+	<div>
+		<div data-options="region:'center'" >
+			<form id="editForm" method="post">
+				<input id="delId" name="delId" type="hidden" value=""/>##删除ID
+				<input id="receiverIds" name="receiverIds" type="hidden"/>
+				<input id="mailReceiverIds" name="mailReceiverIds" type="hidden"/>
+				<table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+					<tbody>
+						<tr>
+							<td class="fix_td_title">&nbsp;</td>
+							<td class="fix_td_data">&nbsp;</td>
+							<td class="fix_td_title">&nbsp;</td>
+							<td class="fix_td_data">&nbsp;</td>
+						</tr>
+						<tr align="center">
+							<td class="bg-grey"><span><font color=red>*</font></span>申请人</td>
+							<td class="bg-white">
+								$!{esc.html($!{currUser.userName})}
+							</td>
+							<td class="bg-grey"><span><font color=red>*</font></span>申请部门</td>
+							<td class="bg-white">
+								$!{esc.html($!{dept.deptName})}
+							</td>
+						</tr>
+						<tr>
+							<td class="bg-grey"><span><font color=red>*</font></span>用餐时间</td>
+							<td class="bg-white">
+								<input id = "mealDate" name="mealDate" class="easyui-datebox" data-options="editable:false,required:true"/>
+							</td>
+							<td class="bg-grey"><span><font color=red>*</font></span>用餐地点</td>
+							<td class="bg-white">
+								<label><input type="radio" class="easyui-validatebox" data-options="required:true" checked name="mealPlace" value="0"/>明秀</label>&nbsp;&nbsp;
+								<label><input type="radio" class="easyui-validatebox" data-options="required:true" name="mealPlace" value="1"/>青湖</label>&nbsp;&nbsp;
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+		</div>
+		<div id="cc_layout" class="easyui-layout" style="height:55%;">
+			<div id="tbs" class="top-menu datagrid-toolbar toolbar-borderbottom">
+				<a href="javascript:;" id="add" class="easyui-linkbutton" iconCls="icon-add" plain="true" callback=fnSelectMansCallback mans-dialog>选择内部人员</a>
+				<a href="javascript:;" id="add2" class="easyui-linkbutton" iconCls="icon-add" plain="true" callback=fnSelectMailCallback mail-dialog>选择通讯录</a>
+				##<a href="javascript:;" id="add2" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="openMail()">选择通讯录</a>
+			</div>
+			<div class="cc-tableWrap1" data-options="region:'center',border:false" style="padding:5px;">
+				<table id="dgs" style="width:99%;height:99%">
+					<thead>
+						<tr>
+							<th style="width:10%" data-options="field:'mealUserName'">姓名</th>
+							<th style="width:100px" data-options="field:'mealType',
+								editor:{
+									type:'combobox',
+									options:{
+										onChange:mealTypeChange,
+    									valueField:'mealTypeId',
+    									textField:'mealTypeValue',
+    									data: [{'mealTypeId':'0','mealTypeValue':'员工餐'},{'mealTypeId':'1','mealTypeValue':'接待餐'},{'mealTypeId':'2','mealTypeValue':'加班餐'},{'mealTypeId':'3','mealTypeValue':'自费餐'}],
+    									required:true
+									}
+								},formatter:reMealTyle">类型</th>
+							<th style="width:10%" data-options="field:'operate',align:'center',formatter:operaterFormatter1">操作</th>
+						</tr>
+					</thead>
+				</table>
+				<div class="cc-operateColum1">
+					<a href='javascript:;' class="easyui-linkbutton" iconCls="icon-remove"
+						plain="true" onclick="del('__id__',this)">删除</a>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'south'" class="bottom-h" style="position: fixed;bottom: 0;width: 100%;">
+			<div class="bottom-but">
+				<ul>
+					<li><a id="publish" onclick="publishPur()" class="new-but">提交</a></li>
+					<li><a id="back" onclick="top.CC.closeCurTab()" class="new-but">返回</a></li>
+				</ul>
+			</div>
+		</div>
+		<div id="editWindow" class="easyui-window" title="选择人员" style="width:80%;height:330px;padding:10px"
+			data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+		</div>
+	</div>
+	<div id="editMailWindow" class="easyui-window" title="选择人员" style="width:40%;height:600px;padding:10px"
+		data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+	</div>
+</div>
+#@script()
+<script type="text/javascript">
+
+ 	var _editWindow = $('#editWindow');
+    var _datagrid = $('#dgs');
+	var editIndex = undefined;
+	
+	// 用于把真数据以假数据的形式迭代处理
+    $(document).ready(function() {
+        //工具条操作
+        var _btnAdd = $("#add[iconCls='icon-add']");
+        var _btnEdit = $("#edit[iconCls='icon-edit']");
+        var _btnImport = $("#import[iconCls='icon-download-alt']")
+        $('#dgs').datagrid({
+            fitColumns:false,//列宽自适应
+            fit:true,//自适应
+            nowrap:false, //不可换行
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            idField:'id',
+            toolbar:'#tbs',//工具条
+			onClickRow: onClickRow
+        });
+    });
+	
+	
+	
+	
+	function endEditing(){
+		
+		if (editIndex == undefined){return true}
+		if ($('#dgs').datagrid('validateRow', editIndex)){
+			var ed = $('#dgs').datagrid('getEditor', {index:editIndex,field:'mealType'});
+			var mealTypeValue = $(ed.target).combobox('getText');
+			$('#dgs').datagrid('getRows')[editIndex]['mealTypeValue'] = mealTypeValue;
+			$('#dgs').datagrid('endEdit', editIndex);
+			editIndex = undefined;
+			return true;
+		} else {
+			return false;
+		}
+	}
+		
+	function onClickRow(index){
+		if (editIndex != index){
+			if (endEditing()){
+				$('#dgs').datagrid('selectRow', index).datagrid('beginEdit', index);
+				editIndex = index;
+			} else {
+				$('#dgs').datagrid('selectRow', editIndex);
+			}
+		}
+	}
+	
+	// 用于假数据的uuid生成
+	function guid() {
+    	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+	        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+	        return v.toString(16);
+	    });
+	}
+	
+	//选择内部人员
+    $("a[mans-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+			var manAddress = $('#receiverIds').val();
+			var _url = "$link.getContextURL()/oa/mail/select/getIncepters?userIds=" + manAddress;
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+	
+	//选择通讯录
+    $("a[mail-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+			var manAddress = $('#mailReceiverIds').val();
+			var _url = "$link.getContextURL()/sms/select/contactdialog?dataIds=" + manAddress;
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    //选择内部人员回调
+    function fnSelectMansCallback(obj){
+		filterDuplicateData(obj,'0','receiverIds');
+    }
+	
+	//选择通讯录回调
+    function fnSelectMailCallback(obj){
+		filterDuplicateData(obj,'3','mailReceiverIds');
+    }
+	
+	
+    //呈送-------------------------------------------------------------------------------------------
+    function publishPur(){
+		if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/pubaffairs/meal/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.success){
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'提交成功！'
+                    });
+          			var title = top.CC.getCurTab().panel('options').title;
+          			var newTitle = '预约订餐';
+					var url = '$link.getContextURL()/pubaffairs/meal/list';
+          			top.CC.addTab({title:newTitle, url:url});
+          			top.CC.closeTab(title);
+                }else{
+					top.CC.messager({
+                        title:'提示',
+						height:'auto',
+                        msg:result.error
+                    });
+                }
+            });
+        }
+    }
+
+	function reMealTyle(value,row,index){
+		if(value=='0'){
+			return '员工餐';
+		}else if(value=='1'){
+			return '接待餐';
+		}else if(value=='2'){
+			return '加班餐';
+		}else{
+			return '自费餐';
+		}
+	}
+	
+	
+	// 删除
+	function operaterFormatter1(value,row,index){
+		console.log($(".cc-operateColum1",_datagrid.parents(".cc-tableWrap1")).html());
+		return $(".cc-operateColum1",_datagrid.parents(".cc-tableWrap1")).html()
+			.replace(new RegExp("__id__",'gm'),row.id)
+			.replace(new RegExp("__index__",'gm'),index);
+    }	
+
+    function del(id,obj) {
+		
+    	var index = $(obj).parent().parent().parent().attr("datagrid-row-index");
+    	$("#dgs").datagrid("checkRow",index);
+    	
+        var rows = $("#dgs").datagrid("getChecked");
+    	var rowsNow = $("#dgs").datagrid("getRows");
+        if(rows && rows.length > 0){
+		
+			//删除已选人员同时把已选人员ID去掉（内部人员）
+			if(rows[0].mealType == '0'){
+				var ids = $('#receiverIds').val();
+				var arr = ids.split(",");
+				arr.splice($.inArray("" + rows[0].mealUserId + "",arr),1);
+				$('#receiverIds').val(arr.join(","));
+			
+			}
+			//删除已选人员同时把已选人员ID去掉（通讯录）
+			if(rows[0].mealType == '3'){
+				var ids = $('#mailReceiverIds').val();
+				var arr = ids.split(",");
+                arr.splice($.inArray("" + rows[0].mealUserId + "",arr),1);
+				$('#mailReceiverIds').val(arr.join(","));
+			}
+		
+		
+            var id = rows[0].id.toString();
+            ##假id数据删除
+            var delIndex = $("#dgs").datagrid("getRowIndex",rows[0]);
+            $("#dgs").datagrid('deleteRow', delIndex);
+            $("input").remove(".detail-row-" + delIndex);
+			for(var i = rowsNow.lenght - 1; i >= 0; i--) {
+				if (rowsNow[i].id === id) {
+					rowsNow.splice(i, 1);
+				}
+			}
+			
+			##隐藏域删除
+			$(".detail-row-"+id).remove();
+        } else {
+            top.CC.messager({
+                title: '提示',
+                msg: '请选择一条数据进行作废!'
+            });
+        }
+    }
+	
+	
+	//多次添加数据过程中，过滤重复数据
+	function filterDuplicateData(obj,mealType,personIds){
+	
+		var receiverIds = "";
+		var deleteIndexs = [];
+		var detailIds = [];
+		
+		
+		//过滤重复已添加的人员
+		var rows = $("#dgs").datagrid("getRows");
+ 
+		//首次添加人员时，直接添加数据
+        if (rows.length == 0) {
+            for (var m = 0; m < obj.length; m++) {
+				receiverIds += obj[m].id + ",";
+				var className = guid();
+				var updateRow = {
+                	id : className,
+                   	mealUserName : obj[m].dataText,
+                   	mealType : mealType,
+                  	mealUserId : obj[m].id,
+    				type : "0"
+        		}
+        		$('#dgs').datagrid('appendRow',updateRow);
+				
+				if(mealType == "0"){
+        			$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealUserId" value="' + obj[m].id + '"/>');
+                    $("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealUserName" value="' + obj[m].dataText + '"/>');
+            		$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealType" value="' + mealType + '"/>');
+        		}else{
+        			$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mailDeptName" value="广西东盟食品药品安全检验检测中心"/>');
+                    $("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mailUserName" value="' + obj[m].dataText + '"/>');
+            		$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealType1" value="' + mealType + '"/>');
+        		}
+				
+				
+            }
+        }
+        else {//再次添加人员时，先判断是否有重复数据，有重复数据先过滤，再判断新添加数据是否减少，再删除列表多余数据
+		
+            var flag = true;//不相等
+            for (var i = 0; i <= obj.length - 1; i++)//未选择
+            {
+				receiverIds += obj[i].id + ",";
+				for (var j=0 ; j < rows.length ; j++ ){
+				
+                 	
+					if (obj[i].id == rows[j].mealUserId && rows[j].mealType == mealType) {
+                        flag = false;//相等
+                        break;
+                    }
+                    else {
+                        flag = true;
+                    }
+                  	
+        		}	
+ 
+                if (flag == true) {
+					var className = guid();
+                    var updateRow = {
+                    	id : className,
+                       	mealUserName : obj[i].dataText,
+                       	mealType : mealType,
+                      	mealUserId : obj[i].id,
+        				type : "0"
+            		}
+            		$('#dgs').datagrid('appendRow',updateRow);
+					
+					if(mealType == "0"){
+            			$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealUserId" value="' + obj[i].id + '"/>');
+                        $("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealUserName" value="' + obj[i].dataText + '"/>');
+                		$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealType" value="' + mealType + '"/>');
+            		}else{
+            			$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mailDeptName" value="广西东盟食品药品安全检验检测中心"/>');
+                        $("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mailUserName" value="' + obj[i].dataText + '"/>');
+                		$("#editForm").append('<input type="hidden" class="detail-row-' + className + '" name="mealType1" value="' + mealType + '"/>');
+            		}
+					
+					
+                }
+            }
+ 
+			
+			var rows = $("#dgs").datagrid("getRows");
+			
+    		for (var i = 0; i <= rows.length - 1; i++)//未选择
+                {
+    				var deleteFlag = '1';
+					if(rows[i].mealType == mealType){
+						for (var j=0 ; j < obj.length ; j++ ){
+        					if (obj[j].id == rows[i].mealUserId) {
+    							deleteFlag = '0';
+                            }
+                      	
+            			}
+    					if(deleteFlag == '1'){
+    						var index = $('#dgs').datagrid('getRowIndex',rows[i])
+							deleteIndexs.push(index);
+    						detailIds.push(rows[i].id);
+    					}
+					}
+    				
+    			}
+				for (var i = deleteIndexs.length-1 ; i >= 0 ; i--){
+    				##隐藏域删除
+        			$(".detail-row-"+detailIds[i]).remove();
+                    $('#dgs').datagrid('deleteRow',deleteIndexs[i]);//根据索引删除对应的行。
+                }
+			
+        }
+		
+		receiverIds = receiverIds.substring(0,receiverIds.length-1);
+		$('#'+personIds).val(receiverIds);
+	}
+	
+	
+	//用餐类型切换事件，更新隐藏域属性
+	function mealTypeChange(n,o){
+		var rowIndex = $(this).parents('.datagrid-row').attr('datagrid-row-index');
+        var rows = $('#dgs').datagrid('getRows');
+        var row = rows[rowIndex];
+		
+		$(".detail-row-"+row.id).remove();
+		if(row.type == "0"){
+			$("#editForm").append('<input type="hidden" class="detail-row-' + row.id + '" name="mealUserId" value="' + row.mealUserId + '"/>');
+            $("#editForm").append('<input type="hidden" class="detail-row-' + row.id + '" name="mealUserName" value="' + row.mealUserName + '"/>');
+    		$("#editForm").append('<input type="hidden" class="detail-row-' + row.id + '" name="mealType" value="' + n + '"/>');
+		}else{
+			$("#editForm").append('<input type="hidden" class="detail-row-' + row.id + '" name="mailDeptName" value="' + row.mealDeptName + '"/>');
+            $("#editForm").append('<input type="hidden" class="detail-row-' + row.id + '" name="mailUserName" value="' + row.mealUserName + '"/>');
+    		$("#editForm").append('<input type="hidden" class="detail-row-' + row.id + '" name="mealType1" value="' + n + '"/>');
+		}
+		
+	
+	}
+	
+</script>
+#end

@@ -1,0 +1,2 @@
+<th data-options="field:'id'" style="width:38%">节点Id</th>
+<th data-options="field:'nodeName'" style="width:60%">节点名称</th>

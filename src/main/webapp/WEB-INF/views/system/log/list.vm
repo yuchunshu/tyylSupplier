@@ -1,0 +1,205 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        <a  onclick="$('#searchDialog').css('display','block').window('open').window('center');" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+        <a  onclick="top.CC.closeCurTab()"
+            class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="width:7%" data-options="field:'operatorName'">操作人</th>
+                        <th style="width:9%" data-options="field:'ip'">IP</th>
+						<th style="width:12%" data-options="field:'browser',formatter:formatBrowser">浏览器</th>
+                        <th style="width:20%" data-options="field:'url'">访问URL</th>
+                        <th style="width:32%" data-options="field:'content'">操作内容</th>
+                        <th style="width:12%"  data-options="field:'operateDateStr'">操作时间</th>
+                        <th style="width:6%" data-options="field:'status',formatter:statusShow">操作状态</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件"
+            data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+            style="width:500px;height:420px;padding:20px 10px; background-color:#f4f4f4;display:none">
+            <form id="queryForm">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td style="text-align:right">操作人：</td>
+                        <td><input id="userName" name="$qc.like('operator.userName')" style="width:100px" class="easyui-textbox" /></td>
+                        <td style="text-align:right">IP地址：</td>
+                        <td><input name="$qc.like('ip')" id="ip" style="width:145px" class="easyui-textbox" /></td>
+                    </tr>
+					<tr>
+                        <td style="text-align: right;">所属单位：</td>
+                        <td colspan="3">
+                            <input type="hidden" id="unitDeptId" name="$qc.equal('operator.department.unitDept.id')" value=""/>
+                            <input type="text" id="unitDeptName" style="width:350px;" class="easyui-textbox"/>
+                            <a href="javascript:;" plain="true" iconcls="icon-search"
+                                callback=fnSelectUnitDeptCallback class="easyui-linkbutton" select-dialog="$link.getContextURL()/select/Dep/selectDepTree"></a>
+                        </td>
+                	</tr>
+					<tr>
+    					<td style="text-align: right;">所属部门：</td>
+                        <td colspan="3">
+                            <input type="hidden" id="deptId" name="$qc.equal('operator.department.id')" value=""/>
+                            <input type="text" id="deptName" value="" style="width:350px;" class="easyui-textbox"/>
+                            <a href="javascript:;" plain="true" iconcls="icon-search"
+                                callback=fnSelectDeptCallback class="easyui-linkbutton" select-dialog="$link.getContextURL()/select/Dep/selectDepTree"></a>
+                        </td>
+                	</tr>
+					<tr>
+                        <td align="right">操作时间：</td>
+                        <td align="left" colspan="3">
+                            <input name="$qc.greaterThanOrEqualTo('operateDate')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+								至
+                            <input name="$qc.lessThanOrEqualTo('operateDate')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right">访问URL：</td>
+                        <td colspan="3"><input name="$qc.like('url')" id="url" style="width:350px" class="easyui-textbox" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right">操作内容：</td>
+                        <td colspan="3"><input name="$qc.like('content')" id="content" style="width:350px" class="easyui-textbox" /></td>
+                    </tr>
+                    <tr>
+						#*
+                        <td style="text-align:right">操作类型：</td>
+                        <td>
+                            <select name="$qc.equal('sjType')" panelHeight="auto" style="width:80px" class="easyui-combobox" data-options="editable:false">
+                                #formoption("",$!dict.sjtype)
+                            </select>
+                        </td>
+						*#
+						<td style="text-align:right">操作状态：</td>
+                        <td>
+                            <select name="$qc.equal('status')" panelHeight="auto" style="width:80px" class="easyui-combobox" data-options="editable:false">
+                                #formoption("",$!dict.LogStatus)
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <div id="bnts" style="top:0px; height:25px; width:auto;">
+                <a class="new-but" onclick="formSerach()">确定</a>
+                <a class="new-but" onclick="reset()">重置</a>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function () { // 给查询dialog中的 input 绑定回车事件
+        $('#userName').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+        $('#ip').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+        $('#url').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+        $('#content').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/log/list.json';
+
+
+     $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            loadFilter: datagridHtmlEncode, // 防js注入
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+
+    function formSerach() {
+            $("#dg").datagrid('reload');
+            $('#searchDialog').window('close');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+	function statusShow(value,row) {
+		if($.trim(row.status) == "失败"){
+            return "<font color='red'>"+value+"</font>";
+		}else{
+			return "<font color='black'>"+value+"</font>";
+		}
+    }
+	
+	//选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+	
+	function fnSelectUnitDeptCallback(obj){
+        $("#unitDeptId").val(obj.id);
+        $("#unitDeptName").textbox('setText',obj.text);
+	}
+	
+	function fnSelectDeptCallback(obj){
+        $("#deptId").val(obj.id);
+        $("#deptName").textbox('setText',obj.text);
+	}
+	
+	function formatBrowser(value,row) {
+        return '<div title="' + value + '">' + value + '</div>';
+    }
+</script>
+#end

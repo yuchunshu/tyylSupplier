@@ -1,0 +1,238 @@
+#if($dict.userprofile.get($!{user.currentUserId}))
+#set($themes="$!dict.userprofile.get($!{user.currentUserId})")
+#else
+#set($themes="default")
+#end
+<div class="content">
+    <div class="desk">
+        <ul>
+            #foreach($curShortcut in $curShortcuts)
+                <li onclick="top.CC.addTab({title:'$!{curShortcut.title}',url:'$link.getContextURL()$!{curShortcut.url}'})" title="$!{curShortcut.title}">
+                    <div class="img">
+                        #if($strTool.StrIndexOf("$!{curShortcut.icon}", "power-icon") == 0)
+                        <i class="power-icon large $!{curShortcut.icon}"></i>
+                        #else
+                        <img src="$!{curShortcut.icon}" />
+                        #end
+                    </div>
+                    <a href="javascript:;">$!{esc.html($!{curShortcut.title})}</a>
+                </li>
+            #end
+            <li onclick="setShortcut()" title="">
+                <div class="img">
+                    <img src="images/shortcut/desk-icon-14.png"/>
+                </div>
+                <a href="javascript:;">设置</a>
+            </li>
+        </ul>
+    </div>
+    #parse("desktop/contentParse/fixTop.vm")
+    <div class="work-area">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="table-layout-fixed">
+            <tr>
+                <td valign="top" id="leftModels">
+                    <div class="work-box" style="height:20px;border:none;margin:0;"></div>
+                    #foreach($model in $displayModelsLeft)
+                    <div class="work-box">
+                    #parse("desktop/contentParse/$!{model.name}.vm")
+                    </div>
+                    #end
+                </td>
+                <td valign="top" id="rightModels">
+                    <div class="work-box" style="height:20px;border:none;margin:0;"></div>
+                    #foreach($model in $displayModelsRight)
+                    <div class="work-box">
+                    #parse("desktop/contentParse/$!{model.name}.vm")
+                    </div>
+                    #end
+                </td>
+            </tr>
+        </table>
+##        #foreach($model in $displayModels)
+##        <div class="work-box">
+##        #parse("desktop/contentParse/$!{model}.vm")
+##        </div>
+##        #end
+
+    </div>
+</div>
+<br><br>
+<div class="footer">
+<p> 南宁超创信息工程有限公司 &nbsp;&nbsp;&nbsp;&nbsp;技术支持：400-070-7770</p>
+</div>
+#@script()
+<link href="themes/$!{themes}/index.css" rel="stylesheet" type="text/css"/>
+<script>
+$(function(){
+    initModels();
+});
+
+// 初始化 dnd 模块
+function initModels() {
+    $('.work-box').draggable({
+        handle:'.drag-handle-area',
+        revert:true,
+        deltaX:0,
+        deltaY:0,
+        onStartDrag:function(e){
+            $('#tempDiv').remove();
+            var tempDiv = $('<div id="tempDiv" class="temp-work-box"></div>')
+            tempDiv.insertAfter($(this));
+            $(this).css("z-index", "99999");
+        },
+        onStopDrag:function(e){
+            $('#tempDiv').remove();
+            $(this).replaceAll($('#tempDiv'));
+        },
+        onDrag:function(e){
+            var deskHeigh = $($('.desk')[0]).height();
+            var workAreaWidth = $($('.work-area')[0]).width();
+            var d = e.data;
+            if (d.left < 0){d.left = 0;}
+            if (d.top < deskHeigh){d.top = deskHeigh}
+            if (d.left + $(d.target).outerWidth() > workAreaWidth + 50){
+                d.left = workAreaWidth - $(d.target).outerWidth() + 50;
+            }
+            if (d.top + $(d.target).outerHeight() > $(d.parent).height() + deskHeigh + 50){
+                d.top = $(d.parent).height() - $(d.target).outerHeight() + deskHeigh + 50;
+            }
+        }
+    }).droppable({
+        onDragOver:function(e,source){ // 鼠标悬浮
+            $('#tempDiv').remove();
+            var tempDiv = $('<div id="tempDiv" class="temp-work-box"></div>')
+            tempDiv.insertAfter($(this));
+
+        },
+        onDrop:function(e,source){
+            $(source).replaceAll($('#tempDiv'));
+            $('#tempDiv').remove();
+            saveDisplayModels();
+            initModels();
+        }
+    });
+
+    $('.work-area').droppable({
+        onDrop:function(e,source){
+            $(source).replaceAll($('#tempDiv'));
+            $('#tempDiv').remove();
+            saveDisplayModels();
+            initModels();
+        }
+    });
+
+    $('.content').droppable({
+        onDrop:function(e,source){
+            $(source).replaceAll($('#tempDiv'));
+            $('#tempDiv').remove();
+            saveDisplayModels();
+            initModels();
+        }
+    });
+
+    $('#leftModels').droppable({
+        onDragOver:function(e,source){ // 鼠标悬浮
+            if ($('.temp-work-box', '#leftModels').length < 1) {
+                $('#tempDiv').remove();
+                $('#leftModels').append('<div id="tempDiv" class="temp-work-box"></div>');
+            }
+
+        },
+        onDrop:function(e,source){
+            $(source).replaceAll($('#tempDiv'));
+            $('#tempDiv').remove();
+            saveDisplayModels();
+            initModels();
+        }
+    });
+
+    $('#rightModels').droppable({
+        onDragOver:function(e,source){ // 鼠标悬浮
+            if ($('.temp-work-box', '#rightModels').length < 1) {
+                $('#tempDiv').remove();
+                $('#rightModels').append('<div id="tempDiv" class="temp-work-box"></div>');
+            }
+        },
+        onDrop:function(e,source){
+            $(source).replaceAll($('#tempDiv'));
+            $('#tempDiv').remove();
+            saveDisplayModels();
+            initModels();
+        }
+    });
+
+}
+
+function saveDisplayModels() {
+    // 将修改后的模块顺序保存至数据库
+    var leftModels = $(".drag-item", $("#leftModels"));
+    var rightModels = $(".drag-item", $("#rightModels"));
+    var displayModels = new Array();
+    if (leftModels) {
+        for(var i = 0; i < leftModels.length; i++) {
+            var jsonObj = new Object();
+            jsonObj.name = $(leftModels[i]).attr("displayModels");
+            jsonObj.location = "left";
+            jsonObj.status = $("ul", $(leftModels[i])).css("display");
+            displayModels.push(jsonObj);
+        }
+    }
+    if (rightModels) {
+        for(var i = 0; i < rightModels.length; i++) {
+            var jsonObj = new Object();
+            jsonObj.name = $(rightModels[i]).attr("displayModels");
+            jsonObj.location = "right";
+            jsonObj.status = $("ul", $(rightModels[i])).css("display");
+            displayModels.push(jsonObj);
+        }
+    }
+    if (displayModels) {
+        $.post("$link.getContextURL()/desktop/saveDisplayModels.json",{displayModels:JSON.stringify(displayModels)},function(result){
+            if (result.error) {
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+            }
+        });
+    }
+}
+
+function removeModels(dom) {
+    $(dom).parent().parent().parent().remove();
+    saveDisplayModels();
+}
+
+function setShortcut(){
+    var _callback_fn = window["setShortcutCallBack"];
+    var dfn = top.window.openSelectDialogFrameDialog;
+    if (typeof dfn === "function") {
+        dfn("$link.getContextURL()/desktop/setShortcut", _callback_fn);
+    }
+    return false;
+}
+function setShortcutCallBack(obj){
+
+}
+
+function displayModelToggle(dom) {
+    if (dom) {
+##        $("ul", $(dom).parent().parent()).toggle(); // jquery 1.9以后不适用
+        var ulDom = $("ul", $(dom).parent().parent());
+        if (ulDom.length > 0) {
+            if (ulDom.is(":hidden")) {
+                ulDom.show();
+                $(dom).attr("src","$link.getContextURL()/themes/$!{themes}/images/work-icon-up.png")
+            } else {
+                ulDom.hide();
+                $(dom).attr("src","$link.getContextURL()/themes/$!{themes}/images/work-icon-down.png")
+            }
+        }
+        saveDisplayModels();
+    }
+}
+</script>
+#end
+<style>
+.temp-work-box{ width: 498px; height: 248px; border:1px dashed red; margin: 0 0 20px 20px;}
+</style>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<E_officialdocument>
+    <jhsbxx>
+        <xxzyID>$!{envelopeContent.resourceIden}</xxzyID>
+        <ywlsh>$!{envelopeContent.envelopeUuid}</ywlsh>
+        <letterid>$!{envelopeContent.letterId}</letterid>
+        <ywlx>$!{envelopeContent.bussinessType}</ywlx>
+        <mj>3</mj>
+        <jjcd>$!{envelopeContent.emergencyLevel}</jjcd>
+        <qqf>$!{envelopeContent.sendOrg}</qqf>
+        <fkf>$!{envelopeContent.feedbackOrg}</fkf>
+        <jhdx>
+            <fsf>$!{envelopeContent.sendOrg}</fsf>
+            <fssj>$!{envelope.sendTimeFmt}</fssj>
+            <jsf>$!{envelopeContent.feedbackOrg}</jsf>
+        </jhdx>
+        <jhzt>$!{envelopeContent.conStatus}</jhzt>
+        <fkyqbsf>$!{envelopeContent.feedbackFlag}</fkyqbsf>
+        <fksjyq type="$!{envelope.deadlineType}">$!{envelope.limitTimeFmt}</fksjyq>
+        <aqxxx>$!{envelopeContent.digitalSignature}</aqxxx>
+    </jhsbxx>
+    <jhztxx>
+		<dzgw type="$!{envelope.documentType}">
+            <fh>$!{envelopeContent.numIden}</fh>
+            <mj>非涉密</mj>
+            <bmqx></bmqx>
+            <jjcd>$!{envelopeContent.emergencyLevel.value}</jjcd>
+            <fwjg>$!{envelopeContent.sendOrgName}</fwjg>
+            <fwwh>$!{envelopeContent.docNumber}</fwwh>
+            <qfr>$!{envelopeContent.signReceiveMan}</qfr>
+            <bt>$!{envelopeContent.title}</bt>
+            <zsjg>$!{envelopeContent.mainSend}</zsjg>
+            <zw></zw>
+            <fjsm></fjsm>
+            <cwrq>$!{envelope.sendTimeFmt}</cwrq>
+            <dzyz></dzyz>
+            <fz>$!{envelopeContent.linkScript}</fz>
+            <gkfs>$!{envelopeContent.publishType.value}</gkfs>
+            <cs>$!{envelopeContent.copySend}</cs>
+            <yfjg>$!{envelopeContent.printOrg}</yfjg>
+            <yfrq>$!{envelopeContent.printDateFmt}</yfrq>
+            <ewtm>$!{envelopeContent.twoDimensionCode}</ewtm>
+            <lxr>$!{envelopeContent.contactName}</lxr>
+            <lxdh>$!{envelopeContent.contactPhone}</lxdh>
+			<dzgwbswj>
+                <bswjwjm>$!{envelopeContent.gdFileDoc.trueName}</bswjwjm>
+                <bswjgssm>$!{envelopeContent.gdFileDoc.affixSuffix}</bswjgssm>
+                <bswjwjt></bswjwjt>
+            </dzgwbswj>
+            <dzgwbswj>
+                <bswjwjm>$!{envelopeContent.gwFileDoc.trueName}</bswjwjm>
+                <bswjgssm>$!{envelopeContent.gwFileDoc.affixSuffix}</bswjgssm>
+                <bswjwjt></bswjwjt>
+            </dzgwbswj>
+            <dzgwbswj>
+                <bswjwjm>$!{envelopeContent.tifFileDoc.trueName}</bswjwjm>
+                <bswjgssm>$!{envelopeContent.tifFileDoc.affixSuffix}</bswjgssm>
+                <bswjwjt></bswjwjt>
+            </dzgwbswj>
+#foreach($_attach in $!{envelopeContent.remoteDocSwapAttachs})
+    #if("$!{_attach.remoteAttachType}" == "other")
+            <gwfj>
+                <fjwjm>$!{_attach.trueName}</fjwjm>
+                <fjgsss></fjgsss>
+                <fjwjt></fjwjt>
+            </gwfj>
+    #end
+#end
+        </dzgw>
+    </jhztxx>
+</E_officialdocument>
+

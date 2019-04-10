@@ -1,0 +1,162 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/doc/listicon.css"/>
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+	<form id="queryForm">
+		<a onclick="top.CC.closeCurTab()"
+			class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+		<i></i>
+		<label class="query-label" style="padding-right: 20px;">
+			<select id="mealType" name="mealType" class="easyui-combobox" data-options="editable:false,onChange:onSelectChange" style="width:110px;"
+				panelheight="auto">
+				<option value="4">非加班</option>
+				<option value="2">加班</option>
+			</select>
+		</label>
+		<div style="float:right">
+			<label class="query-label">
+				<span style="font-size:14px">
+					日期范围：
+				</span>
+				<input id="beginDate" name="beginDate" class="easyui-datebox" data-options="editable:false" style="width:150px;" value="$date.get('yyyy-MM-dd')">
+					&nbsp;
+					<span style="font-size:14px">
+						-
+					</span>
+					&nbsp;
+				<input id="endDate" name="endDate" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+        		<i style="position:relative;top:2px;"></i>
+        		<a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="reloadData()" title="查询" >查询</a>
+        		<a href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="resetForm()" title="重置" >重置</a>
+			    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-download-alt" onclick="exportExcel()" plain="true">导出</a>
+
+            </label>
+			</div>
+		</form>
+    </div>
+
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+                <tr>
+                    <th style="width:10%" data-options="field:'mealDateShow',align:'center'" rowspan="2">日期</th>
+					<th colspan="5">青湖</th>
+					<th colspan="5">明秀</th>
+					<th style="width:10%" data-options="field:'total',align:'center'" rowspan="2">总数</th>
+					<th style="width:10%" data-options="field:'status',formatter:statusShow,align:'center'" rowspan="2">状态</th>
+					<th style="width:10%" data-options="field:'operate',align:'center',formatter:operaterFormatter" rowspan="2">操作列</th>
+				</tr>
+				<tr>
+                    <th style="width:6%" data-options="field:'staffMealTotalQH',align:'center'">员工餐</th>
+					<th style="width:6%" data-options="field:'recepMealTotalQH',align:'center'">接待餐</th>
+        			<th style="width:6%" data-options="field:'overtimeMealTotalQH',align:'center'">加班餐</th>
+					<th style="width:6%" data-options="field:'practiceMealTotalQH',align:'center'">自费餐</th>
+					<th style="width:6%" data-options="field:'totalQH',align:'center'">总数</th>
+					
+					<th style="width:6%" data-options="field:'staffMealTotalMX',align:'center'">员工餐</th>
+					<th style="width:6%" data-options="field:'recepMealTotalMX',align:'center'">接待餐</th>
+        			<th style="width:6%" data-options="field:'overtimeMealTotalMX',align:'center'">加班餐</th>
+					<th style="width:6%" data-options="field:'practiceMealTotalMX',align:'center'">自费餐</th>
+					<th style="width:6%" data-options="field:'totalMX',align:'center'">总数</th>
+                </tr>
+            </thead>
+        </table>
+		<div class="cc-operateColum">
+			<a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+				plain="true" onclick="deal('__mealDate__')">办理</a>
+        </div>
+    </div>
+    <div id="editWindow" class="easyui-window" title="设置" style="width:450px;height:80%;padding:5px"
+            data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+    </div>
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("common/button/control.js.vm")
+#@script()
+<script type="text/javascript">
+	var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/pubaffairs/meal/listStat.json';
+	
+	function operaterFormatter(value,row,index){
+        return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html()
+            .replace(new RegExp("__mealDate__",'gm'),row.mealDateShow);
+    }
+	
+	$(document).ready(function(){
+		var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+		
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+		
+        //初始化datagrid
+        _datagrid.datagrid({
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/listStat.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+	
+	<!-----------------------顶部条件查询-------------------------------->
+	function onSelectChange() {
+  		_datagrid.datagrid('reload');
+   	}
+	function reloadData() {
+  		_datagrid.datagrid('reload');
+   	}
+	function resetForm(){
+		$('#beginDate').datebox("setValue", "");
+		$('#endDate').datebox("setValue", "");	
+ 	}
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+	
+	<!-----------------------格式化订餐状态-------------------------------->
+	function statusShow(value,row) {
+		if($.trim(row.status) == "暂存"){
+            return "<font color='blue'>"+value+"</font>";
+		}else if($.trim(row.status) == "在办"){
+			return "<font color='red'>"+value+"</font>";
+		}else{
+			return "<font color='black'>"+value+"</font>";
+		}
+    }
+	
+	<!-----------------------办理-------------------------------->
+	function deal(mealDate) {
+		var mealType = $("#mealType").combobox("getValue");
+    	var url = _baseUrl + "/pubaffairs/meal/task/deal?mealDate=" + mealDate +"&mealType=" + mealType;
+    	top.CC.addTab({title:'订餐办理',url:url});
+    }
+	
+	
+	//导出
+	function exportExcel() {
+        $.messager.confirm('警告','确定导出订餐统计列表吗?',function(r){
+            if (r){
+               window.location = "$link.getContextURL()/pubaffairs/meal/exportMealStaList.json?"+$("#queryForm").serialize();
+            }
+        });
+    }
+</script>
+#end

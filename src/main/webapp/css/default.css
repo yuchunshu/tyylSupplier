@@ -1,0 +1,72 @@
+*{font-size:12px; font-family:Tahoma,Verdana,Î¢ÈíÑÅºÚ,ÐÂËÎÌå}
+body{background:#FFFFFF; }
+a{ color:Black; text-decoration:none;}
+a:hover{ color:Red; text-decoration:underline;}
+.textbox03 {border: #878787 1px solid;padding: 4px 3px;font:Verdana, Geneva, sans-serif,ËÎÌå;line-height: 14px; background-color: #fff;  height: auto; font-size: 14px;  font-weight: bold; width: 190px; }
+
+.txt01{font:Verdana, Geneva, sans-serif,ËÎÌå;padding:3px 2px 2px 2px; border-width:1px; border-color:#ddd;  color:#000;}
+.txt {border: #878787 1px solid;padding: 4px 3px;font:Verdana, Geneva, sans-serif,ËÎÌå;line-height: 14px; background-color: #fff;  height: auto; font-size: 14px;}
+.footer{font:12px/28px "Î¢ÈíÑÅºÚ"; text-align:center;color:#FFF; margin:0; padding:0;}
+
+.header-logo{
+    float:left;
+    margin-top:10px;
+    margin-left:10px;
+}
+.header-user{
+    height:32px;
+    background:url(../images/state_bg.png) top repeat-x;
+    float:right;
+    padding-right:15px;
+    font: normal 14px 'ËÎÌå';
+    color:green;
+}
+.header-user a{ font:14px/34px "Î¢ÈíÑÅºÚ";color:#FFF; margin:0 5px;}
+.icon-user{
+    display:inline;
+    float:left;
+    width:30px;
+    height:36px;
+    background:url(../images/icon-user.png) left center no-repeat!important;
+}
+.icon-home{
+    width:20px;
+    height:20px;
+    background:url(../images/icon-home.png) left center no-repeat;
+    padding-left:24px;
+}
+
+.easyui-accordion ul{list-style-type:none;margin:0px; padding:5px;}
+.easyui-accordion ul li{ padding:0px;}
+.easyui-accordion ul li a{line-height:24px; display:block}
+.easyui-accordion ul li div{margin:2px 0px;padding-left:10px;padding-top:2px;}
+.easyui-accordion ul li div.hover{ background:#E0ECFF;cursor:pointer;}
+.easyui-accordion ul li div.hover a{color:#416AA3;text-decoration:none;}
+.easyui-accordion ul li div.selected{ background:#E0ECFF;cursor:default;}
+.easyui-accordion ul li div.selected a{color:#416AA3;}
+
+
+
+.icon{ width:18px; line-height:18px; display:inline-block;}
+.icon-sys{ background:url(../icons_Custom/icon-folder-close-alt.png); line-height:16px}
+.icon-set{ background-position:-380px -200px;}
+.icon-add{background-position: -20px 0px;}
+.icon-add1{background:url('icon/edit_add.png') no-repeat;}
+.icon-nav{/* background-position: -100px -20px;  */background:url(../icons_Custom/icon-file-alt.png); line-height:16px}
+.icon-users{background-position: -100px -480px;}
+.icon-role{background-position: -360px -200px;}
+.icon-set{background-position: -380px -200px;}
+.icon-log{background-position: -380px -80px;}
+.icon-delete16{background:url('icon/delete.gif') no-repeat;width:18px; line-height:18px; display:inline-block;}
+.icon-delete{ background-position:-140px -120px;}
+.icon-edit{ background-position:-380px -320px;}
+.icon-magic{ background-position:0px -500px;}
+.icon-database{ background-position:-20px -140px;}
+.icon-expand{ background:url('/images/coll2.gif') no-repeat;}
+.icon-collapse{ background:url('/images/coll3.gif') no-repeat;}
+
+hr {
+    background-color: #ccc;
+    border: 0 none;
+    height: 1px;
+}

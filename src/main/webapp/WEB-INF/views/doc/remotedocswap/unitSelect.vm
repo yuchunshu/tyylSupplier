@@ -1,0 +1,270 @@
+#set($bodyattr="id='selectReceiverLayout' class='easyui-layout' style='border:0px;width:890px;height:550px;margin-left:5px;margin-right:5px;margin-top:5px; padding:0 5px 3px 0; '")
+ 
+<div class="cc-tableWrap" data-options="region:'west',split:true,collapsible:false" style="width:240px;">
+    <div style="padding:5px 5px;">
+        <ul id="menutree" class="easyui-tree" data-options="fit:true,lines:true"></ul>
+    </div>
+</div>
+<div class="cc-tableWrap" data-options="region:'center',border:true,collapsible:false">
+    #*
+	<form id="queryForm">
+       <table class="tb2 default-table" id="tb" style="width:100%;">
+            <tr>
+                <th style="width:80px;"  align="right">单位名称：</th>
+                <td align="left">
+                    <input name="$qc.equal('identifierName')" id="identifierName" type="hidden"/>
+                    <input name="$qc.like('unitName')" id="unitName" class="easyui-textbox" type="text"/>
+                    <a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="formSearch()"></a>
+                </td>
+            </tr>
+        </table>
+    </form>
+	*#
+    <table id="peopleTable"  class="easyui-datagrid" style="width:100%;height:100%;"
+               data-options="border:false,pageList:[10,20,30],pageSize:10,toolbar:'#queryForm',fitColumns:true,rownumbers:true, singleSelect: #if($single) true #else false #end,pagination:true,collapsible:false">
+            <thead>
+            <tr>
+                #if(!$single)<th field="ck" data-options="checkbox:true"></th>#end
+                <th data-options="field:'unitName',width:140">单位名称</th>
+                <th data-options="field:'unitIdentifier',width:70">单位标识</th>
+            </tr>
+            </thead>
+        </table>
+    </table>
+</div>
+<div class="cc-tableWrap" data-options="region:'east',split:true,collapsible:false" border="false" style="width:180px;">
+    <div class="easyui-layout" fit="true">
+        <div  style="height:100%;">
+            <table id="peopleSelect"  class="easyui-datagrid" fit="true"
+                   data-options="fitColumns:true,rownumbers:false,idField:'unitIdentifier',toolbar:'#toolbar2',border:false,singleSelect:true">
+                <thead>
+                <tr>
+                    <th data-options="field:'unitName',width:300,autoRowHeight:false,formatter:operaterFormatter" style="line-height:30px;">已选单位</th>
+                </tr>
+                </thead>
+            </table>
+            <div class="cc-operateColum" id="delButton" style="height: auto; padding: 5px 0px 5px 5px;">
+                    <a href='javascript:;' class="easyui-linkbutton delete-button l-btn-plain-remove" plain="true" iconCls="icon-remove" onclick="delMan(getRowIdByDom(this))" style="float: right;"></a>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+<div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+    <div class="bottom-but-dialog">
+        <ul>
+            <li><a id="saveTemp" onclick="doselect()" class="new-but">选择</a></li>
+            <li><a id="back" onclick="doclose()" class="new-but">取消</a></li>
+        </ul>
+    </div>
+</div>
+#@script()
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script>
+var peopleSelect_flag = "ALL";
+function getReceive(){
+    //先清空已选人员
+    $("#peopleSelect").datagrid("loadData",[]);
+    $("#menutree").tree({url:"$link.getContextURL()/remotedocswap/unit/getRemoteUnitIdentifierTree.json"});
+}
+
+
+$(document).ready(function() {
+    if (top.setSelectDialogFrameDialogTitle) {
+        top.setSelectDialogFrameDialogTitle("$!{selectDialogTitle}");
+    }
+});
+
+    // 清除所有已选人员
+    function clearAllSelect() {
+        var rows =  $('#peopleSelect').datagrid('getRows');
+        for (var i=rows.length-1;i>=0;i--) {
+            $('#peopleSelect').datagrid('deleteRow', i);
+        }
+    }
+
+    // 获取row的index
+    function getRowIdByDom(dom){
+
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+
+    // 删除已选人员
+    function delMan(index) {
+        $('#peopleSelect').datagrid('deleteRow', index);
+        var rows =  $('#peopleSelect').datagrid('getRows');
+        $('#peopleSelect').datagrid('loadData',rows);
+    }
+
+    // 搜索
+    function formSearch() {
+        $('#identifierName').val('');
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+        $('#peopleTable').datagrid('reload',obj);
+        //$('#menutree').find('.tree-node-selected').removeClass('tree-node-selected'); ##取消树选中
+        return false;
+    }
+     
+
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+
+    //选择
+    function doselect() {
+        var rows =  $('#peopleSelect').datagrid('getRows');
+        if(!rows || rows.length<=0){
+            $.messager.alert('提示','请选择单位！','info');
+            return false;
+        }
+        top.okSelectDialogFrameDialog(rows);
+        return false;
+    }
+
+
+    $(document).ready(function(){
+        // 回车事件
+        document.onkeydown = function(e){
+            var ev = document.all ? window.event : e;
+            if(ev.keyCode==13) {
+                  formSearch();
+             }
+        }
+        getReceive();
+
+        $('#menutree').tree({
+            // 绑定部门树单击节点事件
+            onSelect:function(node){
+                // 点击树文字展开树节点
+                //$("#unitName").textbox('setValue', '');
+                if(node){
+                    if (node.state=='closed') {
+                        $(this).tree('expand',node.target);
+                    }
+					
+                    $('#identifierName').val(node.text);
+                    $("#peopleTable").datagrid({url:"$link.getContextURL()/remotedocswap/unit/selectRemoteUnitByIdentifierName.json?identifierName="+encodeURI(node.text)});
+                }else{
+					 
+                }
+
+            },
+            onLoadSuccess:function(node, data){
+                if(!node){
+                    var  roots = $("#menutree").tree("getRoots");
+                    if(roots && roots.length>0){
+                        var root = roots[0];
+                        $("#menutree").tree("expand",root.target);
+                        $(this).tree('select', root.target);
+                    }
+                }
+            }
+        });
+
+        $('#peopleTable').datagrid({
+            #if($single)
+            // 单选
+            onClickRow:function(rowIndex,rowData){
+                var obj = {
+                    unitIdentifier       : rowData.unitIdentifier,
+                    unitName : rowData.unitName
+                };
+                var rows = $('#peopleSelect').datagrid('getRows');
+                if (rows != null && rows.length > 0) {
+                    for(var i = rows.length - 1;i >= 0;i--){
+                        // 单选，删除已选择的人
+                         $('#peopleSelect').datagrid('deleteRow', i);
+                    }
+                }
+                $('#peopleSelect').datagrid('appendRow', obj);
+            },
+            #else
+            // 多选
+            // datagrid点击行事件
+            onCheck:function(rowIndex,rowData){
+                var obj = {
+                            unitIdentifier       : rowData.unitIdentifier,
+                            unitName : rowData.unitName
+                          };
+
+                var rows = $('#peopleSelect').datagrid('getRows');
+                // 去重
+                if (rows != null && rows.length > 0) {
+                    for(var i = 0;i< rows.length;i++){
+                        if (obj.unitIdentifier == rows[i].unitIdentifier) {
+                            return ;
+                        }
+                    }
+                }
+                $('#peopleSelect').datagrid('appendRow', obj);
+            },
+            onUncheck:function(rowIndex,rowData){
+                var peopleRows = $('#peopleSelect').datagrid('getRows');
+                for(var i = 0; i < peopleRows.length; i++) {
+                    if (peopleRows[i].unitIdentifier == rowData.unitIdentifier) {
+                        $('#peopleSelect').datagrid('deleteRow', i);
+                        break;
+                    }
+                }
+            },
+            onCheckAll:function(rows){
+                var selectRows = $('#peopleSelect').datagrid('getRows');
+                for(var i = 0; i < rows.length; i++) {
+                    var obj = {
+                            unitIdentifier       : rows[i].unitIdentifier,
+                            unitName : rows[i].unitName
+                          };
+                    if (selectRows != null && selectRows.length > 0) {
+                        var containFlag = false;
+                        for(var j = 0; j < selectRows.length; j++) {
+                           if (obj.unitIdentifier == selectRows[j].unitIdentifier) {
+                               containFlag = true;
+                               break;
+                           }
+                        }
+                        if (containFlag) {
+                           continue;
+                        }
+                    }
+                    $('#peopleSelect').datagrid('appendRow', obj);
+                }
+            },
+            onUncheckAll:function(rows){
+                var peopleRows = $('#peopleSelect').datagrid('getRows');
+                for(var i = 0; i < rows.length; i++) {
+                    for(var j = peopleRows.length-1; j >= 0; j--) {
+                       if (rows[i].unitIdentifier == peopleRows[j].unitIdentifier) {
+                           $('#peopleSelect').datagrid('deleteRow', j);
+                           break;
+                       }
+                    }
+                }
+            }
+            #end
+        });
+
+        // $('#peopleSelect').datagrid({
+        //     url: "$link.getContextURL()/select/getUsers.json "
+        // });
+    });
+
+    function operaterFormatter(value,row,index){
+        return '<span class="value-span">' + value + '</span>' + $('#delButton').html();
+    }
+</script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

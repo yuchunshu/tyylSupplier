@@ -1,0 +1,174 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input name="id" id="id" type="hidden" value="$!{obj.id}"/>
+                <table id="app_apply_tab" class="table-edit"  width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tbody>
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>姓名</td>
+                      <td class="bg-white">
+                        $!{esc.html($!{obj.userName})}
+                      </td>
+                      <td class="bg-grey">所属部门</td>
+                      <td class="bg-white">
+                        #if($obj) $!{esc.html($!obj.department.deptName)} #else $!{esc.html($!dep.department.deptName)} #end
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">职务</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="duty" class="easyui-textbox" value="$!{obj.duty.dutyName}"/>
+                      </td>
+                      <td class="bg-grey">传真</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="fax" class="easyui-textbox" value="$!{obj.fax}"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">办公电话</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="tel" class="easyui-textbox" data-options="validType:'mobileAndTel'" value="$!{obj.tel}"/>
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>手机</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="mobile" data-options="required:true,validType:'maxLength[20]'" class="easyui-textbox" value="$!{obj.mobile}"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">住宅电话</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="homeTel" class="easyui-textbox" data-options="validType:'tel'" value="$!{obj.homeTel}"/>
+                      </td>
+                      <td class="bg-grey">Email</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="email" class="easyui-textbox" data-options="validType:'email'" value="$!{obj.email}"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">家庭地址</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="homeAddr" class="easyui-textbox" value="$!{esc.html($!{obj.homeAddr})}"/>
+                      </td>
+                      <td class="bg-grey">邮编</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" name="postcode" class="easyui-numberbox" data-options="validType:'ZIP'" value="$!{obj.postcode}"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">排序号</td>
+                      <td class="bg-white" colspan="3">
+                        <input style="width:100%;" name="sort" class="easyui-numberbox" data-options="validType:'integ'" value="$!{obj.sort}"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">备注</td>
+                      <td class="bg-white" colspan="3">
+                        <textarea name="remark" class="textareaborder" style="width:99%;height:50px;resize:none;" >$!{esc.html($!{obj.remark})}</textarea>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    #if($power.checkShowMenu("公共通讯录保存","/oa/address/public/save.json"))<li><a onclick="save()" class="new-but">保存</a></li>#end
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()/oa/address/public';
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'公共通讯录',url:_baseUrl+'/list'});
+        top.CC.closeTab('公共通讯录编辑');
+    }
+
+    $.extend($.fn.validatebox.defaults.rules, {
+        ZIP: {
+          validator: function (value, param) {
+            return /^[0-9]\d{5}$/.test(value);
+          },
+          message: '请输入正确的邮政编码!'
+        },
+        mobile: {
+          validator: function (value, param) {
+            return /^(?:13\d|15\d|18\d)-?\d{5}(\d{3}|\*{3})$/.test(value);
+          },
+          message: '请正确输入手机号码'
+        },
+        tel:{
+          validator:function(value,param){
+            return /^(\d{3}-|\d{4}-)?(\d{8}|\d{7})?(-\d{1,6})?$/.test(value);
+          },
+          message:'请正确输入电话号码'
+        },
+        mobileAndTel: {
+          validator: function (value, param) {
+            return /(^([0\+]\d{2,3})\d{3,4}\-\d{3,8}$)|(^([0\+]\d{2,3})\d{3,4}\d{3,8}$)|(^([0\+]\d{2,3}){0,1}13\d{9}$)|(^\d{3,4}\d{3,8}$)|(^\d{3,4}\-\d{3,8}$)/.test(value);
+          },
+          message: '请正确输入电话号码'
+        },
+        integ:{
+          validator:function(value,param){
+            return /^[+]?[0-9]\d*$/.test(value);
+          },
+          message: '请输入整数'
+        },
+        minLength:{
+          validator:function(value,param){
+            return value.length >=param[0]
+          },
+          message:'至少输入{0}个字'
+        },
+        maxLength:{
+          validator:function(value,param){
+            return value.length<=param[0]
+          },
+          message:'最多{0}个字'
+        },
+        idCode:{
+          validator:function(value,param){
+            return /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value);
+          },
+          message: '请输入正确的身份证号'
+        }
+      });
+
+
+    function save(){
+        if($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/oa/address/public/save.json",$("#editForm").serialize(),function(result){
+              if(result.id){
+                top.CC.messager({
+                    title:'提示',
+                    msg:'保存成功！'
+                });
+                top.CC.addTab({title:'公共通讯录',url:_baseUrl+'/list'});
+                top.CC.closeTab('公共通讯录编辑');
+              }else{
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+              }
+            });
+        }
+    }
+</script>
+#end

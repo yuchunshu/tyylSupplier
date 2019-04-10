@@ -1,0 +1,49 @@
+
+###########################
+#macro(fixhtmlhead $__title)
+#if($__title)
+#set($__headtitle="$!__headtitle - $!__title")
+#end
+#parse("/common/template/fixhtmlhead.vm")
+#set($__title=false)
+#end
+
+#macro(fixhtmlcss)
+#parse("/common/template/fixhtmlcss.vm")
+#end
+
+#macro(fixhtmlscript)
+#parse("/common/template/fixhtmlscript.vm")
+#end
+
+#macro(localhtmlscript)
+#parse("/common/template/localhtmlscript.vm")
+#end
+
+#macro(pageheader)
+#parse("/common/template/pageheader.vm")
+#end
+
+#macro(pagenav)
+#parse("/common/template/pagenav.vm")
+#end
+
+#macro(pagemenu $__divid)
+#if(!$__divid)#set($__divid="left")#end
+#parse("/common/template/pagemenu.vm")
+#set($__divid=false)
+#end
+
+###########################
+#macro(menuonlyhead $__menutitle $__menuurl $__menuclass)
+#if($power.checkShowMenu($__menutitle, $__menuurl))
+#parse("/common/template/menuonlyhead.vm")
+#end
+#end
+
+#macro(menuitem $__parentid $__menuid $__menutitle $__menuclass $__menuoptions)
+#if($power.checkShowMenu($__menutitle, $__menuoptions))
+#parse("/common/template/menuitem.vm")
+#end
+#end
+

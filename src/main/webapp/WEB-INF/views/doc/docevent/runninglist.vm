@@ -1,0 +1,277 @@
+<style type="text/css">
+  .icon-receivefile {
+    background: url('./images/doc/icon-received.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-sendfile {
+    background: url('./images/doc/icon-send.png') no-repeat center center;
+    padding-left: 20px;
+  }
+
+</style>
+<div class="easyui-layout" fit="true">
+<div id="tb" style="padding:2px 5px;">
+
+     <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" onclick="reminders()" plain="true">催办</a>
+     <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="del()" plain="true">删除</a>
+     <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+     class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+     <i></i>
+     <a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+
+</div>
+<div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+    <table id="dg" data-options="nowrap:false" style="width:99%;">
+        <thead>
+        <tr>
+            <!--<th field="ck" data-options="checkbox:true">序号</th> -->
+            <th data-options="field:'title',width:200, editor:'text',formatter:detailUrl">公文标题</th>
+            <th data-options="field:'docCode',width:60">文号</th>
+            <th data-options="field:'createInfo',width:80">拟稿信息</th>
+            <th data-options="field:'flowInstId',width:60">流程实例ID</th>
+            ##<th data-options="field:'flowId',width:80">流程定义ID</th>
+            <th data-options="field:'curTaskName',width:60,formatter:traceUrl">当前环节</th>
+            <th data-options="field:'operate',align:'center',formatter:operaterFormatter,width:30">操作列</th>
+        </tr>
+        </thead>
+    </table>
+    <div class="cc-operateColum">
+        <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+            plain="true" onclick="edit('__id__', __taskId__,'__type__','__procDefId__')">详细</a>
+    </div>
+</div>
+<div  id="searchDialog" class="easyui-dialog  query-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+     style="width:500px;height:290px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+    <form id="queryForm">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td style="text-align: right">标题:</td>
+                <td><input id="title" style="width:350px;" name="$qc.like('title')" class="easyui-textbox textbox" /></td>
+            </tr>
+        </table>
+     </form>
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="formSerach()">确定</a>
+        <a class="new-but" onclick="reset()">重置</a>
+    </div>
+    <div id="editWindow" class="easyui-window" title="设置" style="width:450px;height:80%;padding:5px"
+            data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+    </div>
+</div>
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/doc/event/runninglist.json';
+
+    function reminders(){
+       var row = $("#dg").datagrid("getSelected");
+            if(row){
+                $.post("$link.getContextURL()/doc/event/sendReminders.json",{fileId:row.id,title:row.title},function(result){
+                    if(result.id){
+                        $('#id').val(result.id);
+                        top.CC.messager({
+                            title:'提示',
+                            msg:'催办邮件已发送成功！'
+                        });
+                    }else{
+                        top.CC.messager({
+                            title:'提示',
+                            msg:'服务器连接不上'
+                        });
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title: '提示',
+                    msg: '请选择一条记录!'
+                });
+            }
+    }
+
+    function edit(id, tid,type,opflag,flowId){
+       if(type==="发文"){
+       //var url = _baseUrl + "/doc/sendfile/task/deal?id=" + id + "&tid=" + tid+ "&opflag=readonly" +"&flowId="+flowId;
+       var url = _baseUrl + "/doc/archives/detailFile?id="+id+"&tid"
+       top.CC.addTab({title:'发文详情',url:url});
+
+      }else{
+       //var url = _baseUrl + "/doc/receivefile/task/deal?id=" + id + "&tid=" + tid+ "&opflag=readonly"+"&flowId="+flowId;
+         var url = _baseUrl + "/doc/archives/detailFile?id="+id+"&tid"
+         top.CC.addTab({title:'收文详情',url:url});
+       }
+      //  $('#editWindow').window('open');
+      //  $('#editWindow').window('refresh', '$link.getContextURL()/system/user/edit?id='+id);
+    }
+
+    function del(){
+        var row = $('#dg').datagrid("getSelected");
+        if (row) {
+            $.messager.confirm('警告','确定中止并删除在办中的公文《' + row.title + '》吗? 该操作不可恢复，请谨慎操作！', function(r){
+                if (r){
+                    $.post(_baseUrl + '/doc/event/deleteProcInst/' + row.flowInstId, {}, function(result){
+                        if (result.success){
+                            $('#dg').datagrid('reload'); // reload the user data
+                        } else {
+                            top.CC.messager({ // show error message
+                                title: '错误',
+                                msg: result.errorMsg
+                            });
+                        }
+                    },'json');
+                }
+            });
+        } else {
+            top.CC.messager({
+                title: '提示',
+                msg: '请选择一条记录!'
+            });
+        }
+    }
+
+
+    function operaterFormatter(value,row,index){
+        return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html()
+            .replace(new RegExp("__id__",'gm'),row.id)
+            .replace(new RegExp("__taskId__",'gm'),row.curTaskId)
+            .replace(new RegExp("__type__",'gm'),row.fileType)
+            .replace(new RegExp("__procDefId__",'gm'),row.flowId);
+     }
+
+    function fnDemoSelectDepCallback(obj){
+        $("#dep").textbox("setValue",obj.depName);
+    }
+
+
+     $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/runninglist.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            if($("#editForm").form('validate')){
+                var dfn = top.window.openSelectDialogFrameDialog;
+            }else{
+                return false;
+            }
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepQueryCallback(obj){
+        $('#dep').textbox('setValue',obj.id);
+        $('#dep').textbox('setText',obj.text);
+    }
+
+
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+    function traceRow(index){
+        $('#dg').datagrid('clearSelections');
+        _datagrid.datagrid("selectRow",index);
+        var row = _datagrid.datagrid("getSelected");
+        var url;
+        //url = "$link.getContextURL()/workflow/showtrace?pid="+row.flowInstId;
+        url = "$link.getContextURL()/diagram-viewer/index.html?processDefinitionId="+row.flowId+"&processInstanceId="+row.flowInstId;
+
+        top.CC.addTab({title:'流程图跟踪',url:url});
+    }
+    function traceUrl(value,row) {
+        return "<a href='javascript:;' style='color:blue' onclick='traceRow(getRowIdByDom(this))' title='点击查看流程图' >"+value+"</a>";
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+
+    function detailUrl(value,row) {
+        var content = value + "<a href='javascript:;' class='font-titlecolor'>" + "</a>";
+        var icostr1="";
+        if (row.fileType == "收文") {
+            icostr1 = '<span class="icon-receivefile" title="收文"></span>'+icostr1;
+        }
+        if (row.fileType == "发文") {
+            icostr1= '<span class="icon-sendfile" title="发文"></span>'+icostr1;
+        }
+         content=icostr1+content;
+
+        return content;
+    }
+
+
+</script>
+#end
+#parse("common/easyui/operatorcolumn.js.vm")

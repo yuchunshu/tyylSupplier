@@ -1,0 +1,206 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/doc/listicon.css"/>
+<div class="easyui-layout" fit="true">
+<div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+    <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+        class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+    <a  onclick="top.CC.closeCurTab()"
+        class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+</div>
+<div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+    <table id="dg" data-options="nowrap:false" style="width:99%;">
+        <thead>
+        <tr>
+            <th style="width:34%;" data-options="field:'title',editor:'text',formatter:detailUrl,sortable:true">公文标题</th>
+            <th style="width:14%;" data-options="field:'docCode'">来文字号</th>
+            <th style="width:10%;" data-options="field:'createDateShow',sortable:true">拟稿时间</th>
+            <th style="width:20%;" data-options="field:'sendUnit'">来文单位</th>
+            <th style="width:10%;" data-options="field:'deptName'">主办处室</th>
+            <th style="width:6%;" data-options="field:'creatorName'">拟稿人</th>
+            <th style="width:5%;" data-options="field:'instStatus'">状态</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+     style="width:500px;height:350px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+    <form id="queryForm">
+		<input name="queryType" type="hidden" value="$!{queryType}"/>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td style="text-align: right">公文标题：</td>
+                <td colspan="3"><input style="width:300px;" name="title" class="easyui-textbox" /></td>
+            </tr>
+            <tr>
+                <td style="text-align: right">来文单位：</td>
+                <td colspan="3"><input style="width:300px;" name="sendUnit" class="easyui-textbox" /></td>
+            </tr>
+            <tr>
+                <td style="text-align: right">来文字号：</td>
+                <td colspan="3"><input style="width:300px;" name="docCode" class="easyui-textbox" /></td>
+            </tr>
+            <tr>
+                <td style="text-align: right">自然编号：</td>
+                <td align="left" style="width:120px;"><input name="fileCode" style="width:120px;" class="easyui-textbox" /></td>
+				<td align="right">状态：</td>
+                <td align="left">
+                    <select name="instStatus" class="easyui-combobox" data-options="editable:false" style="width:100px;"
+                        panelheight="auto">
+						#set($arr = [0, 1])
+						#formoptioncontain("" $dict.WfInstStatus $arr)
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">拟稿时间：</td>
+                <td colspan="3">
+                    <input name="createDateBegin" class="easyui-datebox" data-options="editable:false" style="width:120px;">
+						&nbsp;&nbsp;&nbsp;&nbsp;至&nbsp;&nbsp;&nbsp;
+                    <input name="createDateEnd" class="easyui-datebox" data-options="editable:false" style="width:120px;">
+                </td>
+            </tr>
+        </table>
+     </form>
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="formSerach()">确定</a>
+        <a class="new-but" onclick="reset()">重置</a>
+    </div>
+</div>
+</div>
+<div id="editWindow" class="easyui-window" title="流程图" style="width:900px;height:520px;padding:5px;overflow:hidden;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+    <iframe id="showGooFlow">
+
+	</iframe>
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/doc/event/listDocModify.json';
+
+    function operaterFormatter(value,row,index){
+        return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html()
+            .replace(new RegExp("__id__",'gm'),row.entityId)
+            .replace(new RegExp("__type__",'gm'),row.businessType);
+     }
+
+     $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            loadFilter: datagridHtmlEncode,
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/listDocModify.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+
+    function detailUrl(value,row) {
+        var content = "<a href='javascript:;' onclick='showDetail(\""+row.entityId+"\", \""+row.businessType+"\")' class='font-titlecolor'>" + value + "</a>";
+        var icostr1="";
+        if (row.businessType == "1") {
+            icostr1 = '<span class="icon-receivefile" title="收文"></span>'+icostr1;
+        } else if (row.businessType == "2") {
+            icostr1= '<span class="icon-sendfile" title="发文"></span>'+icostr1;
+        } else if (row.businessType == "3") {
+            icostr1= '<span class="icon-simplefile" title="便函"></span>'+icostr1;
+        }else if(row.businessType == "5")	{
+			icostr1= '<span class="icon-interequestfile" title="内部"></span> '+icostr1;
+		}
+
+        var icostr2="";
+        if (row.urgencyLevel == "2") {
+            icostr2= '<span class="icon-urgent" title="急件"></span>'+icostr2;
+        } else if (row.urgencyLevel == "1") {
+            icostr2= '<span class="icon-emergency" title="特急"></span>'+icostr2;
+        }
+
+        if (row.expiryDate != null) {
+            icostr2= '<span class="icon-limit" title="限时办结"></span>'+icostr2;
+        }
+        content=icostr1+icostr2+content;
+
+        return content;
+    }
+
+    function showDetail(id, type) {
+        var url = "$link.getContextURL()/doc/archives/detailDocModify?id="+id;
+        if(type == 1){
+            top.CC.addTab({title:'收文编辑',url:url});
+        }else if (type == 2){
+            top.CC.addTab({title:'发文编辑',url:url});
+        }else if (type == 3) {
+            top.CC.addTab({title:'便函编辑',url:url});
+        }else if(type == 5)	{
+			top.CC.addTab({title:'内部请示编辑',url:url});
+		}
+    }
+
+</script>
+<script src="js/gooflow/mylinkdoclist.js"></script>
+#end
+#parse("common/easyui/operatorcolumn.js.vm")

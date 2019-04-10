@@ -1,0 +1,267 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+			    <input name="id" type="hidden" value="$!{obj.id}"/>
+				<input name="type" type="hidden" value="1"/>
+				<input name="apprOpinion" id="apprOpinion" type="hidden" value=""/>
+                <table class="table-edit">
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><font color=red>*</font></span>文电名称</td>
+                      <td class="bg-white" colspan="3">
+                        <input style="width:90%;" name="title" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{esc.html($!{obj.title})}" />
+						<a onclick="modifyHistory('receive_title')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+					  </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><font color=red>*</font></span>来文日期</td>
+                      <td class="bg-white" colspan="3">
+                        <input style="width:10%;" name="receiveDate" class="easyui-datebox" #if(${obj.id}) value="$!{obj.receiveDate}" #else value="$!{date.get('yyyy-MM-dd')}" #end data-options="editable:false" />
+						<a onclick="modifyHistory('receive_receiveDate')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+					  </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><font color=red>*</font></span>来文单位</td>
+                      <td class="bg-white">
+						<input style="width:77%;" name="sendUnit" data-options="required:true,validType:'maxLength[100]'" class="easyui-textbox" value="$!{obj.sendUnit}"/>
+						<a onclick="modifyHistory('receive_sendUnit')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+					  </td>
+                      <td class="bg-grey"><font color=red>*</font></span>来文字号</td>
+                      <td class="bg-white">
+						<input style="width:77%;" name="docCode" data-options="required:true,validType:'maxLength[100]'" class="easyui-textbox" value="$!{obj.docCode}"/>
+						<a onclick="modifyHistory('receive_docCode')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+                      </td>
+                    </tr>
+					<tr>
+                      <td colSpan="4" class="bg-white" style="text-align:center">意见</td>
+                    </tr>
+					<tr class="bg-grey">
+                        <td class="bg-grey"><div>拟 办 意 见</div></td>
+                        <td colspan="3" class="bg-white" style="vertical-align:text-top;">
+							<table class="table-content">
+                                <tr>
+                                    <td class="content-white" style="width:90%;">
+    								<textarea name="suggestion" class="textareaborder easyui-validatebox" data-options="validType:'maxLength[1000]'" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{obj.suggestion}</textarea>
+    								</td>
+                                    <td class="content-white">
+    								<a onclick="modifyHistory('receive_suggestion')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+    								</td>
+    							</tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+    								<span>$!{obj.creatorName}</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+                                </tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+									<span>$!date.format('yyyy-MM-dd HH:mm',$!{obj.createDate})</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+    							</tr>
+							</table>
+						</td>
+					</tr>
+					<tr class="bg-grey">
+                        <td class="bg-grey"><div>办公室领导批示</div></td>
+                        <td colspan="3" class="bg-white" style="vertical-align:text-top;">
+							#foreach($data in $opinionList)
+							#if("$!data.curNode.nodeName" == "办公室领导批示")
+						    <input name="apprOpinionId" type="hidden" value="$!{data.id}"/>
+							<input name="apprOpinionNodeId" type="hidden" value="$!{data.nodeId}"/>
+							<table class="table-content">
+                                <tr>
+                                    <td class="content-white" style="width:90%;">
+    								<textarea name="apprOpinionText" class="textareaborder easyui-validatebox" data-options="validType:'maxLength[1000]'" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{data.apprOpinion}</textarea>
+    								</td>
+                                    <td class="content-white">
+    								<a onclick="modifyHistory('receive_apprOpinion_$!{data.nodeId}')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+    								</td>
+    							</tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+    								<span>$!{data.approver.userName}</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+                                </tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+									<span>$!date.format('yyyy-MM-dd HH:mm',$!{data.apprTime})</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+    							</tr>
+							</table>
+							#end
+							#end
+						</td>
+					</tr>
+					<tr class="bg-grey">
+                        <td class="bg-grey"><div>经办处室办理情况</div></td>
+                        <td colspan="3" class="bg-white" style="vertical-align:text-top;">
+							#foreach($data in $opinionList)
+							#if("$!data.curNode.nodeName" == "各处室办理" || "$!data.curNode.nodeName" == "处室领导审核")
+							<input name="apprOpinionId" type="hidden" value="$!{data.id}"/>
+							<input name="apprOpinionNodeId" type="hidden" value="$!{data.nodeId}"/>
+							<table class="table-content">
+                                <tr>
+                                    <td class="content-white" style="width:90%;">
+    								<textarea name="apprOpinionText" class="textareaborder easyui-validatebox" data-options="validType:'maxLength[1000]'" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{data.apprOpinion}</textarea>
+    								</td>
+                                    <td class="content-white">
+    								<a onclick="modifyHistory('receive_apprOpinion_$!{data.nodeId}')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+    								</td>
+    							</tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+    								<span>$!{data.approver.userName}（$!{data.approver.department.deptName}）</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+                                </tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+									<span>$!date.format('yyyy-MM-dd HH:mm',$!{data.apprTime})</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+    							</tr>
+							</table>
+							#end
+							#end
+						</td>
+					</tr>
+					<tr class="bg-grey">
+                        <td class="bg-grey"><div>局领导批示</div></td>
+                        <td colspan="3" class="bg-white" style="vertical-align:text-top;">
+							#foreach($data in $opinionList)
+							#if("$!data.curNode.nodeName" == "局领导批示")
+							<input name="apprOpinionId" type="hidden" value="$!{data.id}"/>
+							<input name="apprOpinionNodeId" type="hidden" value="$!{data.nodeId}"/>
+							<table class="table-content">
+                                <tr>
+                                    <td class="content-white" style="width:90%;">
+    								<textarea name="apprOpinionText" class="textareaborder easyui-validatebox" data-options="validType:'maxLength[1000]'" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{data.apprOpinion}</textarea>
+    								</td>
+                                    <td class="content-white">
+    								<a onclick="modifyHistory('receive_apprOpinion_$!{data.nodeId}')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+    								</td>
+    							</tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+    								<span>$!{data.approver.userName}（$!{data.approver.department.deptName}）</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+                                </tr>
+    							<tr>
+    								<td class="content-white" style="text-align: right;">
+									<span>$!date.format('yyyy-MM-dd HH:mm',$!{data.apprTime})</span>
+    								</td>
+    								<td class="content-white">
+    								</td>
+    							</tr>
+							</table>
+							#end
+							#end
+						</td>
+					</tr>
+					<tr class="bg-grey">
+                        <td class="bg-grey"><div>备注</div></td>
+                        <td colspan="3" class="bg-white" style="vertical-align:text-top;">
+							<textarea name="remark" class="textareaborder easyui-validatebox" maxLength="240" cols="" style="resize:none;width:89%;height:60px;">$!{obj.remark}</textarea>
+							<a onclick="modifyHistory('receive_remark')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">修改历史</a>
+						</td>
+					</tr>
+				</table>
+            </form>
+        </div>
+		<div id="editWindow" class="easyui-window" title="修改历史" style="width:70%;height:70%;padding:5px"
+			data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+		</div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="save()" class="new-but">保存</a></li>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+	
+    })
+
+    var _baseUrl = '$link.getContextURL()';
+
+	function modifyHistory(itemId){
+		$('#editWindow').window('open');
+        $('#editWindow').window('refresh','$link.getContextURL()/doc/modify/list?fileId=$!{obj.id}' + '&itemId=' + itemId);
+	}
+	
+    function save(){
+		var apprOpinion = '';
+		$("textarea[name='apprOpinionText']").each(function (n) {
+			if($(this).val() == ''){
+				apprOpinion+= " " + "|";
+			}else{
+				apprOpinion+= $(this).val() + "|";
+			}
+			
+    	});
+		apprOpinion = apprOpinion.substring(0,apprOpinion.length-1);
+		$("#apprOpinion").val(apprOpinion);
+		
+		if($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/doc/modify/save.json",$("#editForm").serialize(),function(result){
+                  if(result.id){
+                    //$('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                  }
+            });
+        }
+    }
+</script>
+#end
+<style>
+.table-content  {
+    table-layout: fixed;
+    background-color:#e0e0e0;
+    width:100%;
+    padding: 0;
+    border-collapse: collapse;
+    border:0;
+    border-cellspacing:0;
+    border-cellpadding:0;
+}
+
+.table-content tr td.content-white{
+    border: #fff 1px solid;
+    background-color:#fff;
+    line-height: 150%;
+    padding: 3px 5px;
+    height: 32px;
+    word-break: break-all;
+    overflow: hidden;
+    }
+</style>

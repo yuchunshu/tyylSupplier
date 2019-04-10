@@ -1,0 +1,92 @@
+#macro(filterInputattr $__name $__inputatt)
+    $!__inputatt #validateValue($__name)
+#end
+#macro(callFormParse $__templatename $__name $__inputatt $__id)
+    #parse($__templatename)
+#end
+
+#macro(formfile $__name $__value $__class $__title $__holder $__uploadurl $__filename $__options $__inputatt $__id)
+    #callFormParse("/common/form/formfile.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+
+#macro(formfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
+    #parse("/common/form/formfilemulti.vm")
+#end
+
+#macro(formemailfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
+    #parse("/common/form/formemailfilemulti.vm")
+#end
+
+#macro(formcamerafilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
+    #parse("/common/form/formcamerafilemulti.vm")
+#end
+
+#macro(formremotedocswapfilemulti $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
+    #parse("/common/form/formremotedocswapfilemulti.vm")
+#end
+
+#macro(itemfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id)
+    #parse("/common/form/itemfilemulti.vm")
+#end
+
+#macro(formradio $__name $__value $__options $__default $__disabled $__class $__inputatt $__id)
+    #callFormParse("/common/form/formradio.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+
+#macro(formsendfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id)
+    #parse("/common/form/formsendfiletemp.vm")
+#end
+
+#macro(formremotedocswapfile $__name $__name1 $__name2 $__value $__value1 $__value2 $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id)
+    #parse("/common/form/formremotedocswapfile.vm")
+#end
+
+#macro(docfileattach $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
+    #parse("/doc/receivefile/inner/doc_file_attach.vm")
+#end
+
+#macro(cleanformrequired)
+#if($__formrequiredmap)
+#set($__formrequiredmap={})
+#end
+#end
+
+#macro(formrequired $__name $__message)
+#if(!$__formrequiredmap)
+#set($__formrequiredmap={})
+#end
+#set($__dummy=$__formrequiredmap.put("$!__name", true))
+#validateRequired($__name, $__message)
+#end
+
+#macro(callformrequired)
+    #parse("/common/form/formrequired.vm")
+#end
+
+###########################
+#macro(callButtonParse $__templatename $__formid)
+    #parse($__templatename)
+#end
+###########################
+
+####################################
+##  easyui使用的宏
+##
+###################################
+#macro(formoption $__value $__options)
+    #parse("/common/form/formoption.vm")
+#end
+#macro(formoptionexcept $__value $__options $__except)
+    #parse( "/common/form/formoptionexcept.vm" )
+#end
+#macro(formoptioncontain $__value $__options $__contain)
+    #parse( "/common/form/formoptioncontain.vm" )
+#end
+#macro(formVlidate $__name $__className)
+    #parse("/common/validate/validteforeasyui.vm")
+#end
+
+## 个人词条
+#macro(formwordmenu $__name $__onclick)
+    #parse("/common/form/formwordmenu.vm")
+#end

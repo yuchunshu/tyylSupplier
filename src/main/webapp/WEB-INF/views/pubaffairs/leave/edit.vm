@@ -1,0 +1,224 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input id="creatorId" name="creatorId" type="hidden" #if($!{leave.creatorId}) value="$!{leave.creatorId}" #else value="$!{currUser.id}" #end/>
+                <input name="id" id="id" type="hidden" value="$!{leave.id}"/>
+				<input name="createDate" type="hidden" id="createDate" value="$date.get('yyyy-MM-dd HH:mm:ss')"/>
+				<input name="deptId" type="hidden" id="deptId" value="$!{currUser.deptId}"/>
+				<input name="creatorName" type="hidden" id="creatorName" value="$!{currUser.userName}"/>
+				<input name="deptName" type="hidden" id="deptName" value="$!{currUser.department.deptName}"/>
+				<input name="version_" type="hidden" id="version_" value="$!{leave.version_}"/>
+				<input name="flowId" id="flowId" type="hidden" value="$!{leave.flowId}"/>
+				<input name="nextNodeId" id="nextNodeId" type="hidden" value=""/>
+				<input name="nextDealers" id="nextDealers" type="hidden" value=""/>
+				<table class="table-edit" title="休假申请">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">申请人</td>
+                      <td class="bg-white">
+							$!{currUser.userName}
+							$!{createName}
+                      </td>
+					  <td class="bg-grey"><span><font color=red>*</font></span>请假天数</td>
+                      <td class="bg-white">
+						<input id="leaveDay" name="leaveDay" type="hidden" value="$!{leave.leaveDay}" />
+                        <span id="leavetimes">$!{leave.leaveDay}</span>&nbsp;天
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>请假日期</td>
+                      <td class="bg-white" colSpan="3">
+                        <input id="beginTime" name="beginTime" data-options="required:true,editable:false,onChange:dateChange" class="easyui-datetimebox" #if($!{leave.beginTime}) value="$!{leave.beginTime}" #else value="$date.get('yyyy-MM-dd HH:mm:ss')" #end/>
+						&nbsp;&nbsp;至&nbsp;&nbsp;
+						<input id="endTime" name="endTime" data-options="required:true,editable:false,onChange:dateChange,validType:'equaldDate[\'#beginTime\']'" class="easyui-datetimebox" #if($!{leave.endTime}) value="$!{leave.endTime}" #else value="$date.get('yyyy-MM-dd HH:mm:ss')" #end/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">假期类别</td>
+                      <td colSpan="3" class="bg-white">
+							#if($!{leave.leaveType})
+    							<label><input type="radio" class="easyui-validatebox" #if($!{leave.leaveType.key}=='0') checked #end data-options="required:true" name="leaveType" value="0"/>公休假</label>
+    							<label><input type="radio" class="easyui-validatebox" #if($!{leave.leaveType.key}=='1') checked #end data-options="required:true" name="leaveType" value="1"/>补休假</label>
+    							<label><input type="radio" class="easyui-validatebox" #if($!{leave.leaveType.key}=='2') checked #end data-options="required:true" name="leaveType" value="2"/>事假</label>
+    							<label><input type="radio" class="easyui-validatebox" #if($!{leave.leaveType.key}=='3') checked #end data-options="required:true" name="leaveType" value="3"/>产假</label>
+    							<label><input type="radio" class="easyui-validatebox" #if($!{leave.leaveType.key}=='4') checked #end data-options="required:true" name="leaveType" value="4"/>陪护假</label>
+								<label><input type="radio" class="easyui-validatebox" #if($!{leave.leaveType.key}=='5') checked #end data-options="required:true" name="leaveType" value="5"/>婚假</label>
+							#else
+								<label><input type="radio" class="easyui-validatebox" checked data-options="required:true" name="leaveType" value="0"/>公休假</label>
+    							<label><input type="radio" class="easyui-validatebox"  data-options="required:true" name="leaveType" value="1"/>补休假</label>
+    							<label><input type="radio" class="easyui-validatebox"  data-options="required:true" name="leaveType" value="2"/>事假</label>
+    							<label><input type="radio" class="easyui-validatebox"  data-options="required:true" name="leaveType" value="3"/>产假</label>
+    							<label><input type="radio" class="easyui-validatebox"  data-options="required:true" name="leaveType" value="4"/>陪护假</label>
+								<label><input type="radio" class="easyui-validatebox"  data-options="required:true" name="leaveType" value="5"/>婚假</label>
+							#end
+                      </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey"><span><font color=red>*</font></span>请假事由</td>
+                        <td colSpan="3" class="bg-white"  valign="top"  >
+							<textarea name="reason" class="easyui-validatebox textareaborder" data-options="required:true, validType:'maxLength[200]'" style="width:99%;height:40px;resize:none;" >$!{esc.html($!{leave.reason})}</textarea>
+						</td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">附件</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{leave.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$leave.id")},"#defaultDownloadUrl('leaveAttach')", true, "#defaultUploadUrl('leaveAttach')",true)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="saveTemp()" class="new-but">暂存</a></li>
+                    <li><a onclick="publish()" class="new-but">提交</a></li>
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+		
+		<div id="selNodesWindow" class="easyui-window" title="提交到下一环节" style="width:350px;height:330px;padding:5px"
+			data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+		</div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+		
+    })
+
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+		var title = top.CC.getCurTab().panel('options').title;
+        top.CC.closeTab(title);
+    }
+
+    function publish(){
+       var flowId = $('#flowId').val();
+	   if($("#editForm").form('validate')) {
+	        $('#selNodesWindow').window('open');
+	        $('#selNodesWindow').window('refresh',"$link.getContextURL()/workflow/event/getNextNodes?startflow=1&nodeId=N201&flowId=" + flowId);
+	   }
+    }
+
+    //暂存
+    function saveTemp(){
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/pubaffairs/leave/saveTemp.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id != ""){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'暂存成功！'
+                    });
+          			var title = top.CC.getCurTab().panel('options').title;
+          			top.CC.addTab({title:'我的休假申请', url:'$link.getContextURL()/pubaffairs/leave/list'})
+          			top.CC.closeTab(title);
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+	
+	// 提交-------------------------------------------------------------------------------------------
+  	function start() {
+    	if($("#editForm").form('validate')) {
+      		var nodeId = selNodeId;
+      		var flowId = $('#flowId').val();
+			var _callbackname = "fnSelectMansCallback";
+      		var _url = "$link.getContextURL()/workflow/event/selectNextTask?flowId=" + flowId + "&nodeId=" + nodeId;
+			var _callback_fn = window[_callbackname];
+			var dfn = top.window.openSelectDialogFrameDialog;
+      		if (typeof dfn === "function") {
+        		dfn(_url, _callback_fn);
+      		}
+    	}
+  	}
+	
+	function fnSelectMansCallback(obj){
+    	//写入下一环节
+    	$('#nextNodeId').val(obj.nextNode);
+   	 	//写入下一环节的办理人（多个用逗号分开）
+    	$('#nextDealers').val(obj.userIds);
+	
+    	// 提交，启动流程
+    	top.CC.loading('提交申请中...');
+    	$.post("$link.getContextURL()/pubaffairs/leave/dealStartflow",$("#editForm").serialize(),function(result){
+      		top.CC.loaded();
+      		if(result.success){
+        		top.CC.messager({ title:'提示', msg:'提交申请成功！' });
+        		var title = top.CC.getCurTab().panel('options').title;
+        		top.CC.addTab({title:'我的休假申请', url:'$link.getContextURL()/pubaffairs/leave/list'})
+      			top.CC.closeTab(title);
+      		}else{
+        		top.CC.messager({ title:'提示', msg:result.message });
+      		}
+    	});
+  	}
+	
+	// 日期变动事件
+    var dateChange = function(newValue, oldValue) {
+        var startDate = $('#beginTime').datetimebox('getValue');
+        var endDate = $('#endTime').datetimebox('getValue');
+		
+		startDate=startDate.replace('-', '/');//为了兼容IE
+		endDate=endDate.replace('-', '/');//为了兼容IE
+		var date = new Date(endDate).getTime() - new Date(startDate).getTime();   //时间差的毫秒数
+		
+        if (startDate && endDate && (date>0)) {
+			
+			var startHours=new Date(startDate).getHours();
+			var endHours=new Date(endDate).getHours();
+			
+			var countDay=0;
+			if(startHours < 12){
+				if(endHours < 12){
+					countDay=1.5;
+				}else{
+					countDay=2;
+				}
+			}else{
+				if(endHours < 12){
+					countDay=1;
+				}else{
+					countDay=1.5;
+				}
+			}
+			var days=Math.round(date/(1000*60*60*24));
+			//比较两个时间是否是同一天
+			var startDays=new Date(startDate).toLocaleDateString();
+			var	endDays=new Date(endDate).toLocaleDateString();
+			days=days-1+countDay;
+			$('#leavetimes').text(days);
+            $('#leaveDay').val(days);
+			if(days<1 || days==1){//一天
+				var flowId = "F007";
+				$('#flowId').val(flowId);
+    		}else{//大于一天
+				var flowId = "F008";
+				$('#flowId').val(flowId);
+    		}
+        }else{
+			//top.CC.messager({ title:'提示', msg:"结束时间要大于开始时间！" });
+		}
+    }
+</script>
+#end

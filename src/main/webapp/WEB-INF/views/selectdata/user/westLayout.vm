@@ -1,0 +1,39 @@
+<div style="padding:5px 5px;">
+    <ul id="menutree" data-options="url:'$link.getContextURL()/select/Dep/treeLazyDep.json',method:'post',fit:true,lines:true"></ul>
+</div>
+#@script()
+<script>
+    function formSerachDept() {
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+        $('#datasDg').datagrid('reload',obj);
+        return false;
+    }
+
+    var _oneFlag = true;
+    $(function(){
+        $('#menutree').tree({
+            // 绑定部门树单击节点事件
+            onSelect:function(node){
+                // 点击树文字展开树节点
+                if ($(this).tree('getSelected').state=='closed') {
+                    $(this).tree('expand',node.target);
+                }
+                $("#userName").textbox('setValue', '');
+                $('#department').val(node.id);
+                formSerachDept();
+            },
+            onLoadSuccess:function(node, data){
+                if (_oneFlag) {  // 只在根节点生效
+                    var rootNode = $(this).tree('find', data[0].id);
+                    _oneFlag = false;
+                    $(this).tree('expand', rootNode.target);
+                }
+            }
+        });
+    });
+</script>
+#end

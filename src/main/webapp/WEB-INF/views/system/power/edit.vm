@@ -1,0 +1,215 @@
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" class="mainborder-Padding">
+        <form id="editForm" method="post">
+            <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+              <tbody>
+                <tr>
+                    <td class="fix_td_title">&nbsp;</td>
+                    <td class="fix_td_data">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="bg-grey"><span><font color=red>*</font></span>权限名称</td>
+                    <td class="bg-white">
+                        <input type="hidden" id="id" name="id" value="$!{obj.id}"/>
+                        <input style="width:100%;" class="easyui-textbox" data-options="required:true,validType:'notBlank'" name="powerName" maxlength="20" value="$!{esc.html($!{obj.powerName})}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey"><span></span>模块名称</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" name="module" maxlength="20" value="$!{esc.html($!{obj.module})}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey">权限URL</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" name="url" data-options="validType:'notBlank'" value="$!{obj.url}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey">移动端URL</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" name="appurl" data-options="validType:'notBlank'" value="$!{obj.appurl}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey">权限编号</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" name="powerCode" value="$!{obj.powerCode}"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="bg-grey">
+                        上级菜单<br>
+                        <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="clearPar()"
+                           plain="true">清除</a>
+                        <a id="selectDepDialog" href="javascript:;" iconcls="icon-search" callback=fnSelectMenuCallback plain="true"
+                           class="easyui-linkbutton" select-dialog="$link.getContextURL()/select/menu/selectMenuTree">选择</a>
+                    </td>
+                    <td class="bg-white">
+                        <input type="hidden" id="parentPowerId" name="parentPowerId" #if($!obj) value="$!obj.parentPowerId" #else value="$!parentPowerId" #end />
+                        <input style="width:100%;" class="easyui-textbox" id="parentName" name="parentName" readonly
+                            #if($!obj.parentPowerId) value="$!{esc.html($!lookup.syspower[$!{obj.parentPowerId}].powerName)}"
+                            #elseif($!parentPowerId) value="$!{esc.html($!lookup.syspower[$!{parentPowerId}].powerName)}" #end />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey"><span><font color=red>*</font></span>权限类型</td>
+                    <td class="bg-white">
+                        <select name="powerTypeFlag" id="powerTypeFlag" class="easyui-combobox" data-options="required:true,editable:false" panelheight="auto" style="width:40%;">
+                            <option selected value=""></option>
+                            <option value="1" #if ($!obj.powerTypeFlag == '1') selected #end>不用授权</option>
+                            <option value="3" #if ($!obj.powerTypeFlag == '3') selected #end>需要授权</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey">是否是菜单</td>
+                    <td class="bg-white">
+                        <label><input type="radio" name="isMenu" onclick="menuPower()" value="0" checked >否</label>&nbsp;&nbsp;
+                        <label><input type="radio" name="isMenu" onclick="menuPower()" value="1" #if($!obj.isMenu == '1') checked #end >是</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey">图标</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" data-options="" id="icon" name="icon" value="$!{obj.icon}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey">移动端图标</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" data-options="" id="appicon" name="appicon" value="$!{obj.appicon}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey">图标背景色</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-textbox" data-options="" id="appcolor" name="appcolor" value="$!{obj.appcolor}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="bg-grey"><span><font color=red>*</font></span>排序号</td>
+                    <td class="bg-white">
+                        <input style="width:100%;" class="easyui-numberbox" data-options="required:true" id="sort" name="sort" value="$!{obj.sort}"/>
+                    </td>
+                </tr>
+##                <tr>
+##                    <td align="center" colspan="2">
+##                        <span><font color=red>注：菜单编号的长度必须为4的倍数</font></span>
+##                    </td>
+##                </tr>
+              </tbody>
+            </table>
+        </form>
+    </div>
+    <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+        <div class="bottom-but-dialog">
+            <ul>
+                <li><a id="saveTemp" onclick="save()" class="new-but">保存</a></li>
+                <li><a id="back" onclick="back()" class="new-but">关闭</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+#@script()
+<script type="text/javascript">
+
+    function clearPar() {
+        $('#parentPowerId').val('');
+        $('#parentName').textbox('setValue','');
+    }
+
+    //保存
+    function save(){
+        if ($("#editForm").form('validate')) {
+            if ($("#deptId").val()!="") {
+
+                $.easyui.loading({locale:$('body')});
+                $.post("$link.getContextURL()/system/power/save.json",$("#editForm").serialize(),function(result){
+                    $.easyui.loaded($('body'));
+                    if(result.success){
+                        $('#editWindow').window('close');
+                        $('#tg').treegrid('reload');
+                        top.CC.messager({
+                            title:'成功',
+                            msg:result.success
+                        });
+                    }else{
+                        top.CC.messager({
+                            title:'提示',
+                            msg:result.errorMsg
+                        });
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title:'提示',
+                    msg:'请选择部门!'
+                });
+            }
+        }
+    }
+    // 关闭
+    function back() {
+        $('#editWindow').window('close');
+    }
+
+    var _account = "";
+    var _returnFlag = true;
+    $.extend($.fn.validatebox.defaults.rules, {
+        accountUnique : { // 判断登录名唯一
+            validator : function(value, param) {
+                value = $.trim(value);
+                if (_account != value) { // 当value改变才进行远程验证
+                    _account = value;
+                    $.post("$link.getContextURL()/system/user/checkAccount.json",{id:$("#id").val(),account:value},function(result){
+                        _returnFlag = result;
+                    },'json');
+                }
+                return _returnFlag;
+            },
+            message : '该登录名已存在!'
+        },
+        notBlank : { // 判断是否为空
+            validator : function(value, param) {
+                value = $.trim(value); //去空格
+                return !(value == "");
+            },
+            message : '不能为空格！'
+        }
+    });
+
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectMenuCallback(obj) {
+        $('#parentPowerId').val(obj.id);
+        $('#parentName').textbox('setValue',obj.text);
+    }
+
+    function menuPower() {
+        var isMenu = $('input[name="isMenu"]:checked').val();
+        if (isMenu==1) {  // 为菜单时默认需要授权
+            $('#powerTypeFlag').combobox('setValue', '3');
+##            $('#powerTypeFlag').combobox('disable');
+        } else {
+            $('#powerTypeFlag').combobox('enable');
+        }
+    }
+</script>
+#end

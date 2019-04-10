@@ -1,0 +1,98 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit">
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">标题</td>
+                      <td class="bg-white" colspan="3">
+                        $!{esc.html($!{camera.title})}
+                      </td>
+##                      <td class="bg-grey">密级</td>
+##                      <td class="bg-white">
+##                        $!{camera.miji.value}
+##                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">发布范围</td>
+                      <td class="bg-white">
+                        $!{camera.publishType.value}
+                      </td>
+                      <td class="bg-grey">显示方式</td>
+                      <td class="bg-white">
+                        $!{camera.displayType.value}
+                      </td>
+                    </tr>
+                    <tr id="publishDepTr">
+                      <td class="bg-grey">部门</td>
+                      <td class="bg-white" colspan="3">
+                        $!{esc.html($!{camera.publishDept.deptName})}
+                      </td>
+                    </tr>
+					<tr>
+						<td class="bg-grey">视频类型</td>
+                        <td class="bg-white">
+							$!{camera.cameraType.value}
+                        </td>
+						<td class="bg-grey">作者</td>
+                        <td class="bg-white">
+							$!{esc.html($!{camera.author})}
+                        </td>
+                    <tr>
+                    <tr>
+                        <td class="bg-grey">备注</td>
+                        <td colSpan="3" class="bg-white"  valign="top"  >
+							$!{esc.html($!{camera.content})}
+						</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">录入时间</td>
+                      <td class="bg-white">
+                        $!date.format('yyyy-MM-dd HH:mm',$!{camera.createDate})
+                      </td>
+                      <td class="bg-grey">发布时间</td>
+                      <td class="bg-white"  class="bg-white" >
+                        $!date.format('yyyy-MM-dd HH:mm',$!{camera.publishDate})
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">视频</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{camera.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$camera.id")},"#defaultDownloadUrl('sysattach')", false, "#defaultUploadUrl('cameraattach')", false)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+
+	}
+	
+    //返回
+    function back() {
+        top.CC.addTab({title:'视频管理',url:'$link.getContextURL()/oa/camera/list'});
+        top.CC.closeTab('视频编辑');
+    }
+ 
+</script>
+##<script type="text/javascript" src="lib/plupload/plupload.full.min.js">
+##<script type="text/javascript" src="lib/plupload/i18n/zh_CN.js">
+#end
+<style>.cke_top{display:none !important;}</style>

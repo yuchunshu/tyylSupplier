@@ -1,0 +1,152 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+  <div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center',border:false" class="mynoborder">
+      <form id="editForm" method="post">
+        <table class="table-edit" title="部门函件">
+          <tr>
+            <td class="fix_td_title">&nbsp;</td>
+            <td class="fix_td_data">&nbsp;</td>
+            <td class="fix_td_title">&nbsp;</td>
+            <td class="fix_td_data">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="bg-grey"><span><font color=red>*</font></span>标题</td>
+            <td class="bg-white" colspan="3">
+            <input style="width:100%;" name="title" data-options="required:true" validType="length[1,120]" class="easyui-textbox" value="$!{esc.html($!{obj.title})}"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-grey">函件编号</td>
+            <td class="bg-white"">
+            <input style="width:100%;" name="letterCode" validType="length[0,30]" class="easyui-textbox" value="$!{esc.html($!{obj.letterCode})}"/>
+            </td>
+            <td class="bg-grey">紧急程度</td>
+            <td class="bg-white">
+            #foreach($level in $dict.urgencyleveltype.keySet())
+            <label>
+            <input name="urgencyLevel" type="radio" value="$!{level}" #if("$!{obj.urgencyLevel.key}" == "$!{level}")checked #elseif("$!{level}" == "1")checked #end /> $dict.urgencyleveltype.get(${level})
+            </label>&nbsp;&nbsp;
+            #end
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-grey"><span><font color=red>*</font></span>接收部门</td>
+            <td class="bg-white" colspan="3">
+            <input type="hidden" name="incepterDepts"/>
+            <input style="width:95%;" id="incepterDept" name="incepterDept" data-options="required:true" missingMessage="该项为必选项" editable=false class="easyui-textbox"/>
+            <a  href="javascript:;" iconcls="icon-search" plain="true" onclick="selectIncepterDept()"
+              callback=fnSelectDepCallback class="easyui-linkbutton" select-dialog="$link.getContextURL()/select/Dep/selectDep"></a>
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-grey"><span><font color=red>*</font></span>处理时限</td>
+            <td class="bg-white" colspan="3">
+            <input id="limitDay" style="width:100px;" name="limitDay" data-options="required:true,onChange:onChangeLimitDay" validType="number" class="easyui-textbox" value=""/>&nbsp;个工作日&nbsp;
+            <span id="limitTimeDisplay" style="color:red; font-weight: bold;"> $!date.format('至 yyyy年MM月dd日', $!{obj.expiryDate})</span>
+            <input type="hidden" id="expiryDate" name="expiryDate" value="$!{obj.expiryDate}"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-grey">内容</td>
+            <td colSpan="3" class="bg-white"  valign="top"  >
+            <textarea  name="content" style="width:100%;height:150px" class="textareaborder">$!{obj.content}</textarea>
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-grey">附件</td>
+            <td colSpan="3" class="bg-white" attachId="$!{notice.id}">
+            #formfilemulty("attachs", "", "", "", "","#defaultDownloadUrl('sysattach')", true, "#defaultUploadUrl('sysattach')",true)
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <div data-options="region:'south'" class="bottom-h">
+      <div class="bottom-but">
+        <ul>
+          <li><a onclick="sendDepLetter()" class="new-but">发送</a></li>
+          <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+#@script()
+<script type="text/javascript">
+  //发送
+  function sendDepLetter(){
+    if($("#editForm").form("validate")){
+      $.post("$link.getContextURL()/doc/letter/send.json",$("#editForm").serialize(),function(result){
+        if(result.id){
+          top.CC.messager({title:"提示",msg:"<span style='color:green'>发送成功。</span>"});
+          top.CC.closeCurTab();
+        }else{
+          top.CC.messager({title:"提示",msg:"<span style='color:red'>发送失败。</span>"});
+        }
+      });
+    }
+  }
+  //选择发送部门
+  function selectIncepterDept(){
+    var url = "$link.getContextURL()/select/Dep/selectDep?selected="+$("input[name='incepterDepts']").val();
+    var dfn = top.window.openSelectDialogFrameDialog;
+    if (typeof dfn === "function") {
+      dfn(url, window["fnSelectDepCallback"]);
+    }
+    return false;
+  }
+  //设定处理时限
+  function onChangeLimitDay(newValue, oldValue){
+    // if(newValue && !isNaN(newValue)){
+    //   var d = new Date();
+    //   d = d.valueOf() + parseInt(newValue) * 24 * 60 * 60 * 1000
+    //   d = new Date(d);
+    //   $('#expiryDate').val();
+    //   $("#limitTimeDisplay").html("至 " + d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日")
+    // }else{
+    //   $("#expiryDate").html("")
+    // }
+    var day =newValue;
+    ##替换非数字
+    day=day.replace(/\D/g,"");
+    if (day== ""|| day =="0") {
+      $("#limitDay").val("");
+      $("#limitTimeDisplay").text("");
+      $("#expiryDate").val("");
+      return false;
+    }
+    jQuery.ajax({
+      url:"$link.getContextURL()/doc/event/getNewLimitTime.json",
+      data:{ limitDay: day },
+      type:"post",
+      async:false,
+      dataType:"text",
+      success:function(data) {
+        $("#expiryDate").val(data);
+        var value = data.substr(0, data.indexOf(' ')).split("-");
+        var displayLimitTime = "";
+        displayLimitTime = value[0] + "年" + value[1] + "月" + value[2] + "日";
+        $("#limitTimeDisplay").text(" 至  " + displayLimitTime);
+      }
+    });
+  }
+  //选择部门回调
+  function fnSelectDepCallback(obj){
+    if(obj && obj.length>0){
+      var ids = "";
+      var names = "";
+      for(var i = 0;i<obj.length;i++){
+        if(i == obj.length -1 ){
+          ids += obj[i].id;
+          names += obj[i].name;
+        }else{
+          ids += obj[i].id + ",";
+          names += obj[i].name + "，";
+        }
+      }
+      $("input[name='incepterDepts']").val(ids);
+      $("#incepterDept").textbox("setValue",names);
+    }
+  }
+</script>
+#end

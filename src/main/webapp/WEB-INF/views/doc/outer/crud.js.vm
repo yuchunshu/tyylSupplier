@@ -1,0 +1,117 @@
+#@script()
+<script>
+    //全局变量覆盖：_baseUrl，_delJsonUrl,_newJsonUrl,_editJsonUrl,_listJsonUrl
+    var _baseUrl, _delJsonUrl, _newJsonUrl, _editJsonUrl, _listJsonUrl, _detailJsonUrl;
+
+    //对页面的条件查询/查询的function()方法
+    $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-undo']",_querForm);
+		var _btnBatchSign = $("[iconCls='icon-info-sign']",_toolbar);
+        if(_btnBatchSign){
+            _btnBatchSign.on("click",batchSign);
+        }
+		
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            // 增加额外条件查询
+            $('.extra-condition').each(function(i, el) {
+                var $el = $(el);
+                searchConditions[$el.attr('name')] = $el.val();
+            });
+            return searchConditions;
+        }
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            loadFilter: datagridHtmlEncode, // 防js注入
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false, //不可换行
+            rownumbers:true,//行号
+            singleSelect:false,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+
+        });
+    });
+
+    //行内操作的方法，编辑、详情
+    var _datagrid = $("#dg");
+    var _toolbar = $("#tb");
+	
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+	
+	//批量签收
+	function batchSign(){
+            var rows = $("#dg").datagrid("getChecked");
+            if(rows && rows.length > 0){
+                $.messager.confirm('警告','是否签收勾选的公文?',function(r){
+                    if (r){
+                        var ids = "";
+                        for(var i=0;i<rows.length;i++){
+                            if(i==rows.length-1){
+                                ids += rows[i].id;
+                            }else{
+                                ids += rows[i].id + ",";
+                            }
+                        }
+						batchSignSend(ids);
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title: '提示',
+                    msg: '请选择至少一条数据进行签收!'
+                });
+            }
+
+        }
+		
+	//签收
+    function batchSignSend(ids){
+        top.CC.loading("签收中...");
+          $.post("$link.getContextURL()/doc/outer/dealOuterSign.json?ids="+ids,$("#queryForm").serialize(),function(result){
+            top.CC.loaded();
+            if(result.id){
+              top.CC.messager({
+                  title:'提示',
+                  msg:'签收成功！'
+              });
+			  top.CC.addTab({title:'已签收查询',url:'$link.getContextURL()/doc/outer/listSigned'});
+           	  top.CC.closeTab('公文签收');
+            }else{
+              top.CC.messager({
+                  title:'提示',
+                  msg:'服务器连接不上'
+              });
+            }
+          });
+    }
+</script>
+#end

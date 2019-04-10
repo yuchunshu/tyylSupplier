@@ -1,0 +1,3 @@
+<th data-options="field:'vehCode',width:250">车牌号</th>
+<th data-options="field:'vehType',width:250">车辆类型</th>
+<th data-options="field:'vehBrand',width:250">品牌型号</th>

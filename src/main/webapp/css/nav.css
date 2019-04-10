@@ -1,0 +1,68 @@
+@charset "utf-8";
+/* CSS Document */
+*{ margin:0; padding:0;}
+body{ background-color:#fcece8}
+ul{ list-style-type:none;}
+img{ border:none;}
+a{ font-size:14px; color:#333; text-decoration:none; font-family:"微软雅黑", "宋体"}
+.clear{ clear:both;}
+/*顶栏*/
+.top-nav{ width:100%;height:56px; background-color:#FFF; position:fixed; top:0;filter:alpha(opacity=75); /*支持 IE 浏览器*/-moz-opacity:0.75; /*支持 FireFox 浏览器*/opacity:0.75; /*支持 Chrome, Opera, Safari 等浏览器*/}
+.top-subnav{ width:100%;height:56px; position:fixed;}
+.mid-subnav{ margin:0 auto;width:1200px; height:56px;}
+.user-info{ float:left; }
+.user-info a.user-pic{ display:block; float:left; padding:12px 10px 0 0; }
+.user-info a.username-info{font-size:16px; line-height:56px; color:#333;}
+.setting-area{ float:right}
+.setting-area a{ display:block; float:left; padding:12px 20px 0 0;}
+/*Banner*/
+.banner{ width:100%; height:287px;background:url(../images/nav/banner.jpg) no-repeat center;}
+/*内容*/
+/*子系统导航*/
+.wrapper{ margin:0 auto;width:1200px;}
+.menu-side{ float:left;width:210px; background-color:#FFF; margin-top:20px}
+.menu-side ul{ padding:10px 20px 0 22px;}
+.menu-side ul li{ width:165px; height:46px; margin-bottom:10px;}
+.menu-side ul li a{ float:left;display:block;width:55px; height:36px; text-align:center; font-size:16px;-moz-border-radius:3px 0 0 3px; -webkit-border-radius:3px 0 0 3px; border-radius:3px 0 0 3px;}
+.menu-side ul li a:hover{ color:#ed613c}
+.menu-side ul li a.icon-office{ background-color:#49c4ae;padding-top:10px}
+.menu-side ul li a.icon-member{ background-color:#ed613c;padding-top:10px}
+.menu-side ul li a.icon-suggest{ background-color:#5aaee8;padding-top:10px}
+.menu-side ul li a.icon-legal{ background-color:#6180e4;padding-top:10px}
+.menu-side ul li a.icon-supervise{ background-color:#49c472;padding-top:10px}
+.menu-side ul li a.icon-petition{ background-color:#efb25a;padding-top:10px}
+.menu-side ul li a.icon-meeting{ background-color:#e65254;padding-top:10px}
+.menu-side ul li a.icon-system{ background-color:#c6965d;padding-top:10px}
+.menu-side ul li a.word{ width:109px; height:44px; border-top:#e0e0e0 solid 1px;border-right:#e0e0e0 solid 1px;border-bottom:#e0e0e0 solid 1px; background-color:#FFF;line-height:46px;-moz-border-radius:0 3px 3px 0; -webkit-border-radius:0 3px 3px 0; border-radius: 0 3px 3px 0;}
+/*待办事项*/
+.content{ float:right;width:968px;}
+.to-do{ float:left;width:664px; background-color:#FFF; margin-top:20px;}
+.box-title{ width:100%;}
+.box-title h3{ float:left;padding-left:15px; font-weight:normal; line-height:40px;}
+.box-title h3 img{ float:left; padding:10px 10px 0 0;}
+.box-title h3 a{ float:left;font-size:16px;}
+.box-title h3 a:hover{color:#ed613c}
+.box-title .more{ float:right; line-height:40px; padding-right:15px;}
+.box-title .more:hover{color:#ed613c}
+.box-title .line{ width:100%; height:3px; border-bottom:#eee solid 1px;}
+.box-title .line span{ float:left;display:block;width:120px;height:3px; background-color:#ff7200;}
+.document-list{ padding:12px 15px;}
+.document-list li{ height:30px; line-height:30px}
+.document-list li span{ float:left; font-size:14px;}
+.document-list li a:hover{ color:#ed613c;text-decoration:underline;}
+/*日历*/
+.calendar{ float:right;width:282px; background-color:#FFF; margin-top:20px;padding-bottom:5px;border:0}
+.calendar .year-month{ font-size:16px;}
+.calendar table{ font-size:14px; font-family:"微软雅黑", "宋体";}
+.calendar table tr{ text-align:center; height:28px; line-height:28px;}
+.calendar table tr th{ font-weight:normal; color:#555;}
+.calendar table tr td{ color:#333;}
+.calendar table tr td.today{ color:#FFF;background-color:#ed613c;-moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;}
+/*通知公告*/
+.notice{ float:left;width:473px; background-color:#FFF; margin-top:20px;}
+.notice ul,.to-read ul{ padding:12px 15px 12px 16px;}
+.notice ul li,.to-read ul li{ height:30px; line-height:30px;}
+.notice ul li a,.to-read ul li a{ float:left;}
+.notice ul li a:hover,.to-read ul li a:hover{ color:#ed613c; text-decoration:underline;}
+.notice ul li span,.to-read ul li span{ float:right; font-size:14px; font-family:"微软雅黑", "宋体"; color:#333;}
+.to-read{ float:right;width:473px; background-color:#FFF; margin-top:20px;}

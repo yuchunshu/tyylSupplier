@@ -1,0 +1,55 @@
+
+#macro(begintab)
+#set($__tab_headid="")
+#set($__tab_activeindex=0)
+#set($__tab_titleindex=0)
+#set($__tab_contentindex=0)
+#useTabPlugin()
+#end
+
+#macro(endtab)
+#set($__tab_headid="")
+#set($__tab_activeindex=0)
+#set($__tab_titleindex=0)
+#set($__tab_contentindex=0)
+#end
+
+#macro(tablayout)
+#parse("/common/tab/tablayout.vm")
+#end
+
+#macro(tabheadlayout $__headid)
+#set($__tab_headid=$__headid)
+#parse("/common/tab/tabheadlayout.vm")
+#end
+
+#macro(dotabtitle $__title $__titleindex $__class)
+#parse("/common/tab/tabtitle.vm")
+#end
+
+#macro(tabtitle $__title $__class)
+#dotabtitle($__title, $__tab_titleindex, $__class)
+#if($__class == "active")#set($__tab_activeindex=$__tab_titleindex)#end
+#set($__tab_titleindex=$__tab_titleindex + 1)
+#end
+
+#macro(contentid $__headid $__contentindex)
+${__headid}_Content${__contentindex}#end
+
+#macro(dotabcontent $__contentid $__isavtive)
+#parse("/common/tab/tabcontent.vm")
+#end
+
+#macro(tabcontent)
+#if($__tab_activeindex==$__tab_contentindex)
+#dotabcontent("#contentid($__tab_headid, $__tab_contentindex)", true)
+#{else}
+#dotabcontent("#contentid($__tab_headid, $__tab_contentindex)", false)
+#end
+#set($__tab_contentindex=$__tab_contentindex + 1)
+#end
+
+#macro(tabcontentlayout)
+#parse("/common/tab/tabcontentlayout.vm")
+#end
+

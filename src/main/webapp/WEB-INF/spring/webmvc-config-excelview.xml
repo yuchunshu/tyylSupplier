@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+>
+    <bean id="messageSource" class="org.springframework.context.support.StaticMessageSource">
+    </bean>
+
+    <bean id="excelViewResolver" class="cn.com.chaochuang.common.excelview.ExcelViewResolver">
+        <property name="exposeSpringMacroHelpers"><value>true</value></property>
+        <property name="contentType"><value>text/html;charset=GBK</value></property>
+        <property name="cache"><value>true</value></property>
+        <property name="prefix"><value></value></property>
+        <property name="suffix"><value>.xls</value></property><!--后缀必须是.xls-->
+        <property name="viewClass"><value>cn.com.chaochuang.common.excelview.ExcelView</value></property>
+        <property name="otherFlagPrefix"><value>common/</value></property>
+        <property name="otherPrefix"><value></value></property>
+        <property name="otherSuffix"><value>.vm</value></property>
+        <property name="order" value="1" />
+    </bean>
+
+    <bean id="excelXmlViewResolver" class="org.springframework.web.servlet.view.AbstractTemplateViewResolver">
+        <property name="exposeSpringMacroHelpers"><value>true</value></property>
+        <property name="contentType"><value>text/html;charset=GBK</value></property>
+        <property name="cache"><value>true</value></property>
+        <property name="prefix"><value></value></property>
+        <property name="suffix"><value>.xls.xml</value></property>
+        <property name="viewClass"><value>cn.com.chaochuang.common.excelview.ExcelXmlView</value></property>
+        <property name="order"><value>2</value></property>
+    </bean>
+
+    <bean id="wordXmlViewResolver" class="cn.com.chaochuang.common.view.XmlToolboxViewResolver">
+        <property name="exposeSpringMacroHelpers"><value>true</value></property>
+        <property name="contentType"><value>text/html;charset=GBK</value></property>
+        <property name="cache"><value>true</value></property>
+        <property name="prefix"><value></value></property>
+        <property name="suffix"><value>.doc.xml</value></property>
+        <property name="toolboxConfigLocation">
+            <value>${velocity.toolboxConfigLocation}</value>
+        </property>
+        <property name="order"><value>3</value></property>
+    </bean>
+
+    <bean id="PDFXmlViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <property name="order"><value>3</value></property>
+    </bean>
+
+    <bean id="excelVelocityConfig" class="cn.com.chaochuang.common.excelview.ExcelConfigurer">
+        <property name="velocityProperties">
+            <props>
+                <prop key="runtime.log">${velocity.runtime.log}</prop>
+                <prop key="runtime.log.invalid.references">${velocity.runtime.log.invalid.references}</prop>
+                <prop key="resource.manager.logwhenfound">${velocity.resource.manager.logwhenfound}</prop>
+                <prop key="velocimacro.library.autoreload">${velocity.velocimacro.library.autoreload}</prop>
+                <prop key="velocimacro.library">${velocity.velocimacro.library}</prop>
+                <prop key="input.encoding">${velocity.input.encoding}</prop>
+                <prop key="output.encoding">${velocity.output.encoding}</prop>
+                <prop key="resource.manager.class">cn.com.chaochuang.common.excelview.ExcelResourceManager</prop>
+            </props>
+        </property>
+        <property name="resourceLoaderPath">
+            <value>${velocity.fileResourceLoaderPath}</value>
+        </property>
+    </bean>
+
+</beans>

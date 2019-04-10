@@ -1,0 +1,24 @@
+&nbsp;&nbsp;姓名：
+<input name="$qc.equal('department.id')" id="department" type="hidden"/>##部门id
+<input name="groupId" id="groupId" type="hidden"/>##群组id
+<input name="type" id="type" type="hidden"/>##类型 type为空时查询部门人员
+<input name="$qc.like('userName')" id="userName" class="easyui-textbox" type="text"/> ##姓名
+
+#@script()
+<script>
+    // 重写search方法
+    function formSerach() {
+        $("#groupId").val("");
+        $("#type").val("");
+        $("#department").val("");
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+        $('#datasDg').datagrid('reload',obj);
+        $('#menutree').find('.tree-node-selected').removeClass('tree-node-selected'); ##取消树选中
+        return false;
+    }
+</script>
+#end

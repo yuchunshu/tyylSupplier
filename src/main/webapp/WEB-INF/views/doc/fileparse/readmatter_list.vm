@@ -1,0 +1,31 @@
+ <div class="easyui-layout" data-options="fit:true " >
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="app_apply_tab" class="table-edit" cellSpacing="1" cellpadding="5">
+      <tbody>
+        <tr align="left">
+          <td class="bg-grey" style="text-align:center" width="5%">序号</td>
+          ## <td class="bg-grey" style="text-align:center" width="45%">文件标题</td>
+          <td class="bg-grey" style="text-align:left" width="15%">阅知人</td>
+          ##<td class="bg-grey" style="text-align:center">阅知意见</td>
+          <td class="bg-grey" style="text-align:left" width="12%">发送时间</td>
+          <td class="bg-grey" style="text-align:left" width="12%">阅知时间</td>
+          <td class="bg-grey" style="text-align:center" width="10%">状态</td>
+        </tr>
+        #foreach( $rm in $rmlist)
+        <tr>
+          <td class="bg-white" style="text-align:center">$velocityCount</td>
+          ## <td class="bg-white" style="text-align:center">$!{esc.html($!{rm.title})}</td>
+          <td class="bg-white" style="text-align:left">
+            #if($!{rm.readMan})${lookup.sysuser[$!{rm.readMan}].userName}#end
+          </td>
+          ##<td class="bg-white" style="text-align:left">$!{esc.html($!{rm.opinion})}</td>
+          <td class="bg-white" style="text-align:left">$!date.format('yyyy-MM-dd HH:mm', $!rm.sendTime)</td>
+          <td class="bg-white" style="text-align:left">$!date.format('yyyy-MM-dd HH:mm', $!rm.readTime)</td>
+          <td class="bg-white" style="text-align:center">$!rm.status.value</td>
+        </tr>
+        #end
+      </tbody>
+    </table>
+    </div>
+</div>
+

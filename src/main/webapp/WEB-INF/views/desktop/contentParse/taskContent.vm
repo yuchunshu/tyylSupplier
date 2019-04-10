@@ -1,0 +1,109 @@
+<div class="drag-item" displayModels="taskContent">
+    <div class="work-title">
+        #if("$!{model.status}" == "block")
+        #set($picture = "work-icon-up.png")
+        #else
+        #set($picture = "work-icon-down.png")
+        #end
+        #if($dict.userprofile.get($!{user.currentUserId}))
+        <img src="$link.getContextURL()/themes/$!dict.userprofile.get($!{user.currentUserId})/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)"/>
+        #else
+        <img src="$link.getContextURL()/themes/default/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)"/>
+        #end
+        <h4>
+            <a href="javascript:;" onclick="top.CC.addTab({title:'待办公文',url:'$link.getContextURL()/doc/event/tasklist'})" title="点击进入待办事项列表">待办公文</a>
+            #if($!{taskContentList.total} > 0) <font color="red">($!{taskContentList.total})</font> #end
+        </h4>
+        <div class="drag-handle-area"></div>
+        <a href="javascript:;" class="model-shut" title="移除此模块" onclick="removeModels(this)"></a>
+        <a href="javascript:;" onclick="top.CC.addTab({title:'待办公文',url:'$link.getContextURL()/doc/event/tasklist'})" class="more" title="更多"></a>
+    </div>
+    <ul style="display:$!{model.status}">
+        #foreach($task in $taskContentList.rows)
+        <li>
+            #if($!task.businessType == '1')
+                <a href="javascript:;" onclick="toReceiveDeal('$!task.id','$!task.entityId','$!task.flowId')" title="$!task.title"/>
+                <img  src="images/doc/icon-received.png" title = "收文" class='tips-icon'/>
+            #elseif($!task.businessType == 2)
+                <a href="javascript:;" onclick="toSendDeal('$!task.id','$!task.entityId','$!task.flowId')" title="$!task.title"/>
+                <img  src="images/doc/icon-send.png" title = "发文" class='tips-icon'/>
+            #elseif($!task.businessType == '3')
+                <a href="javascript:;" onclick="toSimpleDeal('$!task.id','$!task.entityId','$!task.flowId')" title="$!task.title"/>
+                <img  src="images/doc/icon-simple.png" title = "便函" class='tips-icon'/>
+			#elseif($!task.businessType == '5')
+				<a href="javascript:;" onclick="toInteQuesDeal('$!task.id','$!task.entityId','$!task.flowId')" title="$!task.title"/>
+                <img  src="images/doc/icon-interequest.png" title = "内部" class='tips-icon'/>
+            #else
+                <a href="javascript:;" title="$!task.title">$!task.businessType
+            #end
+            #if("$!task.urgencyLevel.key" == "2")
+                <img  src="images/doc/icon-urgent.png" title="急件" class='tips-icon'/>
+            #end
+            #if("$!task.urgencyLevel.key" == "1")
+                <img  src="images/doc/icon-emergency.png" title="特急" class='tips-icon'/>
+            #end
+
+            #if("$!task.expiryDate")
+                <img  src="images/doc/icon-simple.png" title="限时办结" class='tips-icon'/>
+            #end
+
+            #if($!task.dense.key == "2")
+                <img  src="images/doc/icon-secret.png" title="秘密" class='tips-icon'/>
+            #end
+            #if($!task.dense.key == '1')
+                <img  src="images/doc/icon-undercover.png" title="机密" class='tips-icon'/>
+            #end
+            #if("$!{task.specFlag.key}" == "1")
+                <img  src="images/doc/icon-return.png" title="退回" class='tips-icon'/>
+            #end
+            #if($!task.status.key == '0')
+                <img  src="images/doc/icon-new.png" title="新" class='tips-icon'/>
+            #end
+
+            $!task.title
+
+            </a>
+            <span>$!date.format('yyyy-MM-dd', $!task.sendTime)</span>
+        </li>
+        #if($velocityCount == 5) #break #end
+        #end
+
+    </ul>
+</div>
+
+#@script()
+<script type="text/javascript">
+  var _baseUrl = '$link.getContextURL()';
+  function toTaskList() {
+    var tabTitle = "待办公文";
+    var tabUrl = "/doc/event/tasklist";
+    top.CC.addTab({title:tabTitle,url:'$link.getContextURL()' + tabUrl})
+
+  }
+
+  function toSendDeal(id,entityId,flowId) {
+    var tabTitle = "公文办理";
+    var tabUrl = "/doc/sendfile/task/deal?id="+id+"&fileId="+entityId+"&opflag=deal"+"&flowId="+flowId;
+    top.CC.addTab({title:tabTitle,url:'$link.getContextURL()' + tabUrl})
+  }
+
+  function toReceiveDeal(id,entityId,flowId) {
+    var tabTitle = "公文办理";
+    var tabUrl = "/doc/receivefile/task/deal?id="+id+"&fileId="+entityId+"&opflag=deal"+"&flowId="+flowId;
+    top.CC.addTab({title:tabTitle,url:'$link.getContextURL()' + tabUrl})
+  }
+
+  function toSimpleDeal(id,entityId,flowId) {
+    var tabTitle = "便函";
+    var tabUrl = "/doc/simplefile/task/deal?id="+id+"&fileId="+entityId+"&opflag=deal"+"&flowId="+flowId;
+    top.CC.addTab({title:tabTitle,url:'$link.getContextURL()' + tabUrl})
+  }
+  
+  function toInteQuesDeal(id,entityId,flowId) {
+    var tabTitle = "内部请示";
+    var tabUrl = "/doc/interequest/task/deal?id="+id+"&fileId="+entityId+"&opflag=deal"+"&flowId="+flowId;
+    top.CC.addTab({title:tabTitle,url:'$link.getContextURL()' + tabUrl})
+  }
+
+</script>
+#end

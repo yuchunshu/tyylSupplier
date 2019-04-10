@@ -1,0 +1,48 @@
+<div class="cc-tableWrap" data-options="region:'center',border:true" style="padding:5px;">
+    <ul id="tree"></ul>
+</div>
+#@script()
+<script>
+$(function(){
+    $.post("$link.getContextURL()/system/role/linkUser.json?roleId=$!{role.id}","",function(data){
+        $("#tree").tree({
+##	        url:'$link.getContextURL()/system/role/linkUser.json?roleId=$!{role.id}',
+            data:data,
+            checkbox:true,
+            onlyLeafCheck:false,
+            lines:true,
+            onClick:function(node) {
+                if (node.userFlag) {
+                    if (node.checked) {
+                        $("#tree").tree('uncheck', node.target);
+                    } else {
+                        $("#tree").tree('check', node.target);
+                    }
+                } else {
+                    var childs = $("#tree").tree("getChildren");
+                    if(childs && childs.length>0)
+                        $("#tree").tree('expandAll', node.target);
+                }
+            }
+        });
+    })
+});
+function getCheckUser(){
+    var check = $("#tree").tree('getChecked');
+    var userIds = "";
+    if(check && check.length>0){
+        for(var i=0;i<check.length;i++){
+            if (check[i].id.contains('dep_')) { // 过滤部门
+                continue;
+            }
+            if(i == check.length-1){
+                userIds += check[i].id;
+            }else{
+                userIds += check[i].id + ",";
+            }
+        }
+    }
+    return userIds
+}
+</script>
+#end

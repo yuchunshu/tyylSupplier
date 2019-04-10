@@ -1,0 +1,167 @@
+<style type="text/css">
+  .icon-receivefile {
+    background: url('./images/doc/icon-received.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-sendfile {
+    background: url('./images/doc/icon-send.png') no-repeat center center;
+    padding-left: 20px;
+  }
+</style>
+#set($returnPage="list")
+<div class="easyui-layout" fit="true">
+  <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+    <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+         class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+    <a  onclick="top.CC.closeCurTab()"
+         class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+  </div>
+  <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+    <table id="dg"  data-options="nowrap:false" fit="true">
+      <thead>
+      <tr>
+          <th style="width:35%" data-options="field:'title',editor:'text',formatter:titleUrl">文件标题</th>
+          <th style="width:15%" data-options="field:'sendManName'">发送人</th>
+          <th style="width:15%" data-options="field:'sendTimeShow'">发送时间</th>
+          <th style="width:15%" data-options="field:'readTimeShow'">阅知时间</th>
+          <th style="width:10%" data-options="field:'status',align:'center'">状态</th>
+          <th data-options="field:'operate',align:'center',formatter:operaterFormatter,width:80">操作</th>
+      </tr>
+      </thead>
+    </table>
+    <div class="cc-operateColum">
+      <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit" 
+        plain="true" onclick="edit('__rid__','__id__','__type__','__status__')">__title__
+      </a>
+    </div>
+  </div>
+
+  <div id="searchDialog" class="easyui-dialog  query-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+     style="width:500px;height:320px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+    <form id="queryForm">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td style="text-align: right">文件标题：</td>
+          <td><input id="title" style="width:320px;" name="$qc.like('title')" class="easyui-textbox textbox" /></td>
+        </tr>
+        <tr>
+          <td style="text-align: right">发送人：</td>
+          <td>
+            <input id="sendMan" name="$qc.like('sendUser.userName')" class="easyui-textbox"  style="width:320px;" />
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right">发送时间：</td>
+          <td>
+            <input name="$qc.greaterThanOrEqualTo('sendTime')" class="easyui-datebox" value="$!{firstDay}" style="width:150px;" data-options="editable:false">
+            至
+            <input name="$qc.lessThanOrEqualTo('sendTime')" class="easyui-datebox" value="$!{lastDay}" style="width:150px;" data-options="editable:false">
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right">状态：</td>
+          #if($type != "query")
+           <td><select id="status" name="$qc.equal('status')" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                      panelheight="auto">
+                      <option value=" ">-全部-</option>
+                      <option value="0">未阅</option>
+                      <option value="1">已阅</option>
+                 </select>
+            </td>
+          #end
+        </tr>
+      </table>
+     </form>
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+      <a class="new-but" onclick="formSerach()">确定</a>
+      <a class="new-but" onclick="reset()">重置</a>
+    </div>
+</div>
+ </div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("doc/receivefile/crud.js.vm")
+#@script()
+<script type="text/javascript">
+  var _baseUrl = '$link.getContextURL()/doc/readMatter';
+  var _listJsonUrl = '/list.json?type=$!{type}';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepCallback(obj){
+        $("#department").textbox('setValue',obj.id);
+        $("#department").textbox('setText',obj.text);
+    }
+
+    function attFlag(value,row,index){
+        if(value == '有附件') {
+            return "<img src='images/attach.png'/>";
+        }
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    function operaterFormatter(value,row,index){
+        var __title__ = ""
+        if(row.status === "未阅"){
+            __title__ = "阅知"
+        }else{
+            __title__ = "详细"
+        }
+        return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html()
+            .replace(new RegExp("__rid__",'gm'),row.id).replace(new RegExp("__id__",'gm'),row.fileId).replace(new RegExp("__type__",'gm')
+            ,row.fileType).replace(new RegExp("__status__",'gm'),row.status).replace(new RegExp("__title__",'gm'),__title__);
+     }
+    function edit(rid,id,fileType,status){
+        var title = ""
+        if(status === "未阅"){
+            title = "公文阅知";
+        }else{
+            title = "阅知详情";
+        }
+        if(fileType==="发文"){
+            var url =  "$link.getContextURL()/doc/readMatter/read/detail?id=" + id + "&fileType=2" +"&readId="+rid;
+            top.CC.addTab({title:title,url:url});
+        }else{
+            var url =  "$link.getContextURL()/doc/readMatter/read/detail?id=" + id + "&fileType=1"+"&readId=" +rid;
+            top.CC.addTab({title:title,url:url});
+        }
+    }
+
+function titleUrl(value,row) {
+    var content = value + "<a href='javascript:;' class='font-titlecolor'>" + "</a>";
+    var icostr1="";
+    if (row.fileType == "收文") {
+        icostr1 = '<span class="icon-receivefile" title="收文"></span>'+icostr1;
+    }
+    if (row.fileType == "发文") {
+        icostr1= '<span class="icon-sendfile" title="发文"></span>'+icostr1;
+    }
+     content=icostr1+content;
+    return content;
+  }
+
+</script>
+#end

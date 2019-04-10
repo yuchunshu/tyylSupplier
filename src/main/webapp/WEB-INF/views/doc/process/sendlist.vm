@@ -1,0 +1,110 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+##        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+##        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+##        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-download-alt" onclick="exportExcel()"
+            plain="true">导出</a>
+        <i></i>
+        <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+         <a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+            <tr>
+                <th style="width:50%" data-options="field:'title',formatter:detailUrl">文件标题</th>
+                <th style="width:10%" data-options="field:'createDateShow'">拟稿日期</th>
+                <th style="width:15%" data-options="field:'processDepName'">拟稿部门</th>
+                <th style="width:10%" data-options="field:'status',align:'center'">状态</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:280px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <form id="queryForm">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="text-align: right">文件标题：</td>
+                    <td><input id="title" name="$qc.like('docFile.title')" style="width:350px;" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">拟稿日期：</td>
+                    <td>
+                        <input name="$qc.greaterThanOrEqualTo('processDate')" class="easyui-datebox" value="$!{firstDay}" data-options="editable:false" style="width:150px;">
+                        至
+                        <input name="$qc.lessThanOrEqualTo('processDate')" class="easyui-datebox" value="$!{lastDay}" data-options="editable:false" style="width:150px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">状态：</td>
+                    <td><select id="status" name="$qc.equal('docFile.status')" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                        panelheight="auto">
+                        <option value=" ">-全部-</option>
+                        <option value="1">在办</option>
+                        <option value="2">待归档</option>
+                        <option value="3">归档</option>
+                    </select></td>
+                </tr>
+            </table>
+         </form>
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+</div>
+#parse("doc/process/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()/doc/process';
+    var _listJsonUrl = '/send/list.json?type=$!{type}';
+    var _newJsonUrl = '/new';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function attFlag(value,row,index){
+        if(value == '有附件') {
+            return "<img src='images/attach.png'/>";
+        }
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    function exportExcel() {
+        $.messager.confirm('警告','确定导出发文登记簿吗?',function(r){
+            if (r){
+               window.location = "$link.getContextURL()/doc/process/exportSendProcess.json?type=$!{type}&"+$("#queryForm").serialize();
+            }
+        });
+    }
+
+</script>
+#end

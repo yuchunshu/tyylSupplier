@@ -1,0 +1,5 @@
+##<link href="css/jquery.validator.css" type="text/css" rel="stylesheet" />
+<style>
+.n-default .msg-wrap {position: relative; z-index: 1;}
+.n-default .n-right {margin-top: 10px;}
+</style>

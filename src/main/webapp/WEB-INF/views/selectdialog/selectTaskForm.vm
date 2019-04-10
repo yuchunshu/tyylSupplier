@@ -1,0 +1,96 @@
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" style="padding:10px;">
+         #foreach($dt in $tasks)
+                    <label><input type="radio" id="nodeid" onclick="sekectTaskRd(this.value)" class="easyui-validatebox"  data-options="required:true" name="tasknodeid" value="$dt.id"/>$dt.name</label></br>
+         #end
+        </form>
+
+
+         <input name="ftype" id="ftype" type="hidden" value=""/>
+    </div>
+    <div data-options="region:'south',border:false" style="text-align:center;padding:5px 0 0;">
+        ## <a id="selectDepDialog" href="javascript:;" iconcls="icon-search" mans-dialog
+           ##     callback=fnSelectMansCallback class="easyui-linkbutton">选择</a>
+         <a id="save"  callback=fnSelectTaskCallback   class="easyui-linkbutton" nodemans-dialog data-options="iconCls:'icon-save',width:120,height:30">保存</a>
+        <a id="back" onclick="back()" class="easyui-linkbutton" data-options="iconCls:'icon-remove',width:120,height:30">关闭</a>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()'; //呈送
+
+
+     //选择人员对话框
+    $("a[nodemans-dialog]").each(function() {
+        $(this).click(function(){
+           $('#editWindow').window('close');
+            var $this = $(this);
+
+            var _callbackname = $this.attr("callback");
+
+            var _url = "$link.getContextURL()/select/selectmansClassify";
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function sekectTaskRd(node){
+        $('#nextTaskId').val(node);
+    }
+
+      // 人员选择回调
+    function fnSelectTaskCallback(obj){
+        var groupIds = "";
+        var groupNames = "";
+        for (var key = 0; key < obj.length; key++){
+            groupIds += obj[key].id + ",";
+            groupNames += obj[key].dataText + ","
+        }
+        groupIds = groupIds.substring(0,groupIds.length-1);
+        groupNames = groupNames.substring(0,groupNames.length-1);
+        $('#nextDealers').val(groupIds);
+       // $('#groupAddressNames').textbox('setValue',groupNames);
+
+       saveGoldgridFile($('#filepath').val());
+       alert($!{ftype});
+       if($!{ftype}==0){
+         $.post("$link.getContextURL()/doc/receivefile/task/done",$("#editForm").serialize(),function(result){
+              if(result.success){
+                window.location = "$link.getContextURL()/doc/event/tasklist";
+                $.messager.show({
+                    title:'提示',
+                    msg:'呈送成功！'
+                });
+              }else{
+                $.messager.show({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+              }
+            });
+       }else{
+        $.post("$link.getContextURL()/doc/sendfile/task/done",$("#editForm").serialize(),function(result){
+              if(result.success){
+                window.location = "$link.getContextURL()/doc/event/tasklist";
+                $.messager.show({
+                    title:'提示',
+                    msg:'呈送成功！'
+                });
+              }else{
+                $.messager.show({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+              }
+            });
+       }
+
+    }
+</script>
+#end
+#include("oa/common.css.html")

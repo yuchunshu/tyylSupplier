@@ -1,0 +1,172 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        #if("$type" == "answer")
+        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onClick="deal()">处理</a>
+        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        #else
+        <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+        #end
+        <i></i>
+        <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+        <a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+		##<a style="float:right;" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=&site=qq&menu=yes"><img border="0" src="http://pub.idqqimg.com/wpa/images/counseling_style_52.png" alt="点击这里给我发消息" title="点击这里给我发消息"/></a>
+		##在http://shang.qq.com/v3/index.html设置相关qq号
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+                <tr>
+                    <th style="width:5" data-options="field:'attachFlag',formatter:attFlag"><img src='images/attach.png' title='有附件'/></th>
+                    #if("$type" == "answer")
+                    <th style="width:25%" data-options="field:'queDesc',formatter:detailUrl">问题描述</th>
+                    <th style="width:11%" data-options="field:'raiser'">提出人</th>
+                    <th style="width:11%" data-options="field:'queTime'">提出日期</th>
+                    <th style="width:10%" data-options="field:'subSys'">所属子系统</th>
+                    <th style="width:10%" data-options="field:'queType'">问题类型</th>
+                    <th style="width:11%" data-options="field:'dealer'">处理人</th>
+                    <th style="width:11%" data-options="field:'dealTime'">处理日期</th>
+                    <th style="width:8%" data-options="field:'status'">状态</th>
+                    #else
+                    <th style="width:40%" data-options="field:'queDesc',formatter:detailUrl">问题描述</th>
+                    <th style="width:15%" data-options="field:'raiser'">提出人</th>
+                    <th style="width:13%" data-options="field:'queTime'">提出日期</th>
+                    <th style="width:10%" data-options="field:'subSys'">所属子系统</th>
+                    <th style="width:10%" data-options="field:'queType'">问题类型</th>
+                    <th style="width:8%" data-options="field:'status'">状态</th>
+                    #end
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:320px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <form id="queryForm">
+            <input id="type" name="type" type="hidden" value="$!{type}">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="text-align: right">问题描述：</td>
+                    <td><input id="queDesc" name="$qc.like('queDesc')" style="width:350px;" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">提出人：</td>
+                    <td><input id="queDesc" name="$qc.like('raiser')" style="width:350px;" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">提出时间：</td>
+                    <td>
+                        <input id="startTime" name="$qc.greaterThanOrEqualTo('queTime')" class="easyui-datebox" value="$!{firstDay}" data-options="editable:false" style="width:150px;">
+                        至
+                        <input id="endTime" name="$qc.lessThanOrEqualTo('queTime')" class="easyui-datebox" value="$!{lastDay}" data-options="editable:false,validType:'checkEndTime'" style="width:150px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right">状态：</td>
+                    <td><select id="status" name="$qc.equal('status')" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                        panelheight="auto">
+                        <option value=" ">-全部-</option>
+                        <option value="1">已处理</option>
+                        <option value="0">未处理</option>
+                    </select></td>
+                </tr>
+            </table>
+         </form>
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+</div>
+#parse("system/maint/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    var _baseUrl = '$link.getContextURL()/system/maintenance';
+    var _listJsonUrl = '/list.json';
+
+    var _delJsonUrl = '/delete.json';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    function fnSelectDepCallback(obj){
+        $("#department").textbox('setValue',obj.id);
+        $("#department").textbox('setText',obj.text);
+    }
+
+    function attFlag(value,row,index){
+        if(value == '有附件') {
+            return "<img src='images/attach.png' title='有附件'/>";
+        }
+    }
+
+    function formSerach() {
+        if($("#queryForm").form('validate')){
+            $('#searchDialog').window('close');
+            $('#dg').datagrid('reload');
+        }
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+    $.extend($.fn.validatebox.defaults.rules,{
+        checkEndTime: {
+           validator: function (value) {
+             var str = $('#startTime').datebox('getValue');
+               str = str.replace(/-/g,"/");
+               var start = new Date(str);
+
+               str = $('#endTime').datebox('getValue');
+               str = str.replace(/-/g,"/");
+               var end = new Date(str);
+
+               if(end <= start){
+                   return false;
+               }else{
+                   return true;
+               }
+           },
+           message: '结束日期必须大于开始日期！'
+         }
+    });
+
+    function deal(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows && rows.length == 1){
+            if (rows[0].status == "未处理") {
+                var url = _baseUrl + "/deal?id=" + rows[0].id;
+                top.CC.addTab({title:'问题处理详情',url:url});
+            } else {
+                top.CC.messager({
+                    title: '提示',
+                    msg: '这条问题已处理。'
+                });
+            }
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '请选择至少一条数据进行删除!'
+            });
+        }
+
+    }
+</script>
+#end

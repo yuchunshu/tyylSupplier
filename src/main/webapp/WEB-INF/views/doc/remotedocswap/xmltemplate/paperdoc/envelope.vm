@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<envelope>
+  <header identifier="">
+    <type>cooperate</type>
+    <business_id>$!{envelope.envelopeUuid}</business_id>
+    <receiver>
+      <secondary_unit_identifier>123456789-W-1</secondary_unit_identifier>
+    </receiver>
+  </header>
+  <content>
+    <identifier>007565768-N-2016G001000000128</identifier>
+    <opinion>
+    </opinion>
+    <files>
+      <file>
+         <path>$!{envelope.envelopeContentPath}</path>
+         <md5>$!{envelope.envelopeContentMD5}</md5>
+      </file>
+#foreach($_attach in $!{envelopeContent.remoteDocSwapAttachs})
+  #if("$!{_attach.remoteAttachType}" == "other")
+      <file>
+          <path>$!{_attach.trueName}</path>
+          <md5>$!{_attach.fileMdf}</md5>
+      </file>
+  #end
+#end
+    </files>
+  </content>
+</envelope>

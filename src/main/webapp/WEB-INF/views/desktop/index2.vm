@@ -1,0 +1,419 @@
+#set($bodyattr="class='easyui-layout' style='overflow-y: hidden'  scroll='no'")
+#if($dict.userprofile.get($!{user.currentUserId}))
+#set($themes="$!dict.userprofile.get($!{user.currentUserId})")
+#else
+#set($themes="default")
+#end
+<noscript>
+    <div class="noscript_tip">
+        <img src="images/noscript.gif" alt='抱歉，请开启脚本支持！' />
+    </div>
+</noscript>
+
+<div id="north" region="north" border="false" style="height:60px;overflow-y:hidden;">
+    <div class="top-banner">
+        <!--顶栏-->
+        <div class="up">
+            <div class="title"><img src="themes/$!{themes}/images/logo.png"></div>
+            <div class="control">
+                <div class="user-info">
+                    <img src="themes/$!{themes}/images/icon-user.png"/>
+                    <span>$!user.getCurrentUserName()</span>
+                </div>
+
+                <div class="control-zone">
+                    <ul>
+                        <li><a href="javascript:;" title="系统首页" onclick="window.CC.goIndex();"><img src="themes/$!{themes}/images/icon-home.png"/></a></li>
+                        <li><a href="javascript:;" title="帮助中心" onclick="$('#helpWindow').show().window('center').window('open')"><img src="themes/$!{themes}/images/icon-help.png"/></a></li>
+                        <li>
+                            <a href="javascript:;" title="最新通知" onclick="msgHistory()" class="topmenu-info">
+                                <div id="msgAlert" style="display:none;"><span class="wd" id="msgNum"></span></div>
+                                <img src="themes/$!{themes}/images/icon-notice.png"/>
+                            </a>
+                        </li>
+                        <li onclick="logoutSystem()"><a href="javascript:;" title="退出系统"><img src="themes/$!{themes}/images/icon-quit.png"/></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div region="west" id="west" data-options="
+                hideExpandTool: true,
+                expandMode: null,
+                hideCollapsedContent: false,
+                collapsedSize: 7,
+                collapsedContent:function(){return $('#indexlayoutwestcoll')}
+                ">
+        <div id='wnav' fit="true" class="easyui-accordion"  border="false" style="padding:0px 6px 0px 0px">
+        </div>
+        <div  class="index-layout-west-coll">
+            <a href="javascript:;" onclick="$('#indexlayoutwestcoll').show();$('body').layout('collapse','west')" class="extrude"></a>
+        </div>
+        <div id="indexlayoutwestcoll" class="index-layout-west-exp" style="display:none">
+            <a href="javascript:;" onclick="$('#indexlayoutwestcoll').hide();$('body').layout('expand','west')" class="systole"></a>
+        </div>
+</div>
+
+
+<div region="center" border="false">
+    <div id="tabs" class="easyui-tabs"  fit="true" border="false">
+    ## 页面内容
+    </div>
+</div>
+
+<div region="south" split="false" style="height:30px; background: #2489cf;">
+    <div class="footer" style="background: #2489cf;">技术支持：南宁超创信息工程有限公司 0771-5507769</div>
+</div>
+<div id="westHide" style="display:none">
+
+
+<div class="user-tips" id="userInfoTips" style="display:none;">
+    <img src="themes/$!{themes}/images/icon-trangle.png">
+    <div class="tips">
+        <div class="user-content">
+            <div class="user-img"></div>
+            <div class="info">
+                <span class="tips-username" style="font-size:16px;">$!user.getCurrentUserName()</span>
+                <span>$!user.getCurrentUser().department.deptName</span>
+                <span>职位：$!user.getCurrentUser().duty.dutyName</span>
+            </div>
+            <div class="btn-area">
+                <a href="javascript:;" style="border-right:1px solid #e6e6e6" onclick="$('#settingWindow').window('open');$('#settingWindow').window('refresh','$link.getContextURL()/desktop/setting/edit');">个人设置</a>
+                ## <a href="javascript:;" onclick="$('#proxyWindow').window('open').window('refresh','$link.getContextURL()/desktop/agent/edit');">代&nbsp;&nbsp;&nbsp;&nbsp;理</a>
+            </div>
+        </div>
+    </div>
+    <!-- 解决goldgrid遮盖问题 by yuandl 20161209 -->
+    <iframe style="position: absolute; z-index: -1; width: 100%; height: 100%; top: 0;left:0;scrolling:no;" frameborder="0"></iframe>
+</div>
+<div id="tabMenu" class="easyui-menu" class="cc-tab-menu" style="display:none;">
+    <div id="mm-tabupdate">刷新</div>
+    <div class="menu-sep"></div>
+    <div id="mm-tabclose">关闭</div>
+    <div id="mm-tabcloseall">全部关闭</div>
+    <div id="mm-tabcloseother">除此之外全部关闭</div>
+    <div class="menu-sep"></div>
+    <div id="mm-tabcloseright">当前页右侧全部关闭</div>
+    <div id="mm-tabcloseleft">当前页左侧全部关闭</div>
+    <div class="menu-sep"></div>
+    <div id="mm-exit">退出</div>
+</div>
+#include("/index.css.html")
+#parse("/selectdialog/selectdialogframe.vm")
+
+
+## 消息提醒的历史消息窗口
+<div id="editWindow" class="easyui-dialog" title="历史消息" style="width:800px;height:485px;padding:5px;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false,closable:true,buttons:'#bnts'">
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="$('#clearDialog').css('display','block');$('#clearDialog').window('center');$('#clearDialog').window('open');">清理</a>
+        <a class="new-but" onclick="$('#editWindow').dialog('close')">关闭</a>
+    </div>
+</div>
+
+## 个人设置
+<div id="settingWindow" class="easyui-dialog" title="个人设置" style="width:590px;height:395px;padding:5px;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false,closable:true,buttons:'#settingBnts'">
+    <div id="settingBnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="saveSetting()">保存设置</a>
+        <a class="new-but" onclick="$('#settingWindow').dialog('close')">取消</a>
+    </div>
+</div>
+
+## 代理
+<div id="proxyWindow" class="easyui-dialog" title="代理设置" style="width:490px;height:295px;padding:5px;"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false,closable:true,buttons:'#proxyBnts'">
+    <div id="proxyBnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="saveAgentUser()">确定</a>
+        <a class="new-but" onclick="$('#proxyWindow').dialog('close')">取消</a>
+        <a class="new-but" onclick="delAgent()">撤销代理</a>
+    </div>
+</div>
+## 帮助中心
+<div id="helpWindow" class="easyui-dialog" title="帮助中心" style="width:550px;height:350px;padding:5px;display:none"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false,closable:true">
+        <span style="color:blue;font-size:22px">正在努力开发中，敬请期待。</span>
+    ## <table class="easyui-datagrid" data-options="singleSelect:true,showHeader:false,fit:true,border:false">
+    ##     <thead>
+    ##         <tr>
+    ##             <th style="width:100%" data-options="field:'xx'">文档</th>
+    ##         </tr>
+    ##     </thead>
+    ##     <tbody>
+    ##         <tr>
+    ##             <td><a href="#">1、用户手册</a></td>
+    ##         </tr>
+    ##     </tbody>
+    ## </table>
+</div>
+
+#@script()
+<link href="css/effect.css" rel="stylesheet" type="text/css"/>
+<link href="themes/$!{themes}/tab_xoa.css" rel="stylesheet" type="text/css"/>
+<link href="themes/$!{themes}/index.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src='js/main.js'> </script>
+<script type="text/javascript" src='lib/jquery/jquery.SuperSlide.2.1.1.js'> </script>
+
+<script type="text/javascript">
+
+function setShortcut(){
+    var _callback_fn = window["setShortcutCallBack"];
+    var dfn = top.window.openSelectDialogFrameDialog;
+    if (typeof dfn === "function") {
+        dfn("$link.getContextURL()/desktop/setShortcut", _callback_fn);
+    }
+    return false;
+}
+
+
+function scrollModule(){
+    if($("#west").scrollTop()<=0){
+        $("#west").scrollTop(document.getElementById("west").scrollHeight);
+        $(".module-more a").removeClass("btn-more")
+        $(".module-more a").addClass("btn-more-up")
+    }else{
+        $("#west").scrollTop(0);
+        $(".module-more a").removeClass("btn-more-up")
+        $(".module-more a").addClass("btn-more")
+    }
+}
+
+
+
+$(document).ready(function(){
+
+    $("#north .user-info").on("mouseover",function(){
+        $("#userInfoTips").show();
+    });
+    $("#userInfoTips").on("mouseover",function(){
+        $("#userInfoTips").show();
+    });
+     $("#north .user-info").on("mouseout",function(){
+        $("#userInfoTips").hide();
+    });
+    $("#userInfoTips").on("mouseout",function(){
+        $("#userInfoTips").hide();
+    });
+
+
+      //添加遮罩
+    $.easyui.loading({msg:'正在加载',locale:$('#west')});
+
+    /************************************
+     * 初始化导航菜单列表*
+     ************************************/
+    var _menus = {};
+    $.post("$link.getContextURL()/system/power/currentUserPower.json",{},function(result){
+
+        //alert(result.length);
+
+        _menus.主菜单 = result;
+        var app = new CCApp();
+        app.menus = _menus;
+        if(result && result.length>0){
+            app.initMenu(_menus.主菜单);
+        }
+        app.init("$!{themes}");
+
+        //取消遮罩
+        $.easyui.loaded($('#west'));
+
+        app.addTab({title:"首页",url:"desktop/content/index",onFrameLoad:'onFrameLoad'});
+
+        if(!window.CC){
+            window.CC = new CCApp();
+        }
+
+    });
+
+
+});
+
+
+
+
+</script>
+<script type="text/javascript" src='lib/plupload/json2.min.js'></script>
+<script type="text/javascript" src='lib/plupload/plupload.full.min.js'></script>
+<script type="text/javascript" src='lib/plupload/i18n/zh_CN.js'></script>
+<script src="lib/ckeditor/ckeditor.js" type="text/javascript"></script>
+<script src="lib/ckeditor/adapters/jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+function logoutSystem() {
+    if (top.CC.CONTAIN_GOLDGRID_FLAG) {
+        top.CC.goIndex();
+    }
+    $.messager.confirm('系统提示', '您确定要退出本次登录吗?', function(ok) {
+        if (ok) {
+            top.location.href = '$link.getContextURL()/common/logout';
+        }
+    });
+
+    return false;
+}
+
+function msgHistory(mesType) {
+    if (top.CC.CONTAIN_GOLDGRID_FLAG) {
+        top.CC.goIndex();
+    }
+    $("#editWindow").window('open');
+    $("#editWindow").window('center');
+    $("#editWindow").window('refresh','$link.getContextURL()/oa/appmessage/getWelcomeMsg?mesType=' + mesType);
+}
+
+##$(document).ready(function() {
+##    setInterval("$('.topmenu-info .wd').fadeOut(800).fadeIn(800);",1000);
+##});
+
+// 在imMsg页面重写   不要删除
+function closeItv() {
+};
+
+## 消息提醒插件
+(function(){
+    var _skin;
+    var _search = window.location.search;
+    if (_search) {
+        _skin = _search.split('demoSkin=')[1];
+    }
+    document.write('<scr' + 'ipt src="$link.getContextURL()/lib/artDialog4.1.7/artDialog.source.js?skin=' + (_skin || 'green') + '"></sc' + 'ript>');
+    window._isDemoSkin = !!_skin;
+
+    // 进页面后3秒刷新
+    setTimeout(countSecond, 1000 * 3);
+
+    // 每隔30秒刷新
+    setInterval(countSecond, 1000 * 30);
+
+})();
+
+function countSecond() {
+    artDialog.notice = function (options) {
+        var opt = options || {},
+            api, aConfig, hide, wrap, top,
+            duration = 800;
+
+        var config = {
+            id: 'Notice',
+            left: '100%',
+            top: '100%',
+            fixed: true,
+            drag: false,
+            resize: false,
+            follow: null,
+            lock: false,
+            init: function(here){
+                api = this;
+                aConfig = api.config;
+                wrap = api.DOM.wrap;
+                top = parseInt(wrap[0].style.top);
+                hide = top + wrap[0].offsetHeight;
+
+                wrap.css('top', hide + 'px')
+                    .animate({top: top + 'px'}, duration, function () {
+                        opt.init && opt.init.call(api, here);
+                    });
+            },
+            close: function(here){
+                wrap.animate({top: hide + 'px'}, duration, function () {
+                    opt.close && opt.close.call(this, here);
+                    aConfig.close = $.noop;
+                    api.close();
+                });
+
+                return false;
+            }
+        };
+
+        for (var i in opt) {
+            if (config[i] === undefined) config[i] = opt[i];
+        };
+
+        return artDialog(config);
+    };
+
+
+    $.post("$link.getContextURL()/oa/appmessage/query.json", function(msgInfo){
+        var contentText = "";
+        if (msgInfo.pendingFileSum) {
+            var onclick = "top.CC.addTab({title:'待办公文',url:'$link.getContextURL()" + msgInfo.pendingFilePath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="待办公文" class="font-titlecolor">您有<span style="color:red">' + msgInfo.pendingFileSum + '</span>件待办事项</a><br/>';
+        }
+		if (msgInfo.inteRequestFileSum) {
+            var onclick = "top.CC.addTab({title:'内部请示',url:'$link.getContextURL()" + msgInfo.inteRequestFilePath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="内部请示" class="font-titlecolor">您有<span style="color:red">' + msgInfo.inteRequestFileSum + '</span>件内部请示</a><br/>';
+        }
+        if (msgInfo.toReadMatterSum) {
+            var onclick = "top.CC.addTab({title:'待阅公文',url:'$link.getContextURL()" + msgInfo.toReadMatterPath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="待阅公文" class="font-titlecolor">您有<span style="color:red">' + msgInfo.toReadMatterSum + '</span>件待阅事项</a><br/>';
+        }
+        if (msgInfo.mailSum) {
+            var onclick = "top.CC.addTab({title:'收件箱',url:'$link.getContextURL()" + msgInfo.mailPath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="收件箱" class="font-titlecolor">您有<span style="color:red">' + msgInfo.mailSum + '</span>封新邮件</a><br/>';
+        }
+        if (msgInfo.meetingSum) {
+            var onclick = "top.CC.addTab({title:'我的会议',url:'$link.getContextURL()" + msgInfo.meetingPath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="我的会议" class="font-titlecolor">您有<span style="color:red">' + msgInfo.meetingSum + '</span>场新会议</a><br/>';
+        }
+        if (msgInfo.scheduleSum) {
+            var onclick = "top.CC.addTab({title:'我的日程',url:'$link.getContextURL()" + msgInfo.schedulePath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="我的日程" class="font-titlecolor">您有<span style="color:red">' + msgInfo.scheduleSum + '</span>条新日程安排</a><br/>';
+        }
+        if (msgInfo.imMessageSum) {
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();openIm();" title="即时消息" class="font-titlecolor">您有<span style="color:red">' + msgInfo.imMessageSum + '</span>条新即时消息</a><br/>';
+##            setInterval("$('.imMsgClass').fadeOut(800).fadeIn(800);",1000);
+        }
+        if (msgInfo.otherSum) {
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();msgHistory(5);" title="业务消息" class="font-titlecolor">您有<span style="color:red">' + msgInfo.otherSum + '</span>条业务消息</a><br/>';
+        }
+        contentText = contentText + '请注意查收！';
+        if (msgInfo.pendingFileSum || msgInfo.inteRequestFileSum || msgInfo.toReadMatterSum || msgInfo.mailSum || msgInfo.meetingSum || msgInfo.scheduleSum || msgInfo.imMessageSum || msgInfo.otherSum) {
+            art.dialog.notice({
+                title: '温馨提示',//标题
+                width: 250,// 必须指定一个像素宽度值或者百分比，否则浏览器窗口改变可能导致artDialog收缩
+                content: contentText,
+                time: 55 //显示时间
+            });
+        }
+
+##        // 未读数量
+##        var notReadSum = msgInfo.notReadSum;
+##        // 右上角消息图标
+##        if (notReadSum && notReadSum > 0) {
+##            $("#msgAlert").show();
+##            if (notReadSum < 100) {
+##                $("#msgNum").text(notReadSum);
+##            } else {
+##                $("#msgNum").text(99); // 最多显示99条
+##            }
+##        } else {
+##            $("#msgNum").text(0);
+##            $("#msgAlert").hide();
+##        }
+    },'json');
+}
+
+
+
+    $("a[mans-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = "$link.getContextURL()/select/selectSingleManClassify";
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+    // 人员选择回调
+    function fnSelectMansCallback(obj){
+        $('#proxyUser').textbox('setValue', obj.userName);
+    }
+</script>
+#end

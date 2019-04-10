@@ -1,0 +1,123 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onClick="roleEdit('new')">新增</a>
+            <a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="roleEdit('edit')">修改</a>
+            <a  href='javascript:;' class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" plain="true" onclick='deleteRole()'>删除</a>
+            <i></i>
+            <a  onclick="$('#searchDialog').css('display','block').window('open').window('center');" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+        <table id="dg" data-options="nowrap:false" style="width:100%;">
+            <thead>
+                <th style="width:20%" data-options="field:'roleName'">角色名称</th>
+                <th style="width:10%" data-options="field:'powerCount'">权限数量</th>
+                ##<th style="width:10%" data-options="field:'userCount'">关联人员数量</th>
+                <th style="width:10%" data-options="field:'orderNum'">排序</th>
+                <th style="width:20%" data-options="field:'remark'">备注</th>
+				<th style="width:10%" data-options="field:'roleId',align:'center',formatter:rowformater">操作</th>
+            </thead>
+            </table>
+		<div class="cc-operateColum">
+          <a  href='javascript:;' class="easyui-linkbutton" iconCls="icon-edit"
+            plain="true" onclick="editUserRole('__id__')">用户角色配置
+          </a>
+        </div>
+        </div>
+    </div>
+    <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:180px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <form id="queryForm">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="text-align: right">角色名称：</td>
+                    <td><input name="$qc.like('roleName')" id="roleName" style="width:350px;" class="easyui-textbox" /></td>
+                </tr>
+            </table>
+         </form>
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+</div>
+#parse("system/role/crud.js.vm")
+#@script()
+<script type="text/javascript">
+    $(function () { // 给查询dialog中的 input 绑定回车事件
+        $('#roleName').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/system/role/listRole.json';
+
+
+    function roleEdit(type){
+        if(type=="new"){
+            top.CC.addTab({title:'角色编辑',url:'$link.getContextURL()/system/role/editRole'});
+        }else if(type=="edit"){
+            var row = $("#dg").datagrid("getSelected");
+            if(row && row.id){
+                top.CC.addTab({title:'角色编辑',url:'$link.getContextURL()/system/role/editRole?roleId='+row.id});
+            }
+        }
+    }
+
+    function deleteRole(){
+        var row = $("#dg").datagrid('getSelected');
+        if(row && row.id){
+            if(row.userCount>0){
+                top.CC.messager({title:'提示',msg:'该角色关联有人员，不能删除！'});
+            }else if(row.powerCount>0){
+                top.CC.messager({title:'提示',msg:'该角色关联有权限，不能删除！'});
+            }else{
+                $.messager.confirm('提示','确认删除？',function(r){
+                    if(r){
+                        $.easyui.loading({locale:$('body')});
+                        $.post("$link.getContextURL()/system/role/deleteRole.json",{roleId:row.id},function(result){
+                            $.easyui.loaded($('body'));
+                            if(result.error){
+                                top.CC.messager({title:'提示',msg:result.result});
+                            }else{
+                                $("#dg").datagrid('reload');
+                            }
+                        });
+                    }
+                });
+            }
+        }else{
+            top.CC.messager({title:'提示',msg:'请选择要删除的角色！'});
+        }
+    }
+
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+	function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+	//列表操作
+	function rowformater(value, row, index){
+		return $(".cc-operateColum").html().replace(new RegExp("__id__",'gm'),row.id);
+	}
+
+	//用户角色配置
+	function editUserRole(id){
+        top.CC.addTab({title:'用户角色配置',url:'$link.getContextURL()/system/role/editUserRole?roleId='+id});
+    }
+</script>
+#end
+

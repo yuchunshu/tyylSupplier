@@ -1,0 +1,23 @@
+    <form id="editForm" method="post">
+      <input name="outerId" id="outerId" type="hidden" value="$!{obj.id}"/>
+      <input name="fileType" id="fileType" type="hidden" value="1"/>
+      <input id="createrDepId" name="createrDepId" type="hidden"  value="$!{currentUser.department.id}"/>
+      <input id="creatorId" name="creatorId" type="hidden" value="$!{currentUser.id}"/>
+      <input id="docEditable" name="docEditable" type="hidden" value="1"/>
+      <input name="nextNodeId" id="nextNodeId" type="hidden" value=""/>
+      <input name="nextDealers" id="nextDealers" type="hidden" value=""/>
+
+      <table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+        <tbody>
+        <tr>
+          <td class="fix_td_title">&nbsp;</td>
+          <td class="fix_td_data">&nbsp;</td>
+          <td class="fix_td_title">&nbsp;</td>
+          <td class="fix_td_data">&nbsp;</td>
+        </tr>
+
+        #parse("doc/outer/inner/info_edit.vm")
+        </tbody>
+      </table>
+    </form>
+

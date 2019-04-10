@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.1.xsd"
+>
+
+    <description>上传文件配置</description>
+
+    <bean
+        id="uploadManager"
+        class="cn.com.chaochuang.common.upload.support.UploadManager"
+    >
+        <property
+            name="rootDir"
+            value="${upload.rootpath}" />
+        <property
+            name="filePrefix"
+            value="${upload.fileprefix}" />
+    </bean>
+
+</beans>

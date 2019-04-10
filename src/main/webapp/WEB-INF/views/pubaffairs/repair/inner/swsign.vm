@@ -1,0 +1,244 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/pubaffairs/repair.css"/>
+<div id="receiveContainers">
+	<div class="receive_table">
+		<table cellspacing="0" cellpadding="0" >
+            <tr>
+				<td colspan="6" style="border: 0px solid black;">
+					<div style="float: right;">
+						<span>
+							JL-113B
+                        </span>
+                    </div>
+                </td>
+			</tr>
+			<tr>
+				<th colspan="6">广西-东盟食品药品安全检验检测中心<br />仪器设备故障报告、维修表</th>
+			</tr>
+			<tr>
+				<td colspan="6" style="border: 0px solid black; padding: 0px 0px;">
+					<div style="float: left;">
+						<span>
+							报告科室：$!{esc.html($!{obj.deptName})}
+                        </span>
+                    </div>
+                </td>
+			</tr>
+			<tr class="noPadding">
+				<td style="width:140px;text-align: center">
+					仪器名称
+				</td>
+                <td style="width:270px;text-align: center">
+					<span class="span_content">$!{esc.html($!{obj.deviceName})}</span>
+				</td>
+                <td style="width:100px;text-align: center">
+					型号
+				</td>
+                <td style="width:220px;text-align: center">
+					<span class="span_content">$!{esc.html($!{obj.deviceModel})}</span>
+				</td>
+                <td style="width:100px;text-align: center">
+					编号
+				</td>
+				<td style="width:200px;text-align: center">
+					<span class="span_content">$!{esc.html($!{obj.deviceNumber})}</span>
+				</td>
+           </tr>
+    		<tr class="noPadding">
+                <td colspan="6">故障现象、时间及原因分析：
+					<br>
+					<div style="height: 120px;padding: 0px 5px 5px 10px;">
+						<span class="span_content">$!{esc.html($!{obj.failureReason})}</span>
+                    </div>
+					<br>
+					<div style="float: left;width: 33%;">
+						<span style="font-family: '仿宋'!important;font-size:20px;">
+							仪器协理员：<span>$!{esc.html($!{obj.creatorName})}</span>
+                        </span>
+                    </div>
+					<div style="float: left;width: 33%;">
+						<span style="font-family: '仿宋'!important;font-size:20px;">
+							科室负责人：
+							#foreach($data in $opinionList)
+        						#if("$!data.curNode.nodeName" == "科室负责人审核")
+        							<span>$!{data.approver.userName}</span>
+        							<div style="clear:both"></div>
+        						#end
+							#end
+                        </span>
+                    </div>
+					<div style="float: left;width: 33%;">
+						<span style="font-family: '仿宋'!important;font-size:20px;">
+							日期：<span>$date.format('yyyy年MM月dd日HH时',$!{obj.createDate})</span>
+                        </span>
+                    </div>                                
+				</td>
+            </tr>
+			<tr class="noPadding">
+                <td colspan="4">维修方式：
+					<br>
+					<div style="height: 150px;padding: 0px 5px 5px 10px;">
+						<span class="span_content">
+							#foreach($data in $opinionList)
+        						#if("$!data.curNode.nodeName" == "信息科负责人审核")
+        							<span>$!{esc.html($!{data.apprOpinion})}</span>
+        							<div style="clear:both"></div>
+        						#end
+							#end
+						</span>
+                    </div>
+                    <div style="float: left;width: 50%;">
+                        <span style="font-family: '仿宋'!important;font-size:20px;">信息设备科：</span>
+						#foreach($data in $opinionList)
+							#if("$!data.curNode.nodeName" == "信息科负责人审核")
+								<span>$!{data.approver.userName}</span>
+								<div style="clear:both"></div>
+							#end
+						#end
+					</div>
+					<div style="float: left;width: 50%;">
+						<span>
+							<span style="font-family: '仿宋'!important;font-size:20px;">日期：</span>
+							#foreach($data in $opinionList)
+        						#if("$!data.curNode.nodeName" == "信息科负责人审核")
+        							<span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span>
+        							<div style="clear:both"></div>
+        						#end
+							#end
+                        </span>
+                    </div>
+				</td>
+				<td colspan="2">
+                    <div>
+						<label>
+							<input type="radio" class="easyui-validatebox" data-options="required:true" name="repairType" disabled="disabled" value="0" #if($!{obj.repairType.key}=='0') checked #end/>
+							<span style="font-family: '仿宋'!important;font-size:20px;">&nbsp;&nbsp;自行维修</span>
+						</label>
+						<br/>
+						<br/>
+                    	<label>
+							<input type="radio" class="easyui-validatebox" data-options="required:true" name="repairType" disabled="disabled" value="1" #if($!{obj.repairType.key}=='1') checked #end/>
+							<span style="font-family: '仿宋'!important;font-size:20px;">&nbsp;&nbsp;返厂维修</span>
+						</label>
+						<br/>
+						<br/>
+                    	<label>
+							<input type="radio" class="easyui-validatebox" data-options="required:true" name="repairType" disabled="disabled" value="2" #if($!{obj.repairType.key}=='2') checked #end/>
+							<span style="font-family: '仿宋'!important;font-size:20px;">&nbsp;&nbsp;上门维修</span>
+						</label>
+					</div>
+					<div style="padding-top: 32px;">
+						<span style="font-family: '仿宋'!important;font-size:20px;">预计费用：</span><span>$!{esc.html($!{obj.expectCost})}</span>
+                    </div>
+                </td>
+            </tr>
+			<tr class="noPadding">
+                <td colspan="3">
+					<div style="height: 130px;padding: 10px 5px 5px 10px;">
+						<span class="span_content">
+							#foreach($data in $opinionList)
+        						#if("$!data.curNode.nodeName" == "技术负责人审核")
+        							<span>$!{esc.html($!{data.apprOpinion})}</span>
+        							<div style="clear:both"></div>
+        						#end
+							#end
+						</span>
+                    </div>
+					技术负责人：
+					#foreach($data in $opinionList)
+        				#if("$!data.curNode.nodeName" == "技术负责人审核")
+							<span>$!{data.approver.userName}</span>
+							<div style="float:right">
+								<span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span>
+							</div>
+							<div style="clear:both"></div>
+        				#end
+					#end
+				</td>
+				<td colspan="3">
+					<div style="height: 130px;padding: 10px 5px 5px 10px;">
+						<span class="span_content">
+							#foreach($data in $opinionList)
+        						#if("$!data.curNode.nodeName" == "中心主任审核")
+        							<span>$!{esc.html($!{data.apprOpinion})}</span>
+        							<div style="clear:both"></div>
+        						#end
+							#end
+						</span>
+                    </div>
+					中心主任：
+					#foreach($data in $opinionList)
+        				#if("$!data.curNode.nodeName" == "中心主任审核")
+							<span>$!{data.approver.userName}</span>
+							<div style="float:right">
+								<span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span>
+							</div>
+							<div style="clear:both"></div>
+        				#end
+					#end
+				</td>
+            </tr>
+			<tr class="noPadding">
+                <td colspan="3">维修及验收情况：
+					<br>
+					<div style="height: 150px;padding: 0px 5px 5px 10px;">
+						<span class="span_content">
+							#foreach($data in $opinionList)
+        						#if("$!data.curNode.nodeName" == "信息科验收")
+        							<span>$!{esc.html($!{data.apprOpinion})}</span>
+        							<div style="clear:both"></div>
+        						#end
+							#end
+						</span>
+                    </div>
+					信息设备科负责人：
+					#foreach($data in $opinionList)
+        				#if("$!data.curNode.nodeName" == "信息科验收")
+							<span>$!{data.approver.userName}</span>
+							<div style="float:right">
+								<span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span>
+							</div>
+							<div style="clear:both"></div>
+        				#end
+					#end
+				</td>
+				<td colspan="3">科室复核：
+					<br>
+					<div style="height: 150px;padding: 0px 5px 5px 10px;">
+						<span class="span_content">
+							#foreach($data in $opinionList)
+        						#if("$!data.curNode.nodeName" == "科室复核")
+        							<span>$!{esc.html($!{data.apprOpinion})}</span>
+        							<div style="clear:both"></div>
+        						#end
+							#end
+						</span>
+                    </div>
+					科室负责人：
+					#foreach($data in $opinionList)
+        				#if("$!data.curNode.nodeName" == "科室复核")
+							<span>$!{data.approver.userName}</span>
+							<div style="float:right">
+								<span>$!date.format('yyyy年MM月dd日',$!{data.apprTime})</span>
+							</div>
+							<div style="clear:both"></div>
+        				#end
+					#end
+				</td>
+            </tr>
+			<tr>
+				<td colspan="6" style="border: 0px solid black; padding: 0px 0px;">
+					<div style="float: left;">
+						<span>
+							如有厂家维修报告书，请附后。
+                        </span>
+                    </div>
+                </td>
+			</tr>
+			
+			
+			
+			
+			
+		</table>
+	</div>
+</div>

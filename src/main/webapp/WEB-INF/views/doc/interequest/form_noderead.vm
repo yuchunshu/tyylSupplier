@@ -1,0 +1,76 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" >
+        <div id="docTab" class="easyui-tabs tabs-trapezoid"  fit="true" border="false">
+        <div title="内部请示阅知" style="padding:5px;">
+            <div id="wordMenu" style="display:none;"></div>
+            <div style="border:1px solid #e0e0e0;">
+					#parse("doc/interequest/inner/swsign.vm")
+                </br>
+            </div>
+            <form id="editForm" method="post">
+                <input id="comId" name="comId" type="hidden" value="$!{comId}"/>
+
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+
+                    <tr id="receiveFilefileTr1" align="left">
+                        ##标识附件是否可以编辑
+                        #set($docIsEdit=false)
+                        <td class="bg-grey"  align="right">附件 </td>
+                        <td class="bg-white"  colSpan="3" align="left" attachId="$!{obj.id}">
+                            ##附件id
+                            <input id="attach" name="attach" type="hidden" value=""/>
+                            <div class="filelistmulti" id="file-list-c">
+                                <div id="other-file-c">
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+				##金格控件显示预览
+				#parse("doc/fileparse/attachpreview.vm")
+            </form>
+        </div>
+
+        <div title="办理过程"  data-options="href:'$link.getContextURL()/workflow/event/listHisTask?flowInstId=$!{obj.flowInstId}'">
+        </div>
+
+        </div>
+    </div>
+
+	<div data-options="region:'south'" style="height:52px">
+	  <div class="bottom-but">
+	    <ul>
+	    <li><a id="back" onclick="back()" class="new-but">关闭</a></li>
+	    </ul>
+	  </div>
+	</div>
+
+</div>
+</div>
+#@script()
+<script type="text/javascript">
+
+  // 关闭
+  function back() {
+    var title = top.CC.getCurTab().panel('options').title;
+    if("$!returnPageType" == "read"){
+		top.CC.addTab({title:'待阅公文',url:'$link.getContextURL()/doc/event/readlist'});
+	}else{
+		top.CC.addTab({title:'待办公文',url:'$link.getContextURL()/doc/event/tasklist'});
+	}
+    top.CC.closeTab(title);
+  }
+
+</script>
+#end
+

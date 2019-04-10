@@ -1,0 +1,117 @@
+#set($bodyattr="class='easyui-layout' style='border:0px;#if($dialogWidth) width:$!{dialogWidth}px; #else width:890px; #end #if($dialogHeight) height:$!{dialogHeight}px; #else height:500px; #end margin-left:5px;margin-right:5px;margin-top:5px; padding:0 5px 3px 0; '")
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <div style="text-align:center;height:30px;">限办时间：$!{expiryDate}</div>
+                <table class="table-edit">
+					#foreach($data in $flowNodeList)
+					<tr class="bg-grey">
+                        <td class="bg-grey" style="width:150px;"><div>$data.nodeName</div></td>
+                        <td class="bg-white" style="vertical-align:text-top;">
+						    <input name="nodeId" type="hidden" value="$data.id"/>
+        					<input style="width:50px;" id="$!{data.id}_day"  name="day" max="1000" min="0" data-options="onChange:getMinute" class="easyui-numberbox" value="">天
+        					<input style="width:50px;" id="$!{data.id}_hour"  name="hour" max="23" min="0" data-options="onChange:getMinute" class="easyui-numberbox" value="">小时
+							<input id="$!{data.id}_minute" name="minute" type="hidden" value=""/>
+					#end
+						</td>
+					</tr>
+				</table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="doselect()" class="new-but">保存</a></li>
+                    <li><a onclick="doclose()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+#@script()
+<style>
+## 隐藏datagrid底部分页信息
+.pagination-info{display:none}
+.pagination-page-list{display:none}
+</style>
+<script src="$link.getContextURL()/lib/avalon/avalon.js"></script>
+<script>
+    // 设置dialog标题
+    $(document).ready(function() {
+        if (top.setSelectDialogFrameDialogTitle) {
+            top.setSelectDialogFrameDialogTitle("$!{selectDialogTitle}");
+        }
+		
+		#foreach($data in $flowNodeList)
+		#set($nodeExpire="")
+		#set($nodeExpire=$!{nodeMap.get("$data.id")})
+
+		#if($nodeExpire> 0)
+			var day = Math.floor($!{nodeExpire} / (24 * 60 ));
+            var hour = Math.round(($!{nodeExpire} - (day * 24  * 60)) / 60);
+			
+    		$("#"+"$!{data.id}_day").textbox("setValue",day);
+    		$("#"+"$!{data.id}_hour").textbox("setValue",hour);
+		#end
+
+		#end
+    });
+	
+	function getMinute(newValue, oldValue){
+	
+		var id = $(this).attr("id");
+		var prefix = id.substr(0, id.indexOf('_'));
+		var day = $("#" + prefix + "_day").textbox("getValue");
+		var hour = $("#" + prefix + "_hour").textbox("getValue");
+		
+		var minute = $("#" + prefix + "_minute").val();
+		
+		minute = day*24*60 + hour*60;
+		
+		$("#" + prefix + "_minute").val(minute);
+		
+    }
+
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+
+    //选择
+    function doselect() {
+		var nodeIds = '';
+		var nodeExpireMinutes = '';
+        $("input[name='nodeId']").each(function(index,item){
+			nodeIds+=$(this).val()+',';
+		});
+		$("input[name='minute']").each(function(index,item){
+			var value = $(this).val();
+			if(""==value){
+				value = 0;
+			}
+			nodeExpireMinutes+=value+',';
+		});
+		
+		nodeIds = nodeIds.substring(0,nodeIds.length-1);
+		nodeExpireMinutes = nodeExpireMinutes.substring(0,nodeExpireMinutes.length-1);
+		
+		var obj = {
+          nodeIds : nodeIds,
+          nodeExpireMinutes:nodeExpireMinutes
+     	};
+		top.okSelectDialogFrameDialog(obj);
+    }
+
+	
+</script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

@@ -1,0 +1,64 @@
+<div id="selFlowsWindow" class="easyui-window" title="选择流程" style="width:350px;height:330px;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+    <div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    	<div id="cc" class="easyui-layout" data-options="fit:true">
+    		<div data-options="region:'center'" class="mynoborder" >
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				#foreach($flow in $flowList)
+				<tr>
+                    <td width="60"></td>
+                    <td class="bg-white" >
+                         <label class="myselect-task">
+                            <input type="radio" name="flowId" class="easyui-validatebox" #if("$!{velocityCount}" == "1")checked#end  data-options="required:true" value="$!{flow.id}"/>$!{esc.html($!{flow.flowName})}<br>
+                         </label>
+                    </td>
+                </tr>
+                #end
+            </table>
+    		</div>
+    		<div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+                <div class="bottom-but-dialog">
+                    <ul>
+                        <li><a id="gotoNext" onclick="doSelect()" class="new-but">确定</a></li>
+                        <li><a id="closfw" onclick="closefw()" class="new-but">取消</a></li>
+                    </ul>
+                </div>
+            </div>
+    	</div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+	function closefw(){
+		$('#selFlowsWindow').window('close');
+	}
+	
+	function doSelect(){
+		var flowId = $("input[name=flowId]:checked").val();
+		$("#flowId").val(flowId);
+		openNodes();
+		closefw();
+	}
+
+	//选择流程-------------------------------------------------------------------------------------------
+	function selectFlows(){
+		if(!$("#editForm").form('validate'))return false;
+		var flowArr = [];
+		#foreach($fl in $!{flowList})
+			flowArr[$!{velocityCount} - 1] = {
+				flowId : "$!{fl.id}",
+				flowName : "$!{fl.flowName}"
+			}
+		#end
+		if(flowArr.length < 1){
+			top.CC.messager({title:"提示",msg:"流程未定义"})
+		}else if(flowArr.length == 1){
+			$("#flowId").val(flowArr[0].flowId);
+			openNodes();
+		}else{
+			$('#selFlowsWindow').window('open');
+		}
+		return false;
+	}
+</script>
+#end

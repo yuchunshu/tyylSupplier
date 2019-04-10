@@ -1,0 +1,64 @@
+@charset "utf-8";
+
+  .icon-receivefile {
+    background: url('../../images/doc/icon-received.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-sendfile {
+    background: url('../../images/doc/icon-send.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-interequestfile {
+    background: url('../../images/doc/icon-interequest.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-simplefile {
+    background: url('../../images/doc/icon-simple.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-letter {
+    background: url('../../images/doc/icon-letter.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-doc-new {
+    background: url('../../images/doc/icon-new.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-urgent {
+    background: url('../../images/doc/icon-urgent.png') no-repeat center center;
+    padding-left: 20px;
+  }
+
+  .icon-emergency {
+    background: url('../../images/doc/icon-emergency.png') no-repeat center center;
+    padding-left: 20px;
+  }
+
+  .icon-limit {
+    background: url('../../images/doc/icon-limit.png') no-repeat center center;
+    padding-left: 20px;
+  }
+    .icon-secret {
+    background: url('../../images/doc/icon-secret.png') no-repeat center center;
+    padding-left: 20px;
+  }
+   .icon-undercover {
+    background: url('../../images/doc/icon-undercover.png') no-repeat center center;
+    padding-left: 20px;
+  }icon-undercover.png
+
+    .icon-confidential {
+    background: url('../../images/doc/icon-confidential.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-topic {
+    background: url('../../images/doc/icon-topic.png') no-repeat center center;
+    padding-left: 20px;
+  }
+  .icon-fordoback {
+    background: url('../../images/doc/icon-return.png') no-repeat center center;
+    padding-left: 20px;
+  }
+   .datagrid-cell-group{
+	font-size:14px;
+  }

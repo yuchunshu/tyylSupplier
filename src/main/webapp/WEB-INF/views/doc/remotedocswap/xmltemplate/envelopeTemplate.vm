@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<envelope>
+  <header identifier="">
+    <type>$!{envelope.envelopeType.value}</type>
+    <business_id>$!{envelope.envelopeUuid}</business_id>
+    <receiver>
+	   #if($!{envelope.secondaryUnitIdentifier})
+       ##<secondary_unit_identifier>$!{envelope.secondaryUnitIdentifier}</secondary_unit_identifier>
+	   #end
+       <secondary_unit_identifier>123456789-W-1</secondary_unit_identifier>
+    </receiver>
+  </header>
+  <content>
+    <identifier>$!{envelope.identifier}</identifier>
+  <opinion>$!{envelopeContent.title}#if($!{envelopeContent.docNumber})($!{envelopeContent.docNumber})#end</opinion>
+#if($!{envelope.envelopeType}=="6"||$!{envelope.envelopeType}=="5")
+    <end>1</end>
+#end
+    <files>
+      <file>
+        <path>$!{envelope.envelopeContentPath}</path>
+        <md5>$!{envelope.envelopeContentMD5}</md5>
+      </file>
+#if($!{envelopeContent.gwFileDoc})
+    <file>
+        <path>$!{envelopeContent.gwFileDoc.trueName}</path>
+        <md5>$!{envelopeContent.gwFileDoc.fileMdf}</md5>
+    </file>
+#end
+#if($!{envelopeContent.gdFileDoc})
+      <file>
+          <path>$!{envelopeContent.gdFileDoc.trueName}</path>
+          <md5>$!{envelopeContent.gdFileDoc.fileMdf}</md5>
+      </file>
+#end
+#if($!{envelopeContent.tifFileDoc})
+      <file>
+          <path>$!{envelopeContent.tifFileDoc.trueName}</path>
+          <md5>$!{envelopeContent.tifFileDoc.fileMdf}</md5>
+      </file>
+#end
+#foreach($_attach in $!{envelopeContent.remoteDocSwapAttachs})
+#if("$!{_attach.remoteAttachType}" == "other")
+      <file>
+          <path>$!{_attach.trueName}</path>
+          <md5>$!{_attach.fileMdf}</md5>
+      </file>
+#end
+#end
+    </files>
+  </content>
+</envelope>

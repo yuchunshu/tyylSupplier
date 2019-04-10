@@ -1,0 +1,224 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'">
+        <div id="docTab" class="easyui-tabs tabs-trapezoid" fit="true" border="false">
+        <div title="公文办理#if(${curNode})($!{curNode.nodeName})#end" style="padding:5px;">
+        ## <div id="sign-layout" class="easyui-layout" data-options="fit:true" >
+            <div id="wordMenu" style="display:none;"></div>
+            <div style="border:1px solid #e0e0e0;">
+					#parse("doc/simplefile/inner/fwsign.vm")
+                </br>
+            </div>
+            <form id="editForm" method="post">
+                <input id="id" name="id" type="hidden" value="$!{obj.id}"/>
+                <input id="flowId" name="flowId" type="hidden" value="$!{obj.flowId}"/>
+                <input id="flowInstId" name="flowInstId" type="hidden" value="$!{obj.flowInstId}"/>
+                <input id="curNodeId" name="curNodeId" type="hidden" value="$!{curNode.id}"/>
+                <input id="curNodeInstId" name="curNodeInstId"  type="hidden" value="$!{curNodeInstId}"/>
+                <input id="nextDealers" name="nextDealers" type="hidden" value=""/>
+                <input id="nextNodeId" name="nextNodeId" type="hidden" value=""/>
+                <input id="userIds" name="userIds" type="hidden" value=""/>
+                <input id="comId" name="comId" type="hidden" value="$!{comId}"/>
+                <input id="fileType" name="fileType" type="hidden" value="2"/>
+                <input id="filepath" name="filepath" type="hidden" value="$!{docpath}/$!{docname}"/>
+                <input id="taskKey" name="taskKey"  type="hidden" value="$!{taskKey}"/>
+                <input id="createrDepId" name="createrDepId" type="hidden" #if($obj) value="$!{obj.createrDept.id}" #else value="$!{currUser.department.id}" #end/>
+                <input id="creatorId" name="creatorId" type="hidden" #if($obj) value="$!{obj.creatorId}" #else value="$!{currUser.id}" #end/>
+                <input id="status" name="status" type="hidden" value="$!{obj.status}"/>
+                <input id="docEditable" name="docEditable" type="hidden" #if("$!{curNode.docEditable.key}"=="1" || $!{funcList.contains("N1")}) value="1" #else value="0" #end/>
+                <input name="docId" id="docId" type="hidden" value="$!{obj.docId}"/>
+                <input name="docpath" id="docpath" type="hidden" value="$!{docpath}"/>
+                <input name="docname" id="docname" type="hidden" value="$!{docname}"/>
+                <input id="fileCode" name="fileCode" type="hidden" value="$!{obj.fileCode}"/>
+                <input id="version_" name="version_" type="hidden" value="$!{obj.version_}"/>
+                <input id="readmans" name="readmans" type="hidden" value=""/>
+                <input id="createDate" name="createDate" type="hidden" value="$!{obj.createDate}"/>
+
+                <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <td class="fix_td_title">&nbsp;</td>
+                            <td class="fix_td_data">&nbsp;</td>
+                            <td class="fix_td_title">&nbsp;</td>
+                            <td class="fix_td_data">&nbsp;</td>
+                        </tr>
+						#if($!{funcList.contains("N1")})## 拟稿环节
+                			##标识附件是否可以编辑
+                			#set($docIsEdit=true)
+                			#parse("doc/simplefile/inner/info_edit.vm")
+                        #else## 在办环节
+                            #if("$!{curNode.editFlag.key}"=="1")## 可编辑意见
+                        <tr align="center">
+                            <td class="bg-grey" align="right" width="120px">
+                                #if($!{curNode.hasFuncBtns("S5")}) 处理情况 #else 审核意见 #end
+                                <br/>
+                                <a href="javascript:;" id="menuBtn" class="easyui-linkbutton l-btn-plain-search"  onclick="showMenu()" >个人词条</a>
+                            </td>
+                            <td class="bg-white" colspan="3"  align="left">
+                                <textarea id="opinion" class="easyui-validatebox textareaborder" data-options="validType:'maxLength[600]'" name="opinion" rows="3" maxlength="600"  style="width:99%;resize:none;" >$!{oppr}</textarea>
+                                <div style="height:32px;line-height:32px">
+                                    <label><input type="radio" name="quikfill" onclick="apendToOpinion(this)" value="同意"/> 同意</label>&nbsp;&nbsp;
+                                    <label><input type="radio" name="quikfill" onclick="apendToOpinion(this)"  value="已阅"/> 已阅</label>&nbsp;&nbsp;
+                                    <label><input type="radio" name="quikfill" onclick="apendToOpinion(this)"  value="不同意"/> 不同意</label>&nbsp;&nbsp;
+                                </div>
+                            </td>
+                        </tr>
+                #if("$!{curNode.docEditable.key}"=="0")## 不可编辑公文
+                    <tr id="receiveFilefileTr1" align="left">
+                        ##标识附件是否可以编辑
+                        #set($docIsEdit=false)
+                        <td class="bg-grey"  align="right">附件 </td>
+                        <td class="bg-white"  colSpan="3" align="left" attachId="$!{obj.id}">
+                            ##附件id
+                            <input id="attach" name="attach" type="hidden" value=""/>
+                            <div class="filelistmulti" id="file-list-c">
+                                <div id="other-file-c">
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                #end
+            #elseif("$!{curNode.editFlag.key}"=="0" || "$!{curNode.editFlag.key}"=="3")## 不可编辑意见，校对
+                #if("$!{curNode.docEditable.key}"=="0")## 不可编辑公文
+                    <tr id="receiveFilefileTr1" align="left">
+                        ##标识附件是否可以编辑
+                        #set($docIsEdit=false)
+                        <td class="bg-grey"  align="right">附件 </td>
+                        <td class="bg-white"  colSpan="3" align="left" attachId="$!{obj.id}">
+                            ##附件id
+                            <input id="attach" name="attach" type="hidden" value=""/>
+                            <div class="filelistmulti" id="file-list-c">
+                                <div id="other-file-c">
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                #end
+            #end
+
+            #if("$!{curNode.docEditable.key}"=="1")## 编辑公文信息
+                    <tr>
+                        <td class="bg-grey" colspan="4" style="text-align:center;">公文信息</td>
+                    </tr>
+					##标识附件是否可以编辑
+					#set($docIsEdit=true)
+                    #parse("doc/simplefile/inner/info_edit.vm")
+            #else
+            #end
+
+        #end
+                    </tbody>
+                </table>
+
+                ##附件预览
+                #parse("doc/fileparse/attachpreview.vm")
+
+
+            </form>
+        </div>
+        ## </div>
+        ## </div>
+        ##<div title="公文正文"  data-options="href:'$link.getContextURL()/doc/event/editDoc?docpath=$!{docpath}&docname=$!{docname}&flowId=$!{flowId}&taskKey=$!{nfsetting.taskKey}'"></div>
+    #if("$!{opflag}"!="4")
+        ##<div title="阅知意见"  data-options="href:'$link.getContextURL()/doc/readMatter/listFileRead?id=$!{obj.id}'"></div>
+
+        #if($!{depLettersCount} > 0)
+        ##<div title="会办意见"  data-options="href:'$link.getContextURL()/doc/letter/listReceiver?id=$!{obj.id}'"></div>
+        #end
+    #if("$!{opflag}"!="3")
+        <div title="办理过程"  data-options="href:'$link.getContextURL()/workflow/event/listHisTask?flowInstId=$!{obj.flowInstId}'">
+        </div>
+        ##<div title="轨迹图"  >
+          ##  <iframe src="$link.getContextURL()/diagram-viewer/index.html?processDefinitionId=$!{flowId}&processInstanceId=$!{flowInstId}"></iframe>
+        ##</div>
+    #end
+    #end
+        </div>
+    </div>
+    #parse("doc/fileparse/buttonadd.vm")
+</div>
+</div>
+#@script()
+<script type="text/javascript">
+
+    $(function(){
+          var opinionWidth= $('body').width();
+          $('#opinionExp').width(opinionWidth-24);
+          $('#opinionColl').width(opinionWidth-24);
+    });
+
+    function getAppr(apprSelect){
+        if(apprSelect.checked){
+            var apprOp =$('#apprOpinion').val();
+            if(apprOp.trim()==""){
+                apprOp = apprSelect.value;
+            }else{
+                apprOp += " "+apprSelect.value;
+            }
+            $('#apprOpinion').val(apprOp);
+        }
+    }
+
+    function opinionWord(item) {
+        $('#opinion').val(item.text);
+    }
+
+    //个人词条显示
+    $(function(){
+        $.post("$link.getContextURL()/oa/personal/getWordMenu.json",function(menuList){
+            if (menuList) {
+                var menuOptions = '';
+                for (var i = 0; i < menuList.length; i++) {
+                    menuOptions += '<div>' + menuList[i].word + '</div>';
+                }
+                $('#wordMenu').html(menuOptions);
+                initWordMenu();
+            }
+        });
+    })
+
+    function initWordMenu() {
+        $('#wordMenu').menu({
+            onClick:opinionWord
+        });
+    }
+
+    function showMenu() {
+        // var elmOffset = $('#menuBtn').offset();
+        // $('#wordMenu').menu('show',{left:elmOffset.left + 20, top:elmOffset.top + 20});
+
+        var _callbackname = "fnSelectWordCallback";
+        var _url = "$link.getContextURL()/oa/personal/getWordSelect";
+        var _callback_fn = window[_callbackname];
+        var dfn = top.window.openSelectDialogFrameDialog;
+        if (typeof dfn === "function") {
+            dfn(_url, _callback_fn);
+        }
+    }
+
+    function fnSelectWordCallback(obj) {
+        if (obj) {
+            var oldVal = $('#opinion').val();
+            if ($.trim(oldVal) == "") {
+                $('#opinion').val(obj.word);
+            } else {
+                $('#opinion').val(oldVal + " " + obj.word);
+            }
+        }
+    }
+
+    function apendToOpinion(that){
+        if($(that).val()){
+            if($("#opinion").val()){
+                $("#opinion").val($("#opinion").val() + " " + $(that).val());
+            }else{
+                $("#opinion").val($(that).val());
+            }
+        }
+
+    }
+
+</script>
+#end

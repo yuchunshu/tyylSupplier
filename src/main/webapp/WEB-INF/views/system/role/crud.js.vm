@@ -1,0 +1,105 @@
+#@script()
+<script>
+    //全局变量覆盖：_baseUrl，_delJsonUrl,_newJsonUrl,_editJsonUrl,_listJsonUrl
+    $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+        //工具条操作
+        function del(){
+            var row = _datagrid.datagrid('getSelected');
+            if (row){
+                $.messager.confirm('警告','确定删除该用户吗?',function(r){
+                    if (r){
+                        $.post(_baseUrl + (_delJsonUrl || '/delete.json'),{id:row.id},function(result){
+                            if (result.success){
+                                $('#dg').datagrid('reload'); // reload the user data
+                            } else {
+                                top.CC.messager({ // show error message
+                                    title: '错误',
+                                    msg: result.errorMsg
+                                });
+                            }
+                        },'json');
+                    }
+                });
+            }
+        }
+        function add(){
+            window.location = _baseUrl + (_newJsonUrl || '/new');
+        }
+        function edit(){
+            var row = _datagrid.datagrid('getSelected');
+            if(row){
+                window.location = _baseUrl + (_editJsonUrl || '/edit?id=' + row.id);
+            }
+        }
+
+        //选择对话框
+        $("a[select-dialog]").each(function() {
+            $(this).click(function(){
+                var $this = $(this);
+                var _callbackname = $this.attr("callback");
+                var _url = $this.attr("select-dialog");
+                var _callback_fn = window[_callbackname];
+                var dfn = top.window.openSelectDialogFrameDialog;
+                if (typeof dfn === "function") {
+                    dfn(_url, _callback_fn);
+                }
+                return false;
+            })
+        });
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            loadFilter: datagridHtmlEncode, // 防js注入
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+    var _baseUrl, _delJsonUrl, _newJsonUrl, _editJsonUrl, _listJsonUrl;
+
+</script>
+#end
+###include("common/easyui/crud.css.vm")

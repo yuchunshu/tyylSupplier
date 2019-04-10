@@ -1,0 +1,454 @@
+/* 所有类均使用  power-icon 开头, 方便管理, 也方便兼容原来的图标显示方式。 */
+
+/* 定义尺寸大小 */
+i.power-icon.large {
+    width: 50px;
+    height: 50px;
+}
+
+i.power-icon {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+}
+
+i.power-icon.small {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+}
+
+/* 侧边栏图标 */
+.module i.power-icon {
+    width: 34px;
+    height: 34px;
+}
+
+
+/* 以下是图标, 若多个尺寸都采用同一张图片，则可以只定义 i.power-icon-* 的样式 */
+
+/* 中图标 */
+/* 公文办理模块（公文办理）*/
+i.power-icon-doc-hand {background: url(../images/midsize/sub-doc.png);}
+/* 公文办理模块（档案管理）*/
+i.power-icon-doc-manage {background: url(../images/midsize/sub-docmanage.png);}
+/* 公文办理模块（公文设置）*/
+i.power-icon-doc-set {background: url(../images/midsize/sub-docset.png);}
+/* 公文办理模块（公文监控）*/
+i.power-icon-doc-mon {background: url(../images/midsize/sub-docmon.png);}
+/* 公文办理模块（公文传输）*/
+i.power-icon-doc-tran {background: url(../images/midsize/sub-tran.png);}
+/* 公文交换模块（公文办理）*/
+i.power-icon-exchange-hand {background: url(../images/midsize/sub-dochand.png);}
+/* 公文交换模块（公文台账）*/
+i.power-icon-exchange-offic {background: url(../images/midsize/sub-offic.png);}
+/* 公文交换模块（限时公文设置）*/
+i.power-icon-exchange-time {background: url(../images/midsize/sub-doctimeset.png);}
+/* 内部请示模块（内部请示）*/
+i.power-icon-interequest-inte {background: url(../images/midsize/sub-interequest.png);}
+/* 信息发布模块（公告管理）*/
+i.power-icon-inforpublish-notice {background: url(../images/midsize/sub-notice.png);}
+/* 信息发布模块（视频管理）*/
+i.power-icon-inforpublish-video {background: url(../images/midsize/sub-video.png);}
+/* 信息发布模块（新闻管理）*/
+i.power-icon-inforpublish-news {background: url(../images/midsize/sub-news.png);}
+/* 信息发布模块（简报管理）*/
+i.power-icon-inforpublish-briefing {background: url(../images/midsize/sub-briefing.png);}
+/* 内部邮件模块（内部邮件）*/
+i.power-icon-mail-intemail {background: url(../images/midsize/sub-mail.png);}
+/* 通讯录模块（通讯录）*/
+i.power-icon-addresslist-addresslist {background: url(../images/midsize/sub-maillist.png);}
+/* 手机短信模块（手机短信）*/
+i.power-icon-phone-shortmessage {background: url(../images/midsize/sub-shortmessage.png);}
+/* 系统管理模块（用户管理）*/
+i.power-icon-system-user {background: url(../images/midsize/sub-user.png);}
+/* 系统管理模块（部门管理）*/
+i.power-icon-system-dept {background: url(../images/midsize/sub-dept.png);}
+/* 系统管理模块（权限管理）*/
+i.power-icon-system-power {background: url(../images/midsize/sub-power.png);}
+/* 系统管理模块（系统日志）*/
+i.power-icon-system-log {background: url(../images/midsize/sub-log.png);}
+/* 系统管理模块（个人信息）*/
+i.power-icon-system-personal {background: url(../images/midsize/sub-personal.png);}
+/* 系统管理模块（限时办结）*/
+i.power-icon-system-timelimitrun {background: url(../images/midsize/sub-timelimitrun.png);}
+/* 公共事务模块（车辆管理）*/
+i.power-icon-pubaffairs-car {background: url(../images/midsize/sub-car.png);}
+/* 公共事务模块（休假申请）*/
+i.power-icon-pubaffairs-leave {background: url(../images/midsize/sub-leave.png);}
+/* 公共事务模块（故障报告申请）*/
+i.power-icon-pubaffairs-repair {background: url(../images/midsize/sub-trip.png);}
+/* 公共事务模块（订餐管理）*/
+i.power-icon-pubaffairs-meal {background: url(../images/midsize/sub-purchase.png);}
+
+
+
+/* 大图标 （待办公文） */
+i.power-icon-doc-hand-01.large {background: url(../images/large/desk-icon-01.png);}
+/* 小图标 （待办公文）*/
+i.power-icon-doc-hand-01.small {background: url(../images/small/oa-icon-list-01.png);}
+/* 大图标 （待阅公文） */
+i.power-icon-doc-hand-02.large {background: url(../images/large/desk-icon-02.png);}
+/* 小图标 （待阅公文）*/
+i.power-icon-doc-hand-02.small {background: url(../images/small/oa-icon-list-02.png);}
+/* 大图标 （暂存公文） */
+i.power-icon-doc-hand-03.large {background: url(../images/large/desk-icon-03.png);}
+/* 小图标 （暂存公文）*/
+i.power-icon-doc-hand-03.small {background: url(../images/small/oa-icon-list-03.png);}
+/* 大图标 （经办箱） */
+i.power-icon-doc-hand-04.large {background: url(../images/large/desk-icon-04.png);}
+/* 小图标 （经办箱）*/
+i.power-icon-doc-hand-04.small {background: url(../images/small/oa-icon-list-04.png);}
+/* 大图标 （本部门公文） */
+i.power-icon-doc-hand-05.large {background: url(../images/large/desk-icon-05.png);}
+/* 小图标 （本部门公文）*/
+i.power-icon-doc-hand-05.small {background: url(../images/small/oa-icon-list-05.png);}
+/* 大图标 （新建收文） */
+i.power-icon-doc-hand-06.large {background: url(../images/large/desk-icon-06.png);}
+/* 小图标 （新建收文）*/
+i.power-icon-doc-hand-06.small {background: url(../images/small/oa-icon-list-06.png);}
+/* 大图标 （新建发文） */
+i.power-icon-doc-hand-07.large {background: url(../images/large/desk-icon-07.png);}
+/* 小图标 （新建发文）*/
+i.power-icon-doc-hand-07.small {background: url(../images/small/oa-icon-list-07.png);}
+/* 大图标 （便函发送） */
+i.power-icon-doc-hand-08.large {background: url(../images/large/desk-icon-08.png);}
+/* 小图标 （便函发送）*/
+i.power-icon-doc-hand-08.small {background: url(../images/small/oa-icon-list-08.png);}
+/* 大图标 （公文办理数量统计） */
+i.power-icon-doc-hand-09.large {background: url(../images/large/desk-icon-09.png);}
+/* 小图标 （公文办理数量统计）*/
+i.power-icon-doc-hand-09.small {background: url(../images/small/oa-icon-list-09.png);}
+/* 大图标 （公文全文搜索） */
+i.power-icon-doc-hand-10.large {background: url(../images/large/desk-icon-10.png);}
+/* 小图标 （公文全文搜索）*/
+i.power-icon-doc-hand-10.small {background: url(../images/small/oa-icon-list-10.png);}
+/* 大图标 （纸质归档） */
+i.power-icon-doc-manage-11.large {background: url(../images/large/desk-icon-11.png);}
+/* 小图标 （纸质归档）*/
+i.power-icon-doc-manage-11.small {background: url(../images/small/oa-icon-list-11.png);}
+/* 大图标 （待归档公文） */
+i.power-icon-doc-manage-12.large {background: url(../images/large/desk-icon-12.png);}
+/* 小图标 （待归档公文）*/
+i.power-icon-doc-manage-12.small {background: url(../images/small/oa-icon-list-12.png);}
+/* 大图标 （归档后管理） */
+i.power-icon-doc-manage-13.large {background: url(../images/large/desk-icon-13.png);}
+/* 小图标 （归档后管理）*/
+i.power-icon-doc-manage-13.small {background: url(../images/small/oa-icon-list-13.png);}
+/* 大图标 （基础信息维护） */
+i.power-icon-doc-manage-14.large {background: url(../images/large/desk-icon-14.png);}
+/* 小图标 （基础信息维护）*/
+i.power-icon-doc-manage-14.small {background: url(../images/small/oa-icon-list-14.png);}
+/* 大图标 （销毁查询） */
+i.power-icon-doc-manage-15.large {background: url(../images/large/desk-icon-15.png);}
+/* 小图标 （销毁查询）*/
+i.power-icon-doc-manage-15.small {background: url(../images/small/oa-icon-list-15.png);}
+/* 大图标 （档案统计） */
+i.power-icon-doc-manage-16.large {background: url(../images/large/desk-icon-16.png);}
+/* 小图标 （档案统计）*/
+i.power-icon-doc-manage-16.small {background: url(../images/small/oa-icon-list-16.png);}
+/* 大图标 （公文档案检索） */
+i.power-icon-doc-manage-17.large {background: url(../images/large/desk-icon-17.png);}
+/* 小图标 （公文档案检索）*/
+i.power-icon-doc-manage-17.small {background: url(../images/small/oa-icon-list-17.png);}
+/* 大图标 （流程设置） */
+i.power-icon-doc-set-18.large {background: url(../images/large/desk-icon-18.png);}
+/* 小图标 （流程设置）*/
+i.power-icon-doc-set-18.small {background: url(../images/small/oa-icon-list-18.png);}
+/* 大图标 （发文模板） */
+i.power-icon-doc-set-19.large {background: url(../images/large/desk-icon-19.png);}
+/* 小图标 （发文模板）*/
+i.power-icon-doc-set-19.small {background: url(../images/small/oa-icon-list-19.png);}
+/* 大图标 （收文字号管理） */
+i.power-icon-doc-set-20.large {background: url(../images/large/desk-icon-20.png);}
+/* 小图标 （收文字号管理）*/
+i.power-icon-doc-set-20.small {background: url(../images/small/oa-icon-list-20.png);}
+/* 大图标 （发文字号管理） */
+i.power-icon-doc-set-21.large {background: url(../images/large/desk-icon-21.png);}
+/* 小图标 （发文字号管理）*/
+i.power-icon-doc-set-21.small {background: url(../images/small/oa-icon-list-21.png);}
+/* 大图标 （公文监控） */
+i.power-icon-doc-mon-22.large {background: url(../images/large/desk-icon-22.png);}
+/* 小图标 （公文监控）*/
+i.power-icon-doc-mon-22.small {background: url(../images/small/oa-icon-list-22.png);}
+/* 大图标 （公文编辑） */
+i.power-icon-doc-mon-23.large {background: url(../images/large/desk-icon-23.png);}
+/* 小图标 （公文编辑）*/
+i.power-icon-doc-mon-23.small {background: url(../images/small/oa-icon-list-23.png);}
+/* 大图标 （发送查询） */
+i.power-icon-doc-tran-24.large {background: url(../images/large/desk-icon-24.png);}
+/* 小图标 （发送查询）*/
+i.power-icon-doc-tran-24.small {background: url(../images/small/oa-icon-list-24.png);}
+/* 大图标 （公文签收） */
+i.power-icon-doc-tran-25.large {background: url(../images/large/desk-icon-25.png);}
+/* 小图标 （公文签收）*/
+i.power-icon-doc-tran-25.small {background: url(../images/small/oa-icon-list-25.png);}
+/* 大图标 （已签收查询） */
+i.power-icon-doc-tran-26.large {background: url(../images/large/desk-icon-26.png);}
+/* 小图标 （已签收查询）*/
+i.power-icon-doc-tran-26.small {background: url(../images/small/oa-icon-list-26.png);}
+/* 大图标 （公文办理查询） */
+i.power-icon-doc-tran-27.large {background: url(../images/large/desk-icon-27.png);}
+/* 小图标 （公文办理查询）*/
+i.power-icon-doc-tran-27.small {background: url(../images/small/oa-icon-list-27.png);}
+/* 大图标 （归档查询） */
+i.power-icon-doc-tran-28.large {background: url(../images/large/desk-icon-28.png);}
+/* 小图标 （归档查询）*/
+i.power-icon-doc-tran-28.small {background: url(../images/small/oa-icon-list-28.png);}
+/* 大图标 （新建公文交换） */
+i.power-icon-exchange-hand-29.large {background: url(../images/large/desk-icon-29.png);}
+/* 小图标 （新建公文交换）*/
+i.power-icon-exchange-hand-29.small {background: url(../images/small/oa-icon-list-29.png);}
+/* 大图标 （发送查询） */
+i.power-icon-exchange-hand-30.large {background: url(../images/large/desk-icon-30.png);}
+/* 小图标 （发送查询）*/
+i.power-icon-exchange-hand-30.small {background: url(../images/small/oa-icon-list-30.png);}
+/* 大图标 （公文签收） */
+i.power-icon-exchange-hand-31.large {background: url(../images/large/desk-icon-31.png);}
+/* 小图标 （公文签收）*/
+i.power-icon-exchange-hand-31.small {background: url(../images/small/oa-icon-list-31.png);}
+/* 大图标 （已签收查询） */
+i.power-icon-exchange-hand-32.large {background: url(../images/large/desk-icon-32.png);}
+/* 小图标 （已签收查询）*/
+i.power-icon-exchange-hand-32.small {background: url(../images/small/oa-icon-list-32.png);}
+/* 大图标 （电子公文办理查询） */
+i.power-icon-exchange-hand-33.large {background: url(../images/large/desk-icon-33.png);}
+/* 小图标 （电子公文办理查询）*/
+i.power-icon-exchange-hand-33.small {background: url(../images/small/oa-icon-list-33.png);}
+/* 大图标 （纸质公文办理查询） */
+i.power-icon-exchange-hand-34.large {background: url(../images/large/desk-icon-34.png);}
+/* 小图标 （纸质公文办理查询）*/
+i.power-icon-exchange-hand-34.small {background: url(../images/small/oa-icon-list-34.png);}
+/* 大图标 （归档查询） */
+i.power-icon-exchange-hand-35.large {background: url(../images/large/desk-icon-35.png);}
+/* 小图标 （归档查询）*/
+i.power-icon-exchange-hand-35.small {background: url(../images/small/oa-icon-list-35.png);}
+/* 大图标 （公文统计） */
+i.power-icon-exchange-offic-36.large {background: url(../images/large/desk-icon-36.png);}
+/* 小图标 （公文统计）*/
+i.power-icon-exchange-offic-36.small {background: url(../images/small/oa-icon-list-36.png);}
+/* 大图标 （发送列表） */
+i.power-icon-exchange-offic-37.large {background: url(../images/large/desk-icon-37.png);}
+/* 小图标 （发送列表）*/
+i.power-icon-exchange-offic-37.small {background: url(../images/small/oa-icon-list-37.png);}
+/* 大图标 （接受列表） */
+i.power-icon-exchange-offic-38.large {background: url(../images/large/desk-icon-38.png);}
+/* 小图标 （接受列表）*/
+i.power-icon-exchange-offic-38.small {background: url(../images/small/oa-icon-list-38.png);}
+/* 大图标 （错误公文） */
+i.power-icon-exchange-offic-39.large {background: url(../images/large/desk-icon-39.png);}
+/* 小图标 （错误公文）*/
+i.power-icon-exchange-offic-39.small {background: url(../images/small/oa-icon-list-39.png);}
+/* 大图标 （限时公文设置） */
+i.power-icon-exchange-time-40.large {background: url(../images/large/desk-icon-40.png);}
+/* 小图标 （限时公文设置）*/
+i.power-icon-exchange-time-40.small {background: url(../images/small/oa-icon-list-40.png);}
+/* 大图标 （限时日志查询） */
+i.power-icon-exchange-time-41.large {background: url(../images/large/desk-icon-41.png);}
+/* 小图标 （限时日志查询）*/
+i.power-icon-exchange-time-41.small {background: url(../images/small/oa-icon-list-41.png);}
+/* 大图标 （限时公文工作日） */
+i.power-icon-exchange-time-42.large {background: url(../images/large/desk-icon-42.png);}
+/* 小图标 （限时公文工作日）*/
+i.power-icon-exchange-time-42.small {background: url(../images/small/oa-icon-list-42.png);}
+/* 大图标 （内部请示） */
+i.power-icon-interequest-inte-43.large {background: url(../images/large/desk-icon-43.png);}
+/* 小图标 （内部请示）*/
+i.power-icon-interequest-inte-43.small {background: url(../images/small/oa-icon-list-43.png);}
+/* 大图标 （内部请示查询） */
+i.power-icon-interequest-inte-44.large {background: url(../images/large/desk-icon-44.png);}
+/* 小图标 （内部请示查询）*/
+i.power-icon-interequest-inte-44.small {background: url(../images/small/oa-icon-list-44.png);}
+/* 大图标 （公告管理） */
+i.power-icon-inforpublish-notice-45.large {background: url(../images/large/desk-icon-45.png);}
+/* 小图标 （公告管理）*/
+i.power-icon-inforpublish-notice-45.small {background: url(../images/small/oa-icon-list-45.png);}
+/* 大图标 （公告查询） */
+i.power-icon-inforpublish-notice-46.large {background: url(../images/large/desk-icon-46.png);}
+/* 小图标 （公告查询）*/
+i.power-icon-inforpublish-notice-46.small {background: url(../images/small/oa-icon-list-46.png);}
+/* 大图标 （视频管理） */
+i.power-icon-inforpublish-video-47.large {background: url(../images/large/desk-icon-47.png);}
+/* 小图标 （视频管理）*/
+i.power-icon-inforpublish-video-47.small {background: url(../images/small/oa-icon-list-47.png);}
+/* 大图标 （视频查询） */
+i.power-icon-inforpublish-video-48.large {background: url(../images/large/desk-icon-48.png);}
+/* 小图标 （视频查询）*/
+i.power-icon-inforpublish-video-48.small {background: url(../images/small/oa-icon-list-48.png);}
+/* 大图标 （新闻管理） */
+i.power-icon-inforpublish-news-49.large {background: url(../images/large/desk-icon-49.png);}
+/* 小图标 （新闻管理）*/
+i.power-icon-inforpublish-news-49.small {background: url(../images/small/oa-icon-list-49.png);}
+/* 大图标 （新闻查询） */
+i.power-icon-inforpublish-news-50.large {background: url(../images/large/desk-icon-50.png);}
+/* 小图标 （新闻查询）*/
+i.power-icon-inforpublish-news-50.small {background: url(../images/small/oa-icon-list-50.png);}
+/* 大图标 （简报管理） */
+i.power-icon-inforpublish-briefing-51.large {background: url(../images/large/desk-icon-51.png);}
+/* 小图标 （简报管理）*/
+i.power-icon-inforpublish-briefing-51.small {background: url(../images/small/oa-icon-list-51.png);}
+/* 大图标 （简报查询） */
+i.power-icon-inforpublish-briefing-52.large {background: url(../images/large/desk-icon-52.png);}
+/* 小图标 （简报查询）*/
+i.power-icon-inforpublish-briefing-52.small {background: url(../images/small/oa-icon-list-52.png);}
+/* 大图标 （写邮件） */
+i.power-icon-mail-intemail-53.large {background: url(../images/large/desk-icon-53.png);}
+/* 小图标 （写邮件）*/
+i.power-icon-mail-intemail-53.small {background: url(../images/small/oa-icon-list-53.png);}
+/* 大图标 （收件箱） */
+i.power-icon-mail-intemail-54.large {background: url(../images/large/desk-icon-54.png);}
+/* 小图标 （收件箱）*/
+i.power-icon-mail-intemail-54.small {background: url(../images/small/oa-icon-list-54.png);}
+/* 大图标 （发件箱） */
+i.power-icon-mail-intemail-55.large {background: url(../images/large/desk-icon-55.png);}
+/* 小图标 （发件箱）*/
+i.power-icon-mail-intemail-55.small {background: url(../images/small/oa-icon-list-55.png);}
+/* 大图标 （草稿箱） */
+i.power-icon-mail-intemail-56.large {background: url(../images/large/desk-icon-56.png);}
+/* 小图标 （草稿箱）*/
+i.power-icon-mail-intemail-56.small {background: url(../images/small/oa-icon-list-56.png);}
+/* 大图标 （垃圾箱） */
+i.power-icon-mail-intemail-57.large {background: url(../images/large/desk-icon-57.png);}
+/* 小图标 （垃圾箱）*/
+i.power-icon-mail-intemail-57.small {background: url(../images/small/oa-icon-list-57.png);}
+/* 大图标 （存档箱） */
+i.power-icon-mail-intemail-58.large {background: url(../images/large/desk-icon-58.png);}
+/* 小图标 （存档箱）*/
+i.power-icon-mail-intemail-58.small {background: url(../images/small/oa-icon-list-58.png);}
+/* 大图标 （通讯录） */
+i.power-icon-addresslist-addresslist-59.large {background: url(../images/large/desk-icon-59.png);}
+/* 小图标 （通讯录）*/
+i.power-icon-addresslist-addresslist-59.small {background: url(../images/small/oa-icon-list-59.png);}
+/* 大图标 （短信查询） */
+i.power-icon-phone-shortmessage-60.large {background: url(../images/large/desk-icon-60.png);}
+/* 小图标 （短信查询）*/
+i.power-icon-phone-shortmessage-60.small {background: url(../images/small/oa-icon-list-60.png);}
+/* 大图标 （待发查询） */
+i.power-icon-phone-shortmessage-61.large {background: url(../images/large/desk-icon-61.png);}
+/* 小图标 （待发查询）*/
+i.power-icon-phone-shortmessage-61.small {background: url(../images/small/oa-icon-list-61.png);}
+/* 大图标 （常用短语） */
+i.power-icon-phone-shortmessage-62.large {background: url(../images/large/desk-icon-62.png);}
+/* 小图标 （常用短语）*/
+i.power-icon-phone-shortmessage-62.small {background: url(../images/small/oa-icon-list-62.png);}
+/* 大图标 （短语类型） */
+i.power-icon-phone-shortmessage-63.large {background: url(../images/large/desk-icon-63.png);}
+/* 小图标 （短语类型）*/
+i.power-icon-phone-shortmessage-63.small {background: url(../images/small/oa-icon-list-63.png);}
+/* 大图标 （短信发送） */
+i.power-icon-phone-shortmessage-64.large {background: url(../images/large/desk-icon-64.png);}
+/* 小图标 （短信发送）*/
+i.power-icon-phone-shortmessage-64.small {background: url(../images/small/oa-icon-list-64.png);}
+/* 大图标 （用户列表） */
+i.power-icon-system-user-65.large {background: url(../images/large/desk-icon-65.png);}
+/* 小图标 （用户列表）*/
+i.power-icon-system-user-65.small {background: url(../images/small/oa-icon-list-65.png);}
+/* 大图标 （用户解锁） */
+i.power-icon-system-user-66.large {background: url(../images/large/desk-icon-66.png);}
+/* 小图标 （用户解锁）*/
+i.power-icon-system-user-66.small {background: url(../images/small/oa-icon-list-66.png);}
+/* 大图标 （职务管理） */
+i.power-icon-system-dept-67.large {background: url(../images/large/desk-icon-67.png);}
+/* 小图标 （职务管理）*/
+i.power-icon-system-dept-67.small {background: url(../images/small/oa-icon-list-67.png);}
+/* 大图标 （部门列表） */
+i.power-icon-system-dept-68.large {background: url(../images/large/desk-icon-68.png);}
+/* 小图标 （部门列表）*/
+i.power-icon-system-dept-68.small {background: url(../images/small/oa-icon-list-68.png);}
+/* 大图标 （权限列表） */
+i.power-icon-system-power-69.large {background: url(../images/large/desk-icon-69.png);}
+/* 小图标 （权限列表）*/
+i.power-icon-system-power-69.small {background: url(../images/small/oa-icon-list-69.png);}
+/* 大图标 （角色列表） */
+i.power-icon-system-power-70.large {background: url(../images/large/desk-icon-70.png);}
+/* 小图标 （角色列表）*/
+i.power-icon-system-power-70.small {background: url(../images/small/oa-icon-list-70.png);}
+/* 大图标 （日志查询） */
+i.power-icon-system-log-71.large {background: url(../images/large/desk-icon-71.png);}
+/* 小图标 （日志查询）*/
+i.power-icon-system-log-71.small {background: url(../images/small/oa-icon-list-71.png);}
+/* 大图标 （个人通讯录） */
+i.power-icon-system-personal-72.large {background: url(../images/large/desk-icon-72.png);}
+/* 小图标 （个人通讯录）*/
+i.power-icon-system-personal-72.small {background: url(../images/small/oa-icon-list-72.png);}
+/* 大图标 （个人词条） */
+i.power-icon-system-personal-73.large {background: url(../images/large/desk-icon-73.png);}
+/* 小图标 （个人词条）*/
+i.power-icon-system-personal-73.small {background: url(../images/small/oa-icon-list-73.png);}
+/* 大图标 （群组管理） */
+i.power-icon-system-personal-74.large {background: url(../images/large/desk-icon-74.png);}
+/* 小图标 （群组管理）*/
+i.power-icon-system-personal-74.small {background: url(../images/small/oa-icon-list-74.png);}
+/* 大图标 （个人信息修改） */
+i.power-icon-system-personal-75.large {background: url(../images/large/desk-icon-75.png);}
+/* 小图标 （个人信息修改）*/
+i.power-icon-system-personal-75.small {background: url(../images/small/oa-icon-list-75.png);}
+/* 大图标 （密码修改） */
+i.power-icon-system-personal-76.large {background: url(../images/large/desk-icon-76.png);}
+/* 小图标 （密码修改）*/
+i.power-icon-system-personal-76.small {background: url(../images/small/oa-icon-list-76.png);}
+/* 大图标 （环节限办时间） */
+i.power-icon-system-timelimitrun-77.large {background: url(../images/large/desk-icon-77.png);}
+/* 小图标 （环节限办时间）*/
+i.power-icon-system-timelimitrun-77.small {background: url(../images/small/oa-icon-list-77.png);}
+/* 大图标 （限时办结要求） */
+i.power-icon-system-timelimitrun-78.large {background: url(../images/large/desk-icon-78.png);}
+/* 小图标 （限时办结要求）*/
+i.power-icon-system-timelimitrun-78.small {background: url(../images/small/oa-icon-list-78.png);}
+
+/* 大图标 （公务用车申请） */
+i.power-icon-pubaffairs-car-01.large {background: url(../images/large/pubaffairs-car-01.png);}
+/* 小图标 （公务用车申请）*/
+i.power-icon-pubaffairs-car-01.small {background: url(../images/small/pubaffairs-car-01.png);}
+/* 大图标 （车辆申请审核） */
+i.power-icon-pubaffairs-car-03.large {background: url(../images/large/pubaffairs-car-03.png);}
+/* 小图标 （车辆申请审核）*/
+i.power-icon-pubaffairs-car-03.small {background: url(../images/small/pubaffairs-car-03.png);}
+/* 大图标 （我的车辆申请） */
+i.power-icon-pubaffairs-car-04.large {background: url(../images/large/pubaffairs-car-04.png);}
+/* 小图标 （我的车辆申请）*/
+i.power-icon-pubaffairs-car-04.small {background: url(../images/small/pubaffairs-car-04.png);}
+
+
+/* 大图标 （填写休假申请） */
+i.power-icon-pubaffairs-leave-01.large {background: url(../images/large/pubaffairs-leave-01.png);}
+/* 小图标 （填写休假申请）*/
+i.power-icon-pubaffairs-leave-01.small {background: url(../images/small/pubaffairs-leave-01.png);}
+/* 大图标 （休假审核） */
+i.power-icon-pubaffairs-leave-02.large {background: url(../images/large/pubaffairs-leave-02.png);}
+/* 小图标 （休假审核）*/
+i.power-icon-pubaffairs-leave-02.small {background: url(../images/small/pubaffairs-leave-02.png);}
+/* 大图标 （我的休假申请） */
+i.power-icon-pubaffairs-leave-03.large {background: url(../images/large/pubaffairs-leave-03.png);}
+/* 小图标 （我的休假申请）*/
+i.power-icon-pubaffairs-leave-03.small {background: url(../images/small/pubaffairs-leave-03.png);}
+
+
+/* 大图标 （填写故障申请） */
+i.power-icon-pubaffairs-repair-01.large {background: url(../images/large/pubaffairs-trip-01.png);}
+/* 小图标 （填写故障申请）*/
+i.power-icon-pubaffairs-repair-01.small {background: url(../images/small/pubaffairs-trip-01.png);}
+/* 大图标 （故障审核） */
+i.power-icon-pubaffairs-repair-02.large {background: url(../images/large/pubaffairs-trip-02.png);}
+/* 小图标 （故障审核）*/
+i.power-icon-pubaffairs-repair-02.small {background: url(../images/small/pubaffairs-trip-02.png);}
+/* 大图标 （我的故障申请） */
+i.power-icon-pubaffairs-repair-03.large {background: url(../images/large/pubaffairs-trip-03.png);}
+/* 小图标 （我的故障申请）*/
+i.power-icon-pubaffairs-repair-03.small {background: url(../images/small/pubaffairs-trip-03.png);}
+
+
+
+
+
+
+
+/* power-icon-user */
+/* 中图标 */
+i.power-icon-user {background: url(../images/menu/sub-user.png);}
+/* 大图标（桌面快捷方式那个） */
+i.power-icon-user.large {background: url(../images/shortcut/desk-icon-17.png);}
+/* 小图标 */
+i.power-icon-user.small {background: url(../images/menu/man1.png);}
+/* 侧边栏图标 */
+.module i.power-icon-user {background: url(../images/desk/side-icon-man.png);}

@@ -1,0 +1,1 @@
+ data-bv-date="true" data-bv-date-message="$!{__message}" data-bv-date-format="$!{__format}" data-bv-date-separator="$!{__separator}"

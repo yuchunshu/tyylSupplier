@@ -1,0 +1,102 @@
+#if($model)
+    #foreach($m in $model)
+        <div class="layer-content" id="submenu-$!{velocityCount}" style="display:none;bottom:20px">
+            <div class="layer-content-bg">
+            #foreach($c in $m.children)
+				<div class="layer-list">
+					##只有 一个 中级 菜单 且 有子菜单
+					#if("$!m.children"!="" && "$!m.children"!="null" && "$!m.children"!="undefined" && "$m.children.size()"=="1")
+						<ul style=" padding:0 0 0 10px;">
+							#foreach($cc in $c.children)
+								<li>
+									<div class="list-word">
+										<a href="javascript:;" onclick="$('.side ul li[data-submenu-id='+$('.layer-content[current-data=true]').attr('id')+']').trigger('click');$('.layer-content').hide();																		                                         top.CC.addTab({title:'$!cc.powerName',url:'$link.getContextURL()$!{cc.url}'})" title="$!{cc.powerName}">$!{cc.powerName}</a>
+									 </div>
+								 </li>
+							#end
+						</ul>
+					## 有多个中级菜单
+					#else
+						## 没有子菜单
+						#if("$!c.children" == "" || "$!c.children" == "null" || "$!c.children" == "undefined")
+							## 中级菜单 即 标题
+							#*<ul>
+								<h4><span>
+									<a href="javascript:;" onclick="$('.side ul li[data-submenu-id='+$('.layer-content[current-data=true]').attr('id')+']').trigger('click');$('.layer-content').hide();																		                                         top.CC.addTab({title:'$!c.powerName',url:'$link.getContextURL()$!{c.url}'})" title="$!{c.powerName}">
+									$!{c.powerName}
+								</a></span></h4>
+							</ul>
+							*#
+							## 中级菜单 做 条目
+
+							<ul style=" padding:0 0 0 10px;">
+								<li>
+									<div class="list-word">
+										 <a href="javascript:;" onclick="$('.side ul li[data-submenu-id='+$('.layer-content[current-data=true]').attr('id')+']').trigger('click');$('.layer-content').hide();																		                                         top.CC.addTab({title:'$!c.powerName',url:'$link.getContextURL()$!{c.url}'})" title="$!{c.powerName}" style=" margin-left:5px;">$!{c.powerName}</a>
+									 </div>
+								 </li>
+							</ul>
+
+						## 有子菜单
+						#else
+							<h4><span>$!{c.powerName}</span></h4>
+							<ul style="display:none;">
+								#foreach($cc in $c.children)
+									<li>
+										<div class="list-word">
+											<a href="javascript:;" onclick="$('.side ul li[data-submenu-id='+$('.layer-content[current-data=true]').attr('id')+']').trigger('click');$('.layer-content').hide();																		                                         top.CC.addTab({title:'$!cc.powerName',url:'$link.getContextURL()$!{cc.url}'})" title="$!{cc.powerName}">$!{cc.powerName}</a>
+										 </div>
+									 </li>
+								#end
+							</ul>
+						#end
+					#end
+				</div>
+            #end
+            <!-- 解决goldgrid遮盖问题 by yuandl 20161209 -->
+            <iframe style="position: absolute; z-index: -1; width: 215px; height: 100%; top: 0;left:0;scrolling:no;" frameborder="0"></iframe>
+            </div>
+        </div>
+    #end
+#end
+<script>
+var _menushow_timeount;
+$(document).ready(function(){
+    $(".side ul li").hover(function(){
+        var that = $(this);
+        _menushow_timeount = setTimeout(function(){
+            $(".side ul li").removeClass("moduleSelected");
+            that.addClass("side-li-hover");
+            $(".layer-content[id!="+that.attr("data-submenu-id")+"]").hide().attr("current-data",false);
+            $("#"+that.attr("data-submenu-id")).height($(".side").height()-60-20).show().attr("current-data",true);
+        },100);
+    },function(){
+        if(_menushow_timeount  != null){
+            clearTimeout(_menushow_timeount);
+        }
+        $(".side ul li[oldSelectModul=true]").addClass("moduleSelected");
+        $(this).removeClass("side-li-hover");
+        $("#"+$(this).attr("data-submenu-id")).hide();
+    });
+
+    $(".layer-content").hover(function(){
+        $(".side ul li").removeClass("moduleSelected");
+        $(".side ul li[data-submenu-id="+$(this).attr("id")+"]").addClass("side-li-hover");
+        $(".layer-content").height($(".side").height()-60-20);
+        $(".layer-content[current-data=true]").show();
+    },function(){
+        $(".side ul li[oldSelectModul=true]").addClass("moduleSelected");
+        $(".layer-content").hide();
+        $(".side ul li[data-submenu-id="+$(this).attr("id")+"]").removeClass("side-li-hover");
+    });
+    $(".layer-content").height($(".side").height()-60-20);
+
+	## 鼠标点击展开收缩效果
+	$(".layer-list h4").toggle(function(){
+    	$(this).next("ul").animate({height: 'toggle', opacity: 'toggle'}, "slow");
+    },function(){
+    	$(this).next("ul").animate({height: 'toggle', opacity: 'toggle'});
+    });
+
+});
+</script>

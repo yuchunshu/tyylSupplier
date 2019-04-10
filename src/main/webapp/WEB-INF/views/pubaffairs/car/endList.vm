@@ -1,0 +1,191 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/doc/listicon.css"/>
+<div class="easyui-layout" fit="true">
+<div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+<a onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+    class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+<a onclick="top.CC.closeCurTab()"
+    class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+</div>
+
+<div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+    <table id="dg" data-options="nowrap:false" style="width:99%;">
+        <thead>
+            <tr>
+                <th data-options="field:'createDateShow',width:40,formatter:detailUrl,sortable:true">申请日期</th>
+				<th data-options="field:'creatorName',width:50,editor:'text'">申请人</th>
+				<th data-options="field:'deptName',width:50">申请科室</th>
+                <th data-options="field:'beginTimeShow',width:40,formatter:useTime,sortable:true">用车时间</th>
+    			<th data-options="field:'businessType',width:50">类型</th>
+    			<th data-options="field:'status',width:50,formatter:statusShow">状态</th>
+            </tr>
+        </thead>
+    </table>
+
+     <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+     style="width:500px;height:300px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+	 <form id="queryForm">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="right">申请人：</td>
+                    <td>
+						<input name="$qc.like('creatorName')" class="easyui-textbox" style="width:330px;" />
+					</td>
+                </tr>
+                <tr>
+                    <td align="right">申请科室：</td>
+                    <td>
+						<input name="$qc.like('deptName')" class="easyui-textbox" style="width:330px;" />
+					</td>
+                </tr>
+				<tr>
+                    <td align="right">申请时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="$qc.greaterThanOrEqualTo('beginTime')" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+							至
+                        <input name="$qc.lessThanOrEqualTo('endTime')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+                    </td>
+                </tr>
+				<tr>
+                    <td align="right">类型：</td>
+                    <td align="left">
+                        <select name="$qc.equal('businessType')" class="easyui-combobox" data-options="editable:false" style="width:110px;"
+                            panelheight="auto">
+							#formoption("" $dict.BusinessType)
+                        </select>
+                    </td>
+                </tr>
+		</table>
+	</form>
+    <div id="bnts" style="top:0px; height:25px; width:auto;">
+        <a class="new-but" onclick="formSerach()">确定</a>
+        <a class="new-but" onclick="reset()">重置</a>
+    </div>
+</div>
+</div>
+<div id="editWindow" class="easyui-window" title="设置" style="width:450px;height:80%;padding:5px"
+        data-options="closed:true,modal:true,minimizable:false,maximizable:false,collapsible:false">
+</div>
+</div>
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("common/button/control.js.vm")
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+    var _listJsonUrl = '/pubaffairs/car/listEnd.json';
+	
+
+     $(document).ready(function(){
+        var _datagrid = $("#dg");
+        var _querForm = $("#queryForm");
+        var _toolbar = $("#tb");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-remove']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSerach);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset);
+        }
+
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+
+        function formSerach() {
+            _datagrid.datagrid('reload');
+        }
+        function reset(){
+            var _qf = $("#queryForm");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+
+        //初始化datagrid
+        _datagrid.datagrid({
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false,
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            pagination:true,//显示分页工具条
+            toolbar:'#tb',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl + (_listJsonUrl || '/runninglist.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+
+	function useTime(value,row) {
+		var content = row.beginTimeShow +" 至 "+ row.endTimeShow;
+		return content;
+	}
+	
+	function detailUrl(value,row) {
+        return "<a href='javascript:;' class='font-titlecolor' onclick='detailRow(getRowIdByDom(this))'>"+value+"</a>";
+    }
+	
+	function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        _datagrid.datagrid("selectRow",index);
+        var row = _datagrid.datagrid("getSelected");
+        var url = "$link.getContextURL()/pubaffairs/car/detail?id="+row.id+"&businessType="+encodeURI(row.businessType);
+		var url1 = "$link.getContextURL()/pubaffairs/car/edit?id="+row.id+"&businessType="+encodeURI(row.businessType);
+		if($.trim(row.status)=="暂存"){
+    		if($.trim(row.businessType)=="公务用车"){
+    			top.CC.addTab({title:'公务用车申请', url:url1});
+    		}else{
+    			top.CC.addTab({title:'因公外出申请', url:url1});
+    		}
+		}else{
+			if($.trim(row.businessType)=="公务用车"){
+    			top.CC.addTab({title:'车辆申请详情', url:url});
+    		}else{
+    			top.CC.addTab({title:'外出申请详情', url:url});
+    		}
+		}
+    }
+	
+	function statusShow(value,row) {
+		if($.trim(row.status) == "暂存"){
+            return "<font color='blue'>"+value+"</font>";
+		}else if($.trim(row.status) == "在办"){
+			return "<font color='red'>"+value+"</font>";
+		}else{
+			return "<font color='black'>"+value+"</font>";
+		}
+    }
+    
+</script>
+#end

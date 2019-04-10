@@ -1,0 +1,4 @@
+<th>部门名称</th>
+<td><input name="$qc.like('department.deptName')" class="easyui-textbox" type="text"/></td>
+<th>人员名称</th>
+<td><input name="$qc.like('userName')" class="easyui-textbox" type="text"/></td>

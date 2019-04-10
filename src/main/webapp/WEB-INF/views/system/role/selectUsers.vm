@@ -1,0 +1,446 @@
+<div class="easyui-layout" fit="true" style="width:100%;">
+	##部门树
+    <div data-options="region:'west'" style="width:20%;" >
+		<div style="padding:5px 5px;">
+			<ul id="menutree" class="easyui-tree" data-options="fit:true,lines:true"></ul>
+		</div>
+	</div>
+	
+	##人员列表
+    <div data-options="region:'center'" style="width:47%;">
+	<form id="queryForm">
+       <table class="tb2 default-table" id="tb" style="width:100%;">
+            <tr>
+                <th style="width:80px;"  align="right">姓名：</th>
+                <td align="left">
+                    <input name="$qc.equal('department.id')" id="department" type="hidden"/>
+                    <input name="$qc.like('userName')" id="userName" class="easyui-textbox" type="text"/>
+                    <a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="formSearch()"></a>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <table id="peopleTable"  class="easyui-datagrid" style="width:100%;height:100%;"
+               data-options="border:false,pageList:[10],pageSize:10,toolbar:'#queryForm',fitColumns:true,rownumbers:true, singleSelect: #if($single) true #else false #end,pagination:true,collapsible:false">
+            <thead>
+            <tr>
+                #if(!$single)<th field="ck" data-options="checkbox:true"></th>#end
+                <th data-options="field:'userName',width:80">姓名</th>
+                <th data-options="field:'depName',width:150">所属部门</th>
+                <th data-options="field:'duty',width:100">职务</th>
+            </tr>
+            </thead>
+        </table>
+    </table>
+	</div>
+    
+	##已选人员
+	<div data-options="region:'east'" style="width:33%;" >
+    	<form id="peopleSelectqueryForm" class="datagrid-toolbar">
+           <table class="tb2 default-table" id="tb" style="width:100%;">
+                <tr>
+                    <th style="width:80px;"  align="right">姓名：</th>
+                    <td align="left">
+                         <input  id="selectedUserName" class="easyui-validatebox easyui-textbox" type="text"/>
+                        <a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="peopleSelectSearch()"></a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+           <table class="tab-peopleSelect" id="peopleSelect">
+                <tr > <th  align="center" >已选人员(<span id="peopleSelectCount"></span>人)</th> </tr>
+				<tr>
+					<td >
+						<ul class="peopleSelectShow" id="peopleSelectShow-list">
+						#foreach($!peopleSelect in $!peopleSelectList)
+						 <li id="$!peopleSelect.id">
+							<span title="$!peopleSelect.userName"> $!peopleSelect.userName</span>
+							<a href='javascript:;' class="easyui-linkbutton"  id="$!peopleSelect.id" plain="true" iconCls="icon-remove" onclick="delMan(this.id)" ></a>
+							#*<a href='javascript:;'   id="$!peopleSelect.id"   onclick="delMan(this.id)" ></a>*#
+						 </li>
+						#end
+						</ul>
+                    </td>
+				</tr>
+           </table>
+    			
+			#*<table id="peopleSelect"  class="easyui-datagrid" style="width:100%;height:100%;"
+               data-options="border:false,pageList:[10],pageSize:10,toolbar:'#peopleSelectqueryForm',fitColumns:true,rownumbers:true, singleSelect: #if($single) true #else false #end,pagination:true,collapsible:false">
+            <thead>
+            <tr>
+                <th data-options="field:'userName',width:80">姓名</th>
+            </tr>
+            </thead>
+        </table>
+    </table>
+		*#
+           #* <div class="cc-operateColum" id="delButton" style="height: auto; padding: 5px 0px 5px 5px;">
+                    <a href='javascript:;' class="easyui-linkbutton delete-button l-btn-plain-remove" plain="true" iconCls="icon-remove" onclick="delMan(getRowIdByDom(this))" style="float: right;"></a>
+            </div>  *#
+	</div>  
+</div>  
+
+#@script()
+<script>
+	
+	 // 搜索
+    function formSearch() {
+	
+        $('#department').val('');
+        var f = $("#queryForm").serializeArray();
+        var obj ={};
+        for(var i = 0;i< f.length;i++){
+            obj[f[i].name] = f[i].value;
+        }
+		
+        $('#peopleTable').datagrid('reload',obj);
+        //$('#menutree').find('.tree-node-selected').removeClass('tree-node-selected'); ##取消树选中
+		return false;
+    }
+
+	
+	// 已选人员过滤
+    function peopleSelectSearch() {
+	//得到查询输入的值,并且去掉前后的空格
+	 var searchValue =$.trim($("#selectedUserName").textbox('getText'));
+	 //得到已选人员的名字
+	  var _peopleAll =$("#peopleSelectShow-list>li");
+	  
+	 
+	  for(var i=0;i<_peopleAll.length;i++){
+	          var name  =$(_peopleAll[i]).children().first().text(); //得到每个人的名字
+			 
+			  //判断查询，如果不满足条件，则隐藏对应的<li>标签
+			  if(name.indexOf(searchValue)==-1){
+			     
+			     _peopleAll[i].style.display="none";
+			  }
+			  
+			
+			   //如果满足条件或者输入为空或者空字符串，显示所有
+			  if(searchValue.length==0||name.indexOf(searchValue)!==-1){
+			     _peopleAll[i].style.display="inline";
+			  }
+			  
+	  }
+		
+    }
+
+	var _isFocusStatus = '';
+    var _isCheckFlag = false;
+    var _oneFlag = true;
+    
+		
+    //初始化部门树、人员列表、已选人员
+    function initTable(){
+       
+    	var roleId = $("#roleId").val();
+        $("#menutree").tree({url:"$link.getContextURL()/select/Dep/treeLazyDep2.json"});
+
+	    /* $("#peopleSelect").datagrid({
+			url:"$link.getContextURL()/system/role/selectUsersByRoleId.json?roleId=" + roleId
+		});*/
+		
+		//启用过滤(已选人员过滤不需要查询数据库，只在页面过滤)
+	    // $("#peopleSelect").datagrid('enableFilter');
+		
+		//已选人员默认查询文本框移除
+		//$('.datagrid-filter-row').remove();
+    }
+
+	 
+
+    // 清除所有已选人员
+    function clearAllSelect() {
+        var rows =  $('#peopleSelect').datagrid('getRows');
+        for (var i=rows.length-1;i>=0;i--) {
+            $('#peopleSelect').datagrid('deleteRow', i);
+        }
+    }
+
+    // 全选当前页
+    function selectAll() {
+        // 要添加的数据
+        var rows = $('#peopleTable').datagrid('getRows');
+        if (rows != null && rows.length > 0) {
+            for (var i=0;i<rows.length;i++) {
+                var obj = {
+                            id       : rows[i].id,
+                            userName : rows[i].userName,
+                          };
+                // 已有的数据
+                var selectRows = $('#peopleSelect').datagrid('getRows');
+                var repeatFlag = false;
+                if (selectRows != null && selectRows.length > 0) {
+                    for(var j = 0;j < selectRows.length;j++){
+                        if (obj.id == selectRows[j].id) {
+                            repeatFlag = true;
+                            break;
+                        }
+                    }
+
+                    if (repeatFlag) {
+                        continue;
+                    }
+                }
+                $('#peopleSelect').datagrid('appendRow', obj);
+            }
+        }
+    }
+
+    // 获取row的index
+    function getRowIdByDom(dom){
+
+        var tr =$(dom).parent().parent().parent();
+		
+        return tr.attr("datagrid-row-index");
+    }
+
+	
+	/**
+    * 从对象数组中删除属性为objPropery，值为objValue元素的对象
+    * @param Array arrPerson  数组对象
+    * @param String objPropery  对象的属性
+    * @param String objPropery  对象的值
+    * @return Array 过滤后数组
+    */
+    function remove(arrPerson,objPropery,objValue)
+    {
+       return $.grep(arrPerson, function(cur,i){
+              return cur[objPropery]!=objValue;
+           });
+    }
+
+    // 删除已选人员
+    function delMan(id) {
+	var delId = id;
+	$("li[id="+id+"]").remove();
+	var count =parseInt($('#peopleSelectCount').text()); 
+	var count =count-1;
+    $('#peopleSelectCount').empty();
+    $('#peopleSelectCount').text(count);
+	var rows =$('#peopleTable').datagrid('getRows');
+	
+	for(var i=0;i<rows.length;i++){
+	    if(rows[i].id==delId){
+		$('#peopleTable').datagrid('uncheckRow',i);
+		}
+	}
+		
+		/*
+		var rows_all;
+		var f = $("#peopleSelectqueryForm").serializeArray();
+		
+		//有筛选条件的时候，删除操作不影响不符合条件的人员
+		if(f[0].value !=　"" && f[0].value != undefined){
+			var rows =  $('#peopleSelect').datagrid('getRows');
+			var a = remove(rows_all,'userName',rows[index].userName);
+			$('#peopleSelect').datagrid('loadData',a);
+			rows_all = a;
+		}
+		else{
+            $('#peopleSelect').datagrid('deleteRow', index);
+            var rows =  $('#peopleSelect').datagrid('getRows');
+            $('#peopleSelect').datagrid('loadData',rows);
+		}*/
+		 
+    }
+	
+	$(document).ready(function(){
+	 //为已选人员增加初始化人数
+	 var count=$("#peopleSelectShow-list>li").length;
+	 $('#peopleSelectCount').text(count);
+	
+	
+        // 回车事件
+        document.onkeydown = function(e){
+            var ev = document.all ? window.event : e;
+            if(ev.keyCode==13) {
+				  var selectedUserNameFlag = $('#selectedUserName').textbox('textbox').isFocus();
+				  var userNameFlag = $('#userName').textbox('textbox').isFocus();
+				  
+				  if(userNameFlag){
+	                  formSearch();
+				  }
+				  if(selectedUserNameFlag){
+	                  peopleSelectSearch();
+				  }
+             }
+        }
+		
+		//初始化部门树、人员列表、已选人员
+        initTable();
+
+        $('#menutree').tree({
+            // 绑定部门树单击节点事件
+            onSelect:function(node){
+                // 点击树文字展开树节点
+                $("#userName").textbox('setValue', '');
+                if(node){
+                    if (node.state=='closed') {
+                        $(this).tree('expand',node.target);
+                    }
+                    var dutyIdsConds = "";
+                    if(node.dutyIds) {
+                        dutyIdsConds = node.dutyIds;
+                    }
+                    $('#department').val(node.id);
+					$("#peopleTable").datagrid({url:"$link.getContextURL()/select/selectMansByDep.json?__EQ__department.id="+node.id+"&dutyIdsConds="+dutyIdsConds});
+					//此处加formSearch()是为了解决easyui的textbox的bug
+					formSearch();
+                }else{
+                    $('#department').val("");
+					$("#peopleTable").datagrid({url:"$link.getContextURL()/select/selectMansByDep.json"});
+					//此处加formSearch()是为了解决easyui的textbox的bug
+					formSearch();
+                }
+
+            },
+            onLoadSuccess:function(node, data){
+                if(!node){
+                    var  roots = $("#menutree").tree("getRoots");
+                    if(roots && roots.length>0){
+                        var root = roots[0];
+                        $("#menutree").tree("expand",root.target);
+                        $(this).tree('select', root.target);
+                    }
+                }
+            }
+			
+        });
+
+		
+    // 关闭
+    function doclose() {
+        if (top.closeSelectDialogFrameDialog) {
+            top.closeSelectDialogFrameDialog();
+        }
+        return false;
+    }
+	 
+    $('#peopleTable').datagrid({
+            #if($single)
+            // 单选
+            onClickRow:function(rowIndex,rowData){
+                var obj = {
+                    id       : rowData.id,
+                    userName : rowData.userName
+                };
+                var rows = $('#peopleSelect').datagrid('getRows');
+                if (rows != null && rows.length > 0) {
+                    for(var i = rows.length - 1;i >= 0;i--){
+                        // 单选，删除已选择的人
+                         $('#peopleSelect').datagrid('deleteRow', i);
+                    }
+                }
+                $('#peopleSelect').datagrid('appendRow', obj);
+            },
+			
+			
+            #else
+            // 多选
+            // datagrid点击行事件
+            onCheck:function(rowIndex,rowData){
+               
+             // 去重
+			 var _peopleAll =$("#peopleSelectShow-list>li");
+			 if( _peopleAll !=null&&_peopleAll.length>0){
+			   for(var i=0;i<_peopleAll.length;i++){
+			        if(rowData.id==_peopleAll[i].id){
+					     return;
+					}   
+			   }
+			 }
+		  	var count =parseInt($('#peopleSelectCount').text()); 
+        	var count =count+1;
+            $('#peopleSelectCount').empty();
+            $('#peopleSelectCount').text(count);
+             $("#peopleSelectShow-list").append("<li display='none' id='"+rowData.id+"'><span title='" + rowData.userName + "'>"+rowData.userName+"</span><a href='javascript:;' class='easyui-linkbutton l-btn l-btn-small l-btn-plain'  id='"+rowData.id+"' plain='true' iconCls='icon-remove' onclick='delMan(this.id)' style='float:right;'><span class='l-btn-left l-btn-icon-left'><span class='l-btn-text l-btn-empty'></span><span class='l-btn-icon icon-remove'></span></span></a></li>");
+			 },
+			
+			//打钩取消时，删除对应的人
+            onUncheck:function(rowIndex,rowData){
+			 
+			  var _peopleAll =$("#peopleSelectShow-list>li");
+               if(_peopleAll!=null&&_peopleAll.length>0){
+			      for(var i=0;i<_peopleAll.length;i++){
+			        if(rowData.id==_peopleAll[i].id){
+					$(_peopleAll[i]).remove();
+					var count =parseInt($('#peopleSelectCount').text()); 
+        			var count =count-1;
+                    $('#peopleSelectCount').empty();
+                    $('#peopleSelectCount').text(count);
+					break;
+					}   
+			   }
+			   }  
+             },
+			 
+			 
+            onCheckAll:function(rows){
+              
+				var _peopleAll =$("#peopleSelectShow-list>li");
+                for(var i = 0; i < rows.length; i++) {
+                    var obj = {
+                            id       : rows[i].id,
+                            userName : rows[i].userName
+                          };
+                    if (_peopleAll != null && _peopleAll.length > 0) {
+                        var containFlag = false;
+                        for(var j = 0; j < _peopleAll.length; j++) {
+                           if (obj.id == _peopleAll[j].id) {
+                               containFlag = true;
+                               break;
+                           }
+                        }
+                        if (containFlag) {
+                           continue;
+                        }
+                    }
+			var count =parseInt($('#peopleSelectCount').text()); 
+			var count =count+1;
+            $('#peopleSelectCount').empty();
+            $('#peopleSelectCount').text(count);
+             $("#peopleSelectShow-list").append("<li display='none' id='"+rows[i].id+"'><span title='" + rows[i].userName + "'>"+rows[i].userName+"</span><a href='javascript:;' class='easyui-linkbutton l-btn l-btn-small l-btn-plain'  id='"+rows[i].id+"' plain='true' iconCls='icon-remove' onclick='delMan(this.id)' style='float:right;'><span class='l-btn-left l-btn-icon-left'><span class='l-btn-text l-btn-empty'></span><span class='l-btn-icon icon-remove'></span></span></a></li>");
+
+                }
+            },
+            onUncheckAll:function(rows){
+               var _peopleAll =$("#peopleSelectShow-list>li");
+				
+                for(var i = 0; i < rows.length; i++) {
+                    for(var j = _peopleAll.length-1; j >= 0; j--) {
+                       if (rows[i].id == _peopleAll[j].id) {
+                           $(_peopleAll[j]).remove();
+        					var count =parseInt($('#peopleSelectCount').text()); 
+                			var count =count-1;
+                            $('#peopleSelectCount').empty();
+                            $('#peopleSelectCount').text(count);
+                           break;
+                       }
+                    }
+                }
+            }
+            #end
+        });
+    
+    });
+	
+    function operaterFormatter(value,row,index){
+		if(value != ""){
+			return '<span class="value-span" style="width:60px">' + value + '</span>' + $('#delButton').html();
+		}
+        else{
+			
+		}
+    }
+	
+	
+</script>
+<script src="lib/jquery/easyui/datagrid-filter.js" type="text/javascript"></script>
+<style>
+div[ms-controller]{
+    display:none;
+}
+</style>
+#end

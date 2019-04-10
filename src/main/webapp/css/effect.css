@@ -1,0 +1,7 @@
+.easyui-accordion ul li div:hover{background:#ffefd9;cursor:pointer;}
+/* cc-开头的是功能相关的样式不要随意修改 */
+.cc-frame{width: 100%;height: 99%}
+.cc-tab-menu{width:150px}
+.cc-operateColum{display:none}
+.cc-tableWrap{}
+

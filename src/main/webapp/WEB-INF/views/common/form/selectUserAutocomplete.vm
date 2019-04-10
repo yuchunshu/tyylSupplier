@@ -1,0 +1,296 @@
+##隐藏域
+<input id="__userIds" name="$!__idfield" type="hidden" value="$!__idvalue">
+<input id="__userNames" name="$!__textfield" type="hidden" value="$!__textvalue">
+##
+<div id="divTextarea" class="divTextarea" style="width:90%;" onclick="$('#addrInput').focus();"  >
+    <div id="incepters" ></div>
+    <input type="text" class="addrInput" id="addrInput" name="addrInput">
+</div>
+<div id="searchTips" class="searchTips" style="display:none;"></div>
+<a id="selectDepDialog" title="选择人员" href="javascript:;" iconcls="icon-search" select-dialog-auto plain="true" callback=fnSelectUsersAutoCallback class="easyui-linkbutton"></a>
+#@script()
+<script type="text/javascript">
+
+    //选择对话框
+    $("a[select-dialog-auto]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var __userIds = $('#__userIds').val();
+            if (typeof(__userIds) == "undefined") {
+                __userIds = "";
+            }
+            var _url = "$link.getContextURL()$!__dialogurl?userIds="+__userIds;
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    // 人员选择回调
+    function fnSelectUsersAutoCallback(obj){
+        $("#incepters").empty();
+        $("#__userIds").val("");
+        $("#__userNames").val("");
+        for (var i = 0; i < obj.length; i++){
+            addUser(obj[i].$!__dialogidfield, obj[i].$!__dialogtextfield);
+        }
+    }
+
+    // div选中效果;用于删除
+    function selectDiv(div) {
+        if ($(div).attr("id") === "addrInput") {
+            return;
+        }
+        if ($(div).hasClass('selectedIncepter')) {
+            $(div).css('background-color', '#ffffff');
+            $(div).css('color', '#000000');
+            $(div).removeClass('selectedIncepter');
+        } else {
+            $(div).css('background-color', '#528bcb');
+            $(div).css('color', '#ffffff');
+            $(div).addClass('selectedIncepter');
+        }
+        $("#addrInput").focus();
+    }
+
+    // tip页
+    var lastValue = "";
+    function completeUser() {
+        var value = $("#addrInput").val();
+        if (lastValue == value) {
+            return;
+        }
+        lastValue = value;
+        $.post("$link.getContextURL()$!__searchurl",{search:value,exceptUserIds:$("#__userIds").val()},function(list){
+            if(list && list.length > 0){
+                $("#searchTips").css("display", "block");
+                var html = "";
+                for (var i = 0; i < list.length; i++) {
+                    html += '<div class="userSpan" userId="' + list[i].id + '" userName="' + list[i].userName + '"onclick="selectUser($(this))">' + list[i].userName + '(' + list[i].depName + ')</div>';
+                }
+                $("#searchTips").html(html);
+            } else {
+                $("#searchTips").css("display", "none");
+                $("#searchTips").html("");
+            }
+        });
+    }
+
+    // 在tip中选择
+    function selectUser (dom) {
+        addUser(dom.attr('userId'),dom.attr('userName'));
+    }
+
+    // 删除
+    function removeUser(topDom) {
+        if (topDom) {
+            var tdWidth = $("#divTextarea").width() - $("#incepters").width();
+            var divWidth = topDom.width();
+            $("#addrInput").width(divWidth + tdWidth + 20);
+            topDom.remove();
+
+            var selectedUser = $(".incepterDiv");
+            var __userIds = "";
+            var __userNames = "";
+            if (selectedUser.length > 0) {
+                for(var i = 0; i < selectedUser.length; i++) {
+                    __userIds += $(selectedUser[i]).attr("userId");
+                    __userNames += $(selectedUser[i]).attr("userName");
+                    if (i != (selectedUser.length - 1)) {
+                        __userIds += ",";
+                        __userNames += ",";
+                    }
+                }
+            }
+            $("#__userIds").val(__userIds);
+            $("#__userNames").val(__userNames);
+        }
+    }
+
+    // 添加
+    function addUser(id, userName) {
+        var __userIds = $("#__userIds").val();
+        var __userNames = $("#__userNames").val();
+        $("#addrInput").val("");
+        $("#searchTips").css("display", "none");
+        var idArr = __userIds.split(",");
+        if (idArr.indexOf(id) >= 0) {
+            return;
+        }
+        var html = "<div id='selected_" + id + "' userId='" + id + "' userName='" + userName + "' class='incepterDiv' onclick='selectDiv(this)' onselectstart='return false;' style='float:left;display:inline;text-align:left;margin:2px;border:1px solid #ffffff;cursor:pointer;'><span unselectable='on'>" + userName + "</span><a href='javascript:;' style='cursor:pointer;' onclick='removeUser($(this).parent())'>x</a></div>";
+        $("#incepters").append(html);
+        var tdWidth = $("#divTextarea").width() - $("#incepters").width();
+        var incepterDivWidth = $("#selected_" + id).width();
+        $("#addrInput").width(tdWidth - incepterDivWidth - 20);
+        if (__userIds.length > 0) {
+           __userIds = __userIds + "," + id;
+           __userNames = __userNames + "," + userName;
+        } else {
+           __userIds = id;
+           __userNames = userName;
+        }
+        $("#__userIds").val(__userIds);
+        $("#__userNames").val(__userNames);
+        $("#searchTips").html("");
+    }
+
+    $(function(){
+        $("#addrInput").on("keyup", completeUser);
+        // 退格事件 测试
+        $("#addrInput").bind("keydown",function(e){
+            e = e ? e : event;
+            if(e.keyCode == 8 || e.keyCode == 46){
+                if ($(this).val()) {
+                    return;
+                }
+                var divs = $(".selectedIncepter");
+                if (divs.length > 0) {
+                    for (var i = 0; i < divs.length; i++) {
+                        removeUser($(divs[i]));
+                    }
+                } else {
+                    var incepters = $("#incepters").children();
+                    if (incepters.length > 0) {
+                        removeUser($(incepters[incepters.length - 1]));
+                    }
+                }
+                return false;
+            }
+        });
+        $("#addrInput").bind("keyup",function(e){
+            e = e ? e : event;
+
+            // 分号 ;
+            if (e.keyCode == 186) {
+                var selected = $(".userSpanSelected");
+                if (selected && selected.length > 0) {
+                    addUser($(selected[0]).attr("userId"),$(selected[0]).attr("userName"));
+                    return false;
+                }
+                var value = $("#addrInput").val();
+                value = value.replace(";", "");
+                value = value.replace("；", "");
+                var userSpans = $(".userSpan");
+                if (userSpans && userSpans.length > 0) {
+                    var id = $(userSpans[0]).attr("userId");
+                    var userName = $(userSpans[0]).attr("userName");
+                    addUser(id, userName);
+                } else {
+                    $("#addrInput").val("");
+                    $("#searchTips").css("display", "none");
+                    $("#searchTips").html("");
+                }
+                return false;
+            }
+
+            // 方向键↓
+            if (e.keyCode == 40) {
+                var userSpans = $(".userSpan");
+                if (userSpans && userSpans.length > 0) {
+                    var selected = $(".userSpanSelected");
+                    if (selected && selected.length > 0) {
+                        for(var i = 0; i < userSpans.length; i++) {
+                            if ($(userSpans[i]).hasClass("userSpanSelected")) {
+                                if (i != (userSpans.length - 1)) {
+                                    $(userSpans[i]).removeClass("userSpanSelected");
+                                    $(userSpans[i + 1]).addClass("userSpanSelected");
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        $(userSpans[0]).addClass("userSpanSelected");
+                    }
+                }
+                return false;
+            }
+
+            // 方向键↑
+            if (e.keyCode == 38) {
+                var userSpans = $(".userSpan");
+                if (userSpans && userSpans.length > 0) {
+                    var selected = $(".userSpanSelected");
+                    if (selected && selected.length > 0) {
+                        for(var i = userSpans.length - 1; i >= 0; i--) {
+                            if ($(userSpans[i]).hasClass("userSpanSelected")) {
+                                if (i != 0) {
+                                    $(userSpans[i]).removeClass("userSpanSelected");
+                                    $(userSpans[i - 1]).addClass("userSpanSelected");
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        $(userSpans[userSpans.length - 1]).addClass("userSpanSelected");
+                    }
+                }
+                return false;
+            }
+
+            // 回车事件
+            if (e.keyCode == 13) {
+                var selected = $(".userSpanSelected");
+                if (selected && selected.length > 0) {
+                    addUser($(selected[0]).attr("userId"),$(selected[0]).attr("userName"));
+                }
+                return false;
+            }
+        });
+    });
+</script>
+#end
+<style type="text/css">
+.divTextarea {
+    width: 80%;
+    display:inline-block;
+##    min-height: 20px;
+    outline: 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position:relative;
+##    margin:2px;
+    border-radius: 3px;
+
+    margin: 0;
+##    padding: 4px;
+    white-space: normal;
+    vertical-align: top;
+    outline-style: none;
+    resize: none;
+}
+.incepterDiv:hover {
+    background:#e0ecf9;
+}
+.addrInput {
+    border: 0;
+    outline: none;
+    min-width: 90px;
+    width:100%;
+}
+.searchTips{
+    position: absolute;
+    width:300px;
+    border:1px solid #e0e0e0;
+    z-index: 9999;
+    background-color: #ffffff;
+}
+
+.userSpan{
+    margin:5px;
+    cursor:pointer;
+}
+.userSpan:hover{
+    margin:5px;
+    cursor:pointer;
+    background:#e0ecf9;
+}
+.userSpanSelected{
+    background:#e0ecf9;
+}
+</style>

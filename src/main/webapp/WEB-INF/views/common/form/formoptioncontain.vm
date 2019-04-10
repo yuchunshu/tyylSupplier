@@ -1,0 +1,11 @@
+<option value="" >&nbsp;</option>
+#foreach($__option in $__options.keySet())
+	#set( $contain = false )
+	#foreach( $__exp in $__contain)
+		#if($__exp == $__option) #set( $contain = true ) #end
+	#end
+	#if($contain == true)
+    <option value="$__option" #if("$__value"=="$!{__option}")selected="selected"#end>$!{__options.get($__option)}</option>
+    #end
+#end
+

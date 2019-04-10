@@ -1,0 +1,176 @@
+<div class="easyui-layout" fit="true">
+    <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+        ## <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增</a>
+        ## <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+        ## <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        ## <i></i>
+        <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+		
+		<a  onclick="top.CC.closeCurTab()"
+             class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+    </div>
+    <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+        <table id="dg" data-options="nowrap:false" style="width:99%;">
+            <thead>
+            <tr>
+				<th style="width:33%" data-options="field:'title',formatter:detailUrl,sortable:true">公文标题</th>
+                <th style="width:20%" data-options="field:'secondaryUnitIdentifierName'">收文单位</th>
+				<th style="width:8%" data-options="field:'senderName'">发送人</th>
+				<th style="width:12%" data-options="field:'sendTimeShow',sortable:true">发送时间</th>
+				<th style="width:5%" data-options="field:'documentType'">公文类型</th>
+				<th style="width:12%" data-options="field:'limitTimeShow',sortable:true">限办时间</th>
+				<th style="width:9%" data-options="field:'envStatus',formatter:statusFormatter">反馈情况</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+         style="width:500px;height:350px;padding:20px 10px; background-color:#f4f4f4;display:none">
+        <input type="hidden" name="$qc.equal('receiveFlag')" value="$!{receiveFlag}" id="receiveFlag" class="extra-condition"/>
+        <form id="queryForm">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="right">公文标题：</td>
+                    <td align="left" colspan="3"><input id="title" name="$qc.like('title')" style="width:330px;" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+                    <td align="right">收文单位：</td>
+                    <td align="left" style="width:150px;"><input id="secondaryUnitIdentifierName" name="$qc.like('secondaryUnitIdentifierName')" style="width:150px;" class="easyui-textbox" /></td>
+                    <td align="right" style="width:80px;">发送人：</td>
+                    <td align="left"><input id="secondaryUnitIdentifierName" name="$qc.like('senderName')" style="width:100px;" class="easyui-textbox" /></td>
+                </tr>
+                <tr>
+                    <td align="right">发送时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="$qc.greaterThanOrEqualTo('sendTime')" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+                        至
+                        <input name="$qc.lessThanOrEqualTo('sendTime')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">限办时间：</td>
+                    <td align="left" colspan="3">
+                        <input name="$qc.greaterThanOrEqualTo('limitTime')" class="easyui-datebox" data-options="editable:false" style="width:150px;">
+                        至
+                        <input name="$qc.lessThanOrEqualTo('limitTime')" class="easyui-datebox" data-options="editable:false" style="width:160px;">
+                    </td>
+                </tr>
+				<tr>
+                    <td align="right">公文类型：</td>
+                    <td align="left">
+                        <select name="$qc.equal('documentType')" class="easyui-combobox" data-options="editable:false" style="width:150px;"
+                            panelheight="auto">
+							#formoption("" $dict.RemoteDocSwapType)
+                        </select>
+                    </td>
+                    <td align="right">反馈情况：</td>
+                    <td align="left">
+                        <select name="$qc.equal('envStatus')" class="easyui-combobox" data-options="editable:false" style="width:100px;"
+                            panelheight="auto">
+							#formoption("" $dict.RemoteEnvStatus)
+                        </select>
+                    </td>
+                </tr>
+				
+            </table>
+         </form>
+        <div id="bnts" style="top:0px; height:25px; width:auto;">
+            <a class="new-but" onclick="formSerach()">确定</a>
+            <a class="new-but" onclick="reset()">重置</a>
+        </div>
+    </div>
+</div>
+#parse("doc/remotedocswap/crud.js.vm")
+#@script()
+<script type="text/javascript">
+    $(function () { // 给查询dialog中的 标题input 绑定回车事件
+        $('#title').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSerach();
+            }
+        });
+    })
+
+    var _baseUrl = '$link.getContextURL()/remotedocswap';
+    var _listJsonUrl = '/listDocSend.json';
+
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+	
+    /*状态格式化*/
+    function statusFormatter(value, row, index) {
+        if(value == "未签收") {
+            return '<font color="red">' + value + '</font>';
+        }else if (value == "已签收") {
+            return '<font color="blue">已签收</font>';
+        }else if (value == "已办结") {
+            return '<font color="blue">' + value + '</font>';
+        }else if (value == "已撤销") {
+            return '<font color="#ff6012">' + value + '</font>';
+        }else if (value == "已作废") {
+            return '<font color="#ff6012">' + value + '</font>';
+        }else if (value == "不办理") {
+            return '<font color="#ff6012">' + value + '</font>';
+        }else if (value == "转阅件") {
+            return '<font color="blue">' + value + '</font>';
+        }else if (value == "办结传阅") {
+            return '<font color="blue">办结（传阅）</font>';
+        }else if (value == "办结归档") {
+            return '<font color="blue">办结（归档）</font>';
+        }else if (value == "退文") {
+            return '<font color="blue">' + value + '</font>';
+        }
+									
+    }
+
+	//查询
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+
+	//重置
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+	  
+	function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+	
+    function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        _datagrid.datagrid("selectRow",index);
+        var row = _datagrid.datagrid("getSelected");
+        url = "$link.getContextURL()/remotedocswap/detailDocSwap?id="+row.id + "&queryFlag=send";
+        top.CC.addTab({title:'公文交换详情',url:url});
+    }
+	
+    function detailUrl(value,row) {
+        var display = "<span><font color=red>[置顶]</font></span>";
+        if ("置顶" == row.displayType) {
+            return display + "<a href='javascript:;' class='font-titlecolor' onclick='detailRow(getRowIdByDom(this))'>"+value+"</a>";
+        } else {
+            return "<a href='javascript:;' class='font-titlecolor' onclick='detailRow(getRowIdByDom(this))'>"+value+"</a>";
+        }
+    }
+	 
+</script>
+#end

@@ -1,0 +1,108 @@
+#@script()
+<script src="$link.getContextURL()/lib/goldgrid/2009/goldgrid.js" type="text/javascript"></script>
+<script>
+#set( $ggId = "WebOffice2009" )
+#set( $currentURI = "$link.getContextURL()" )
+$(function(){
+    if(window.goldgrid.isIEBrowser()){
+        var WebOffice = document.getElementById("$!{ggId}");
+        // 用于判断所选tab页是否打开金格插件
+        top.CC.CONTAIN_GOLDGRID_FLAG = true;
+    }
+});
+
+//打开文件
+function openGoldgridFile(serverFile) {
+    var retval = window.goldgrid.WebGetFile("$!{ggId}", serverFile);
+    if (retval != "true") {
+        top.CC.messager({ title:'提示', msg:retval });
+    }
+}
+// 套红头文件
+function useDocTemplate(moduleFile) {
+    window.goldgrid.WebUseTemplate("$!{ggId}", moduleFile);
+}
+//保存文件(保存手写批注)
+function saveGoldgridFile(file){
+    window.goldgrid.WebPutFile("$!{ggId}", file, true);
+}
+//保存文件(只保存doc)
+function saveGoldgridFileDoc(file,isClose){
+    window.goldgrid.WebPutDocFile("$!{ggId}", file, isClose);
+}
+//打印
+function WebOpenPrint(){
+    window.goldgrid.WebOpenPrint("$!{ggId}");
+}
+
+
+//获取套打的公文笺数据
+function getPrintNoteData() {
+    var notedata = {};
+
+    notedata["title"] = $('#title').textbox('getValue');
+    notedata["公文标题"] = $('#title').textbox('getValue');
+
+    notedata["sendUnit"] = "$!obj.sendUnit";
+    notedata["来文单位"] = "$!obj.sendUnit";
+    notedata["发文单位"] = "$!obj.sendUnit";
+
+    notedata["docCode"] = $("#docCode").val();
+    notedata["发文字号"] = $("#docCode").val();
+    notedata["来文字号"] = $("#docCode").val();
+
+    notedata["sncode"] = "$!obj.sncode";
+    notedata["编号"] = "$!obj.sncode";
+
+    notedata["mainSend"] = "$!obj.mainSend";
+    notedata["主送单位"] = "$!obj.mainSend";
+
+    notedata["copySend"] = "$!obj.copySend";
+    notedata["抄送单位"] = "$!obj.copySend";
+
+    notedata["reportSend"] = "$!obj.reportSend";
+    notedata["分送单位"] = "$!obj.reportSend";
+	
+    notedata["urgencyLevel"] = "$!obj.urgencyLevel.value";
+    notedata["紧急程度"] = "$!obj.urgencyLevel.value";
+	
+    notedata["openFlag"] = "$!obj.openFlag.value";
+    notedata["政务公开方式"] = "$!obj.openFlag.value";
+	
+    notedata["typist"] = "$!obj.typist";
+    notedata["签发人"] = "$!obj.typist";
+	
+	notedata["copySendAndReportSend"] = "$!obj.copySend" + "," +"$!obj.reportSend";
+    notedata["抄报抄送"] = "$!obj.copySend" + "," +"$!obj.reportSend";
+	
+	var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth()+1;
+    var day = date.getDate();
+    printDate = year+'年'+month+'月'+day+'日 ';
+
+	notedata["printDate"] = printDate;
+    notedata["印发日期"] = printDate;
+	
+	notedata["copies"] = $('#copies').textbox('getValue');
+    notedata["份数"] = $('#copies').textbox('getValue');
+	
+    return notedata;
+}
+
+//公文套打
+function _SuitPrintDoc(serverFile, templateFile, noteData) {
+    window.goldgrid.ReplaceBookmarks('$!{ggId}', serverFile, templateFile, noteData);
+}
+
+
+//套红头文
+function replaceDocTemplate(reValue){
+    var nodeData = getPrintNoteData();
+
+    window.goldgrid.WebUseTemplate("$!{ggId}", reValue, nodeData);
+}
+
+
+</script>
+#end

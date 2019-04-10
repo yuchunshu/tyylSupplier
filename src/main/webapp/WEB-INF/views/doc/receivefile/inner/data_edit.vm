@@ -1,0 +1,40 @@
+<div id="docTab" class="easyui-tabs tabs-trapezoid" fit="true">
+	<div title="收文信息" style="padding:5px;">
+		<form id="editForm" method="post">
+			<input name="id" id="id" type="hidden" value="$!{obj.id}"/>
+			<input name="parentId" id="parentId" type="hidden" value="$!{parentId}"/>
+			<input name="fileType" id="fileType" type="hidden" value="1"/>
+			<input id="createrDepId" name="createrDepId" type="hidden" #if($obj) value="$!{obj.createrDept.id}" #else value="$!{currUser.department.id}" #end/>
+			<input id="creatorId" name="creatorId" type="hidden" #if($obj) value="$!{obj.creatorId}" #else value="$!{currUser.id}" #end/>
+			<input id="status" name="status" type="hidden" value="$!{obj.status}"/>
+			<input id="docEditable" name="docEditable" type="hidden" value="1"/>
+			<input name="nextNodeId" id="nextNodeId" type="hidden" value=""/>
+			<input name="nextDealers" id="nextDealers" type="hidden" value=""/>
+		    ##正文附件相关
+			<input name="filepath" id="filepath" type="hidden" value="$!{docpath}/$!{docname}"/>
+            <input name="docpath" id="docpath" type="hidden" value="$!{docpath}"/>
+            <input name="docname" id="docname" type="hidden" value="$!{docname}"/>
+			<input name="docId" id="docId" type="hidden" value="$!{obj.docId}"/>
+
+			<input id="version_" name="version_" type="hidden" value="$!{obj.version_}"/>
+			<input id="docDepLetterId" name="docDepLetterId" type="hidden" value="$!{obj.docDepLetterId}"/>
+			<input type="hidden" name="identifier" value="007565768-N-2016G001000000128"/>##?? 为什么要这么设置（纸质公文：007565768-N-2016G001000000128）
+			<table class="table-edit" width="99%" border="0" cellspacing="1" cellpadding="0">
+				<tbody>
+					<tr>
+						<td class="fix_td_title">&nbsp;</td>
+						<td class="fix_td_data">&nbsp;</td>
+						<td class="fix_td_title">&nbsp;</td>
+						<td class="fix_td_data">&nbsp;</td>
+					</tr>
+					#parse("doc/receivefile/inner/info_edit.vm")
+				</tbody>
+			</table>
+
+			##附件可编辑
+			#set($docIsEdit=true)
+			##附件预览
+			#parse("doc/fileparse/attachpreview.vm")
+    	</form>
+  	</div>
+</div>

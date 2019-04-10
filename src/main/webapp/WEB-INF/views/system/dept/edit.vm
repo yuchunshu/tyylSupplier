@@ -1,0 +1,118 @@
+<div id="cc" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'center'" class="mainborder-Padding">
+        <form id="editForm" method="post">
+            <table class="table-edit" width="100%" border="0" cellspacing="1" cellpadding="0">
+              <tbody>
+                <tr>
+                    <td class="fix_td_title">&nbsp;</td>
+                    <td class="fix_td_data">&nbsp;</td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">所属单位</td>
+                  <td class="bg-white">
+                    <input type="hidden" id="unitId" name="unitId" #if($!{obj}) value="$!{obj.unitId}" #else value="$!{parentDept.unitId}" #end />
+                    #if($!{obj}) $!{esc.html(${lookup.sysdepartment[$!{obj.unitId}].deptName})}
+                    #else $!{esc.html(${lookup.sysdepartment[$!{parentDept.unitId}].deptName})} #end
+                  </td>
+                </tr>
+                <tr>
+                  <td class="bg-grey"><span><font color=red>*</font></span>部门名称</td>
+                  <td class="bg-white">
+                    <input type="hidden" id="id" name="id" value="$!{obj.id}"/>
+                    <input style="width:100%;" class="easyui-textbox" data-options="required:true,validType:['notBlank','nameUnique']" name="deptName" value="$!{esc.html($!{obj.deptName})}"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">所属部门</td>
+                  <td class="bg-white">
+                    <input type="hidden" id="deptParent" name="deptParent" #if(${obj}) value="$!{obj.deptParent}" #else value="$!{parentDept.id}" #end/>
+                    #if($!{obj}) $!{esc.html($!{lookup.sysdepartment[$!{obj.deptParent}].deptName})}
+                    #else $!{esc.html($!{parentDept.deptName})} #end
+                  </td>
+                </tr>
+				<tr>
+        			<td class="bg-grey">部门级别</td>
+        			<td class="bg-white">
+                        <select style="width:30%;" name="deptLevel" id="deptLevel" class="easyui-combobox" data-options="editable:false" panelheight="auto" >
+                            #formoption("$!{obj.deptLevel}" $dict.AdministrativeLevel)
+                        </select>
+					</td>
+				</tr>
+                <tr>
+                  <td class="bg-grey">单位代码</td>
+                  <td class="bg-white">
+                    <input style="width:100%;" class="easyui-textbox" name="deptCode" value="$!{obj.deptCode}"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="bg-grey">排序号</td>
+                  <td class="bg-white">
+                    <input style="width:100%;" class="easyui-numberbox" name="orderNum" value="$!{obj.orderNum}"/>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </form>
+    </div>
+    <div data-options="region:'south'" style="height:52px;padding-top:15px; background-color: #F4F3F3;">
+        <div class="bottom-but-dialog">
+            <ul>
+                <li><a id="saveTemp" onclick="save()" class="new-but">保存</a></li>
+                <li><a id="back" onclick="back()" class="new-but">关闭</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    //保存
+    function save(){
+        if ($("#editForm").form('validate')) {
+            $.post("$link.getContextURL()/system/dept/save.json",$("#editForm").serialize(),function(result){
+                  if(result.errorMsg == null){
+                    top.CC.messager({
+                        title:'成功',
+                        msg:'保存成功！'
+                    });
+                    window.location = "$link.getContextURL()/system/dept/list";
+
+                  }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:result.errorMsg
+                    });
+                  }
+            });
+        }
+    }
+    // 关闭
+    function back() {
+        $('#editWindow').window('close');
+    }
+
+    var _deptName = "";
+    var _returnFlag = true;
+    $.extend($.fn.validatebox.defaults.rules, {
+        nameUnique : { // 判断部门名唯一
+            validator : function(value, param) {
+                value = $.trim(value);
+                if (_deptName != value) { // 当value改变才进行远程验证
+                    _deptName = value;
+                    $.post("$link.getContextURL()/system/dept/deptNameCheck.json",{id:$("#id").val(),deptName:value,parentId:$("#deptParent").val()},function(result){
+                        _returnFlag = result;
+                    },'json');
+                }
+                return _returnFlag;
+            },
+            message : '该部门已存在!'
+        },
+        notBlank : { // 判断是否为空
+            validator : function(value, param) {
+                value = $.trim(value); //去空格
+                return !(value == "");
+            },
+            message : '不能为空格！'
+        }
+    });
+</script>
+#end

@@ -1,0 +1,22 @@
+<table id="gxnew_ccwebdoc" width="100%"  style="display:none;">
+<tr><td height="750" width="98%">
+        <OBJECT
+      classid="clsid:2F20ABA5-875C-4913-832F-393476212699"
+      codebase="$link.getContextURL()/ocx/ccwebdocreaderProj1.ocx#version=1,0,0,0"
+      name = 'ccwebdoc'
+	  id = 'ccwebdoc'
+      width='95%'
+      height='100%'
+      align=center
+      hspace=0
+      vspace=0
+>
+</OBJECT>
+</td></tr>
+</table>
+	
+<div id="is_IEBrowser" style="display:none;background:#FFF;width:100%;height:100%;">
+    <span style="color: red;padding: 10px;font-weight: bold;font-size: 20px;display: block;line-height: 1.5em;">
+    当前浏览器不支持附件预览。<br/>如需附件预览，请使用IE浏览器进行操作。
+    </span>
+</div>

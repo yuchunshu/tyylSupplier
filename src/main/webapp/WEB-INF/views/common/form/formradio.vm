@@ -1,0 +1,13 @@
+#foreach($__option in $__options.keySet())
+    <label style="display:inline-block;" #if($strTool.strToArr("$!{__disabled}").contains("$__option")) title="不可用" #end >
+        <input #if($strTool.strToArr("$!{__disabled}").contains("$__option")) disabled title="不可用" #end
+        type="radio" name="$!__name" id="$!{__id}${velocityCount}" value="$!{esc.html($!{__option})}"
+        #if("$!__value"=="")
+           #if("$!__default"=="$!{__option}")checked="checked"#end
+        #else
+           #if("$!__value"=="$!{__option}")checked="checked"#end
+        #end
+        #if($__class)class="$!__class"#end $!__inputatt/>$!{esc.html($!{__options.get($__option)})}&nbsp;&nbsp;
+    </label>
+#end
+

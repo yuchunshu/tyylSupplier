@@ -1,0 +1,5 @@
+#if($__localcustomscripttplist)
+#foreach($__script in $__localcustomscripttplist.keySet())
+$!__script
+#end
+#end

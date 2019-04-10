@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+>
+
+    <description>权限相关配置</description>
+
+    <!-- 获取系统内可用url -->
+    <bean class="cn.com.chaochuang.common.power.url.HandlerMappingFinder">
+        <property name="ignoreAntPatternList">
+            <value>${power.commonurl},${power.ignoreurl}</value>
+        </property>
+        <property name="resourcePrefix">
+            <value>/WEB-INF/views/</value>
+        </property>
+        <property name="resourceSuffix">
+            <value>.vm</value>
+        </property>
+    </bean>
+
+    <bean class="cn.com.chaochuang.common.power.PowerManager">
+        <property name="superAdminAccount">
+            <value>${security.default_admin_account}, ${power.default_admin_account}</value>
+        </property>
+        <property name="commonUrl">
+            <value>${power.commonurl}</value>
+        </property>
+        <property name="powerNameRuleMap">
+            <ref bean="powerNameRuleMap" />
+        </property>
+        <property name="parentUrlDetailMap">
+            <ref bean="parentUrlDetailMap"/>
+        </property>
+    </bean>
+
+</beans>

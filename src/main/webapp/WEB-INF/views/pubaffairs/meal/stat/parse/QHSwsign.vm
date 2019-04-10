@@ -1,0 +1,248 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/pubaffairs/meal/qh.css"/>
+<div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom" style="height:28px;">
+	<div style="float:left;padding: 5px;">
+		<label class="query-label">
+            <input type="radio" class="easyui-validatebox" data-options="required:true" name="mealPlace" value="0" onclick="onQueryChange1()"/>
+			<span>全体人员</span>
+		</label>
+		<label class="query-label">
+            <input type="radio" class="easyui-validatebox" data-options="required:true" name="mealPlace" value="1" checked onclick="onQueryChange1()"/>
+			<span>青湖</span>
+		</label>
+		<label class="query-label">
+            <input type="radio" class="easyui-validatebox" data-options="required:true" name="mealPlace" value="2" onclick="onQueryChange1()"/>
+			<span>明秀</span>
+		</label>
+    </div>
+</div>
+<div id="receiveContainersQH">
+	<div class="qh-table" id="tableBox1">
+		
+	</div>
+</div>
+
+
+#@script()
+<script type="text/javascript">
+
+
+	$('#tab').tabs({
+  		onSelect: function(){
+			var tab = $('#tab').tabs('getSelected');
+			var index = $('#tab').tabs('getTabIndex',tab);
+			if(index == 0){
+				$("#print").hide();
+			}else{
+				$("#print").show();
+				onQueryChange1();
+			}
+  		}
+	});
+
+	function onQueryChange1(){
+		var mealPlace = $('input[name="mealPlace"]:checked').val();
+		var url = "";
+		if($.trim(mealPlace) == "0"){//全体人员
+			url = "$link.getContextURL()/pubaffairs/meal/statAllPersonnel?mealDate=$!{mealDate}&&mealType=$!{mealType}&&mealPlace=2";
+		}else if($.trim(mealPlace) == "1"){//青湖
+			url = "$link.getContextURL()/pubaffairs/meal/statQH?mealDate=$!{mealDate}&&mealType=$!{mealType}&&mealPlace=1";
+		}else{//明秀
+			url = "$link.getContextURL()/pubaffairs/meal/statMX?mealDate=$!{mealDate}&&mealType=$!{mealType}&&mealPlace=0";
+		}
+		
+		var tab = $('#tab').tabs('getSelected');  
+		tab.panel('refresh', url);
+	}
+    
+    
+
+
+	
+	$(document).ready(function(){		
+		var number = "$!{number}";
+        var mealType = "$!{mealType}";
+        var workCount = "$!{workCount}";
+        var practiceCount = "$!{practiceCount}";
+        var receptCount = "$!{receptCount}";
+        var mealDate = "$!{mealDate}";
+        var dataList = ${tableChartDatas};
+        var count = parseInt("$!{count}");
+        var columnCount = parseInt("$!{columnCount}");
+        var b = parseInt("0");
+        var b1 = parseInt("0");
+        var b2 = parseInt("0");
+        	
+        //定义一个接收<td>标签id角标的数组
+        var idArr = new Array();
+        //定义一个接收rowSpan数值的数组
+        var rowSpanArr = new Array();
+		//定义一个科室份数数值的数组
+        var deptNumArr = new Array();
+        	
+        var elements = "";
+     	elements += "<div class='receive_qh_table'>";
+    	elements += "<table cellspacing='0' cellpadding='0'>";
+   		elements += "<thead>";
+      	elements += "<tr>";
+       	if(mealType == 4){
+        	elements += "<th colspan='9'>"+ mealDate +" 青湖员工用餐</th>";
+        }else{
+        	elements += "<th colspan='9'>"+ mealDate +" 青湖加班用餐</th>";
+        }
+        elements += "<tr>";
+        if(mealType == 4){
+        	elements += "<td colspan='9'>总计用餐"+ number +"份，其中员工餐"+ workCount +"份、自费餐"+ practiceCount +"份、接待餐"+ receptCount +"份</td>";
+        }else{
+        	elements += "<td colspan='9'>总计用餐"+ number +"份，其中加班餐"+ workCount +"份</td>";
+        }
+        elements += "</tr>";
+        elements += "</thead>";
+        elements += "<tbody>";
+        	
+        	
+        	
+        	
+        //封装表头
+         elements += "<tr>";
+        if(count >= 3){
+        	for(var k = 0 ; k < 3 ; k++){
+            	elements += ("<td class='deptClassQH'>科室</td>");
+            	elements += ("<td class='nameClassQH'>姓名</td>");
+            	elements += ("<td class='remarkClassQH'>备注</td>");
+        	}
+        }else{
+        	for(var k = 0 ; k < count ; k++){
+            	elements += ("<td class='deptClassQH'>科室</td>");
+            	elements += ("<td class='nameClassQH'>姓名</td>");
+            	elements += ("<td class='remarkClassQH'>备注</td>");
+        	}
+        }
+        	
+        elements += "</tr>";
+        	
+        for(var a = 0 ; a < dataList.length ; a++){
+        	if(a < columnCount){
+            	elements += "<tr>";
+        			
+        		//第一列表格数据封装
+        		//判断第一列开头rowSpan样式
+        		if(a == 0){
+        			elements += ("<td id='td"+ a +"' rowspan='0'>"+ dataList[a].deptName +"<br><span id='deptNum"+ a +"'></span></td>");
+        			b = a;
+        		}
+        		//判断第一列中间rowSpan样式
+        		if(a != 0){
+        			if(dataList[a].deptName != dataList[a-1].deptName && a != 0){
+            			elements += ("<td id='td"+ a +"' rowspan='0'>"+ dataList[a].deptName +"<br><span id='deptNum"+ a +"'></span></td>");
+        				idArr.push(b);
+        				rowSpanArr.push(a-b);
+						deptNumArr.push(a-b);
+            			b = a;
+        			}
+        		}
+        		//判断第一列底部rowSpan样式
+        		if(a == columnCount-1){
+        			idArr.push(b);
+        			rowSpanArr.push((a+1)-b);
+					deptNumArr.push((a+1)-b);
+        			b = (a+1);
+        		}
+            	elements += ("<td>"+ dataList[a].userName +"</td>");
+            	elements += ("<td></td>");
+        			
+        			
+        			
+        		//第二列表格数据封装
+        		if(count > 1){
+        			//判断第二列开头rowSpan样式
+        			if(a == 0){
+        				elements += ("<td id='td"+ (a+columnCount) +"' rowspan='0'>"+ dataList[a+columnCount].deptName +"<br><span id='deptNum"+ (a+columnCount) +"'></span></td>");
+        				b1 = a + columnCount;
+        			}
+            		//判断第二列中间rowSpan样式
+            		if(a != 0){
+            			if(dataList[a+columnCount].deptName != dataList[(a+columnCount)-1].deptName && a != 0){
+                			elements += ("<td id='td"+ (a+columnCount) +"' rowspan='0'>"+ dataList[a+columnCount].deptName +"<br><span id='deptNum"+ (a+columnCount) +"'></span></td>");
+            				idArr.push(b1);
+            				rowSpanArr.push((a+columnCount)-b1);
+							deptNumArr.push((a+columnCount)-b1);
+                			b1 = a + columnCount;
+            			}
+            		}
+            		//判断第二列底部rowSpan样式
+            		if(a == columnCount-1){
+            			idArr.push(b1);
+            			rowSpanArr.push((a+columnCount+1)-b1);
+						deptNumArr.push((a+columnCount+1)-b1);
+            			b1 = ((a+columnCount)+1);
+            		}
+            			
+            			
+                	elements += ("<td>"+ dataList[a+columnCount].userName +"</td>");
+                	elements += ("<td></td>");
+        		}
+        			
+        			
+        			
+        			
+        			
+        			
+        		//第三列表格数据封装
+        		if(a+(columnCount*2) < count){
+        			//判断第三列开头rowSpan样式
+            		if(a == 0){
+            			elements += ("<td id='td"+ (a+(columnCount*2)) +"' rowspan='0'>"+ dataList[a+(columnCount*2)].deptName +"<br><span id='deptNum"+ (a+(columnCount*2)) +"'></span></td>");
+            			b2 = a + (columnCount*2);
+            		}
+        			//判断第三列中间rowSpan样式
+            		if(a != 0){
+            			if(dataList[a+(columnCount*2)].deptName != dataList[(a+(columnCount*2))-1].deptName && a != 0){
+                			elements += ("<td id='td"+ (a+(columnCount*2)) +"' rowspan='0'>"+ dataList[a+(columnCount*2)].deptName +"<br><span id='deptNum"+ (a+(columnCount*2)) +"'></span></td>");
+            				idArr.push(b2);
+            				rowSpanArr.push((a+(columnCount*2))-b2);
+							deptNumArr.push((a+(columnCount*2))-b2);
+                			b2 = a + (columnCount*2);
+            			}
+            		}
+        			//判断第三列底部rowSpan样式
+            		if(a+(columnCount*2) == count-1){
+            			idArr.push(b2);
+            			rowSpanArr.push((a+(columnCount*2)+1)-b2);
+						deptNumArr.push((a+(columnCount*2)+1)-b2);
+            			b2 = ((a+columnCount)+1);
+            		}
+            		elements += ("<td>"+ dataList[a+(columnCount*2)].userName +"</td>");
+            		elements += ("<td></td>");
+        		}else{
+        			if(count > 2){
+        				elements += ("<td></td>");
+            			elements += ("<td></td>");
+            			elements += ("<td></td>");
+        			}else{
+        				break;
+        			}
+        		}
+                elements += "</tr>";	
+        	}else{
+        		break;
+        	}
+        		
+        	}
+        	
+        	
+        	
+        elements += "</tbody>";	
+        elements += "</table>"; 
+        elements += "</div>"
+        $(".qh-table").append(elements);
+        
+        	
+        //循环遍历需要设置rowSpan的<td>标签，并为这些标签设置rowSpan参数
+        for(var a = 0 ; a < idArr.length ; a++){
+        	var tmprow = document.getElementById("td" + idArr[a]);
+           	tmprow.rowSpan = rowSpanArr[a];
+			$("#deptNum" + idArr[a]).html("（" + deptNumArr[a] + "份）");
+        }
+	});
+</script>
+#end

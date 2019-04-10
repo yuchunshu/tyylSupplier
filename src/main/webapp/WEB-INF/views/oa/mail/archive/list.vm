@@ -1,0 +1,192 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" fit="true">
+        <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+             style="width:500px;height:290px;padding:20px 10px; background-color:#f4f4f4;display:none;">
+            <form id="queryForm">
+               <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tb2 default-table" >
+                    <tr>
+                        <td style="text-align: right">主题：</td>
+                        <td><input style="width:330px;" id="title" name="$qc.like('title')" class="easyui-textbox" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">发件人：</td>
+                        <td><input style="width:150px;" id="senderName" name="senderName" class="easyui-textbox" readonly />
+                        <input  id="sender" name="senderId" type="hidden" />
+                        <a id="selectDepDialog" href="javascript:;" callback=fnSelectManSingleCallback class="easyui-linkbutton" plain="true"
+                            iconCls="icon-search" select-dialog="$link.getContextURL()/select/selectmanSingle"></a></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right">存档时间：</td>
+                        <td>
+                            <input style="width:150px;" name="$qc.greaterThanOrEqualTo('pigeDate')" class="easyui-datebox" value="$!{firstDay}" data-options="editable:false">
+                            至
+                            <input style="width:150px;" name="$qc.lessThanOrEqualTo('pigeDate')" class="easyui-datebox" value="$!{lastDay}" data-options="editable:false">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <div id="bnts" style="top:0px; height:25px; width:auto;">
+               <a href="javascript:;" class="new-but" onclick="formSerach()" >查询</a>
+               <a href="javascript:;" class="new-but" onclick="reset()" >重置</a>
+            </div>
+        </div>
+        <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+            <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-trash" onclick="trash()"
+                    plain="true">移到垃圾箱</a>
+            <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="del()"
+                    plain="true">删除</a>
+            <i></i>
+            <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open')" class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+            <a  onclick="top.CC.closeCurTab()"
+                         class="easyui-linkbutton l-btn-plain-quit" data-options="iconCls:'icon-quit-small',plain:true">关闭</a>
+        </div>
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <table id="dg" data-options="nowrap:false" style="width:100%;">
+                <thead>
+                <tr>
+                    <th field="ck" data-options="checkbox:true"></th>
+                    <th style="width:5" data-options="field:'attachFlag',formatter:attFlag"><img src='images/attach.png'/></th>
+                    <th style="width:65%" data-options="field:'title',formatter:detailUrl">主题</th>
+                    <th style="width:15%" data-options="field:'senderName'">发件人</th>
+                    <th style="width:14%" data-options="field:'pigeDateShow'">存档时间</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+#parse("common/easyui/operatorcolumn.js.vm")
+#parse("oa/mail/crud.js.vm")
+#@script()
+<script type="text/javascript">
+    function formSerach() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+    }
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+    function detailRow(index){
+        $('#dg').datagrid('clearSelections');
+        $('#dg').datagrid("selectRow",index);
+        var row = $('#dg').datagrid("getSelected");
+        var url;
+        url = "$link.getContextURL()/oa/mail/archive/detail?tmpId=" + row.id;
+
+        top.CC.addTab({title:'查看邮件',url:url});
+    }
+
+    var _baseUrl = '$link.getContextURL()/oa/mail/archive';
+    var _listJsonUrl = '/list.json';
+
+    function attFlag(value,row,index){
+        if(value == '有附件') {
+            return "<img src='images/attach.png'/>";
+        }
+    }
+
+
+    //移动到垃圾箱
+    function trash(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows && rows.length > 0){
+            $.messager.confirm('警告','确定将这些存档放入垃圾箱吗?',function(r){
+                if (r){
+                    var ids = "";
+                    for(var i=0;i<rows.length;i++){
+                        if(i==rows.length-1){
+                            ids += rows[i].id;
+                        }else{
+                            ids += rows[i].id + ",";
+                        }
+                    }
+                    $.post("$link.getContextURL()/oa/mail/archive/dealTrash.json",{tmpIds:ids},function(result){
+                        if(result.id){
+                          $('#dg').datagrid('reload');
+                          $('#dg').datagrid('uncheckAll');
+                          top.CC.messager({
+                              title:'提示',
+                              msg:'存档删除成功!'
+                          });
+                        }else{
+                          top.CC.messager({
+                              title:'提示',
+                              msg:'服务器连接不上'
+                          });
+                        }
+                    });
+                }
+            });
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '请选择至少一条数据!'
+            });
+        }
+    }
+
+    //删除
+    function del(){
+        var rows = $("#dg").datagrid("getChecked");
+        if(rows && rows.length > 0){
+            $.messager.confirm('警告','确定将这些存档彻底删除吗?',function(r){
+                if (r){
+                    var ids = "";
+                    for(var i=0;i<rows.length;i++){
+                        if(i==rows.length-1){
+                            ids += rows[i].id;
+                        }else{
+                            ids += rows[i].id + ",";
+                        }
+                    }
+                    $.post("$link.getContextURL()/oa/mail/archive/delete.json",{tmpIds:ids},function(result){
+                        if(result.id){
+                          $('#dg').datagrid('reload');
+                          $('#dg').datagrid('uncheckAll');
+                          top.CC.messager({
+                              title:'提示',
+                              msg:'存档删除成功!'
+                          });
+                        }else{
+                          top.CC.messager({
+                              title:'提示',
+                              msg:'服务器连接不上'
+                          });
+                        }
+                    });
+                }
+            });
+        } else {
+            top.CC.messager({
+                title: '错误',
+                msg: '请选择至少一条数据!'
+            });
+        }
+    }
+    //选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+
+    // 人员选择回调
+    function fnSelectManSingleCallback(obj){
+        $('#sender').val(obj.id);
+        $('#senderName').textbox('setValue', obj.userName);
+    }
+</script>
+#end

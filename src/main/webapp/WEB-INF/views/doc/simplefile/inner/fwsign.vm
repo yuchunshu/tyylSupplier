@@ -1,0 +1,93 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextURL()/css/doc/memo.css"/>
+<div class="inner-memo" id="sendContainer">
+    <div class="memo-title">广西壮族自治区食品药品监督管理局文件处理笺</div>
+
+
+    <table class="memo-table">
+        <tbody>
+        <tr>
+            <td class="memo-td-1">来文单位</td>
+            <td class="memo-td-2">
+                $!{obj.createrDept.unitDept.deptName}
+            </td>
+            <td class="memo-td-1">文电编号</td>
+            <td class="memo-td-2">
+                $!{esc.html($!{obj.docCode})}
+            </td>
+        </tr>
+        <tr>
+            <td class="memo-td-1">文电名称</td>
+            <td class="memo-td-2" colspan="3">
+                $!{esc.html($!{obj.title})}
+            </td>
+        </tr>
+        <tr>
+            <td class="memo-td-1">
+                <br><br>拟<br>办<br>意<br>见<br><br>
+            </td>
+            <td class="memo-td-3" colspan="3">
+                #foreach($data in $opinionList)
+                    #if("$!data.nodeId" == "N302")
+                        <div>
+                            <p>
+                                $!{esc.html($!{data.apprOpinion})}
+                            </p>
+                            <p class="memo-op-footer">
+                                $!{data.approver.userName} <br>
+                                $!date.format('yyyy-MM-dd HH:mm',$!{data.apprTime})
+                            </p>
+                        </div>
+
+
+                    #end
+                #end
+            </td>
+        </tr>
+        <tr>
+            <td class="memo-td-1">
+                <br><br>处<br>室<br>领<br>导<br>批<br>示<br><br>
+            </td>
+            <td class="memo-td-3" colspan="3">
+                #foreach($data in $opinionList)
+                    #if("$!data.nodeId" == "N303")
+                        <div>
+                            <p>
+                                $!{esc.html($!{data.apprOpinion})}
+                            </p>
+                            <p class="memo-op-footer">
+                                $!{data.approver.userName} <br>
+                                $!date.format('yyyy-MM-dd HH:mm',$!{data.apprTime})
+                            </p>
+                        </div>
+
+                    #end
+                #end
+            </td>
+        </tr>
+        <tr>
+            <td class="memo-td-1">
+                <br><br>经<br>办<br>人<br>办<br>理<br>情<br>况<br><br>
+            </td>
+            <td class="memo-td-3" colspan="3">
+                #foreach($data in $opinionList)
+                    #if("$!data.nodeId" == "N305")
+                        <div>
+                            <p>
+                                $!{esc.html($!{data.apprOpinion})}
+                            </p>
+                            <p class="memo-op-footer">
+                                $!{data.approver.userName} <br>
+                                $!date.format('yyyy-MM-dd HH:mm',$!{data.apprTime})
+                            </p>
+                        </div>
+
+                    #end
+                #end
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+

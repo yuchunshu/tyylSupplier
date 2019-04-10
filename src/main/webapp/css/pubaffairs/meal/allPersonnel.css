@@ -1,0 +1,15 @@
+@charset "utf-8";
+/* CSS Document */
+
+#receiveContainer li {list-style-type:none;}
+#receiveContainers .receive_all_table {width: 1050px; text-align: center; margin:0 auto}
+#receiveContainers .receive_all_table table {width: 100%; border-collapse: collapse;}
+#receiveContainers .receive_all_table table tr th {font-size: 28px;font-weight: bold;color: #000;font-family: '宋体'!important;}
+#receiveContainers .receive_all_table table tr {height: 31px;}
+#receiveContainers .receive_all_table table td {border: 1px solid black;padding: 2px 2px;color: #000;font-size: 17px;font-family: '微软雅黑'!important;    padding: 0;}
+#receiveContainers .receive_all_table table td span {color: #000;font-size: 17px;font-family: '微软雅黑'!important;}
+.deptClass{width: 80px;}
+.nameClass{width: 80px;}
+.typeClass{width: 85px;}
+.remarkClass{width: 80px;}
+

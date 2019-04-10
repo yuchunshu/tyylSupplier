@@ -1,0 +1,117 @@
+#set($__cupage=${__page.number})
+#set($__allpage=${__page.totalPages})
+
+#set($__firstbutton=$__cupage - $__showcount)
+#set($__endbutton=$__cupage + $__showcount)
+
+#if($__firstbutton && ($__firstbutton<0))
+#set($__endbutton=$__endbutton - $__firstbutton)
+#set($__firstbutton=0)
+#end
+
+#if($__endbutton && ($__endbutton>=$__allpage))
+#set($__endbutton=$__allpage - 1)
+#end
+
+#set($__prepage=$__cupage - $__showcount/2)
+#set($__prepage_end=$__cupage - 1)
+
+#set($__nextpage=$__cupage + $__showcount/2)
+#set($__nextpage_start=$__cupage + 1)
+
+#if($__prepage && ($__prepage<0))
+#set($__nextpage=$__nextpage - $__prepage)
+#set($__prepage=0)
+#end
+
+#if($__nextpage && ($__nextpage>=$__allpage))
+#set($__prepage=$__allpage - $__showcount)
+#if($__prepage<0)#set($__prepage=0)#end
+#set($__nextpage=$__allpage - 1)
+#end
+
+#set($__firstbutton=$__firstbutton + 1)
+#set($__endbutton=$__endbutton + 1)
+
+<div id="pager">
+    <div class="paper-left">共：$!{__page.TotalElements}条，$!{__page.TotalPages}页&nbsp;/&nbsp;每页：$!{__page.Size}条</div>
+    <div class="paper-right">
+
+        #if(!$__page.first)<a href="javascript:pagination('$!__firstbutton');">&laquo;</a>#end
+
+#if(!${__page.first} && $__prepage && $__prepage_end)
+    #foreach($__p in [$__prepage .. $__prepage_end])
+#set($__p_show=$__p + 1)
+        <a href="javascript:pagination('$!__p_show');">$!__p_show</a>
+    #end
+#end
+#set($__p_show=$__cupage + 1)
+        <span>$!__p_show</span>
+
+#if(!$__page.last && $__nextpage_start && $__nextpage)
+    #foreach($__p in [$__nextpage_start .. $__nextpage])
+#set($__p_show=$__p + 1)
+        <a href="javascript:pagination('$!__p_show');">$!__p_show</a>
+    #end
+#end
+
+        #if(!$__page.last)<a href="javascript:pagination('$!__endbutton');">&raquo;</a>#end
+ &nbsp;&nbsp;到&nbsp;
+        <input type="text" class="input" id="__pageinput">
+        &nbsp;页&nbsp;&nbsp;
+        <input type="button" value="确定" class="btn-submit" onclick="javascript:pagination($('#__pageinput').val())">
+
+    </div>
+
+</div>
+
+#@script()
+<script>
+function pagination(n) {
+    if (!$.isNumeric(n)) {
+        alert("请输入合法的数值！");
+        $('#__pageinput').focus();
+        return false;
+    }
+
+    var maxpage="$!{page.getTotalPages()}";
+    if (!maxpage) {
+        return false;
+    }
+
+    var nn = new Number(n);
+    var mm = new Number(maxpage);
+
+    if (mm == 0) {
+        n = 1;
+    } else if (nn > mm) {
+        n = maxpage;
+    } else if (nn <= 0) {
+        n = 1;
+    }
+
+#if($params.keySet())
+    var params = {#foreach($param in $params.keySet())"$param":"$!{esc.javascript(${params.get($param)})}",#end "_t":""};
+#else
+    var params = {};
+#end
+    var url="${__url}";
+    var s="$!{page.size}";
+
+    params.page = n;
+
+    var form = $('<form action="' + url + '" method="POST"/>');
+
+    var up = "";
+    for(p in params) {
+        if (p !== "_t") {
+            form.append($("<input/>", {"type":'hidden', "name":p, "value":params[p]}));
+        }
+    }
+
+    form.appendTo('body').submit();
+
+    return false;
+}
+</script>
+#end

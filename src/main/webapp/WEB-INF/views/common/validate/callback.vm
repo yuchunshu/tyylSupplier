@@ -1,0 +1,1 @@
+data-rule-callback="$!__callback" #if(${__message})data-msg-integer="$!{__message}"#end
