@@ -3,7 +3,7 @@
 <tools>
     <data type="boolean" key="CUSTOM_TOOLS_AVAILABLE" value="true" />
 
-    <data type="string" key="__headtitle" value="行政办公系统-广西东盟食品药品安全检验检测中心"/>
+    <data type="string" key="__headtitle" value="供应商管理系统-天影互动集团"/>
 
     <toolbox scope="application" createSession="false" >
         <tool class="cn.com.chaochuang.common.security.util.UserTool" />

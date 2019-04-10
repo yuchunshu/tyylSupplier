@@ -6,10 +6,10 @@ font-family:"微软雅黑";
 }
 body{background:url(../images/login/bg.jpg);background-size:cover;background-repeat:no-repeat;background-position:center;}
 .main {
-    position:relative; width:444px;height:500px;top:42%;margin:0px auto; margin-top:-100px;
+    position:relative; width:350px;height:500px;top:42%;margin:0px auto; margin-top:-100px;
 }
 .logo {
-    width:444px;
+    width:350px;
     height:102px;
     }
 .login {
@@ -98,85 +98,3 @@ body{background:url(../images/login/bg.jpg);background-size:cover;background-rep
     padding: 8PX;
     line-height: 16px;
     }
-
-
-/*右上角苹果、安卓的下载模块*/
-.app-download img {
-    width: 100px;
-    margin-top: 10px;
-    display: none;
-}
-
-.iphone-android{
-    height: 50px;
-    position: absolute;
-    top: 11px;
-    right: 30px;
-}
-
-.iphone-android a {
-    display: inline-block;
-    height: 20px;
-    margin-top: 8px;
-    padding-left: 10px;
-    color: #fff;
-    text-decoration:none;
-    font-size:16px;
-}
-
-.apple,
-.android {
-    margin-right: 20px;
-    height:50px;
-    padding-left:26px;
-    display: inline-block;
-    position: relative;
-}
-.appleHover:hover+.QR-code,
-.androidHover:hover+.QR-code{
-    display:block;
-    height: 30px;
-}
-
-.apple img,
-.android img {
-    vertical-align: top;
-}
-
-.QR-code {
-    position: absolute;
-    top: 20px;
-    left: 0px;
-    display:none;
-    padding-top:20px;
-}
-.QR-code:hover {
-    display:block;
-}
-
-@media screen and (max-width:769px) {
-    .iphone-android {
-        height: 50rem;
-        top: 1rem;
-        right: 0rem;
-    }
-
-    .apple,
-    .android {
-        width: 9.0rem;
-        height: 18rem;
-        padding-left: 1.3rem;
-    }
-
-    .iphone-android a {
-        height: 2.0rem;
-        line-height: 2.0rem;
-        padding-left: 1rem;
-        font-size: 1.3rem;
-    }
-
-    .appleHover:hover + .QR-code,
-    .androidHover:hover + .QR-code {
-        display: none;
-    }
-}

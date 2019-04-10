@@ -21,17 +21,11 @@
                 <td class="bg-white" align="left" colspan="2">默认（白色）</td>
             </tr>
             <tr>
-                <td class="bg-grey" align="right" >手机提醒</td>
-                <td class="bg-white" align="left" colspan="2">
-                    <label><input type="checkbox" name="smsFlag" value="1" #if($profile.smsFlag == 1) checked #end >接收手机短信提醒</label>
-                </td>
-            </tr>
-            <tr>
                 <td class="bg-grey" align="right">
                     桌面模块
                 </td>
                 <td class="bg-white" align="left" id="modelTd">
-                    #set($allModels={"taskContent" : "待办公文","warnTaskContent" : "预警公文","expireTaskContent" : "超时公文","readContent" : "待阅公文","mailContent" : "我的邮件","passreadContent" : "内部请示"})
+                    #set($allModels={"mailContent" : "我的邮件"})
                     #foreach($dm in $!strTool.JSONArrayToList($!profile.displayModels))
                     <div class="myselect-model" model-key="$!dm.name" status="$!dm.status" location="$!dm.location">
                         $!allModels.get("$!dm.name")
@@ -47,11 +41,12 @@
     </form>
 </div>
 <div id="model-menu">
-    <div id="warnTaskContentItem" model-name="warnTaskContent">预警公文</div>
+    #*<div id="warnTaskContentItem" model-name="warnTaskContent">预警公文</div>
     <div id="expireTaskContentItem" model-name="expireTaskContent">超时公文</div>
     <div id="readContentItem" model-name="readContent">待阅公文</div>
     <div id="mailContentItem" model-name="mailContent">我的邮件</div>
     <div id="passreadContentItem" model-name="passreadContent">内部请示</div>
+	*#
 </div>
 #@script()
 <script type="text/javascript">
@@ -72,7 +67,7 @@
         }
     });
 
-    var MODEL_CODE = {"taskContent" : "待办公文","readContent" : "待阅公文","mailContent" : "我的邮件","passreadContent" : "公文传阅"};
+    var MODEL_CODE = {"mailContent" : "我的邮件"};
 
     // 添加模块的菜单
     function modelMenuShow() {

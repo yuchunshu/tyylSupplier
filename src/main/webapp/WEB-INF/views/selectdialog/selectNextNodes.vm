@@ -46,7 +46,6 @@
 
     //返回
     function closew() {
-		showWebOffice('WebOffice2009');
         $('#selNodesWindow').window('close');
     }
     //保存

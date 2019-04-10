@@ -16,6 +16,7 @@
                         callback=fnSelectMansCallback class="easyui-linkbutton">收件人</a>
                   </td>
                   <td class="bg-white">
+##                        #selectUserAutocomplete("","","manAddress","manAddressNames","/select/userAutocomplete.json","/select/selectmansClassify","id","dataText")
                     <input style="width:100%;" name="manAddressNames" id="manAddressNames" data-options="required:true"
                         class="easyui-textbox" readonly value="$!{obj.addressName}"/>
                     <input id="manAddress" name="manAddress" type="hidden" value="$!obj.address" />
@@ -43,7 +44,7 @@
                 <tr align="center">
                   <td class="bg-grey" align="right">附件</td>
                   <td align="left" attachId="$!obj.id" class="bg-white">
-                    #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$oldMailId")},"#defaultDownloadUrl('emAttach')", true, "#defaultUploadUrl('emAttach')",true,"","","", "cc") ## "cc"为可拖拽区域的dom id
+                    #formfilemultyemail("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", true, "#defaultUploadUrl('emAttach')",true,"","","", "cc") ## "cc"为可拖拽区域的dom id
                   </td>
                 </tr>
               </tbody>

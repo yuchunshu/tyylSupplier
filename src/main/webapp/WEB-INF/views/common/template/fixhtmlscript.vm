@@ -23,9 +23,6 @@
 ##easyui datagrid显示转义html
 <script src="js/htmlEscape.js" type="text/javascript"></script>
 
-##金格控件动态显示隐藏，解决弹出框闪烁问题
-<script src="lib/iWebOffice/iWebOffice.js" type="text/javascript"></script>
-
 #if($__customscripttplist)
 #foreach($__scripttpl in $__customscripttplist.keySet())
 #parse($__scripttpl)

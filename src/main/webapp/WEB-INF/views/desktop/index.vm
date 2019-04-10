@@ -24,8 +24,8 @@
 
                         <div class="control-zone">
                             <ul>
-                                <li><a href="javascript:;" title="系统首页" onclick="toSysIndex()"><img src="themes/$!{themes}/images/icon-home.png"/></a></li>
-                                <li><a href="javascript:;" title="帮助中心" onclick="$('#helpWindow').show().window('center').window('open')"><img src="themes/$!{themes}/images/icon-help.png"/></a></li>
+                                <li><a href="javascript:;" title="系统首页" onclick="window.CC.goIndex();"><img src="themes/$!{themes}/images/icon-home.png"/></a></li>
+                                ##<li><a href="javascript:;" title="帮助中心" onclick="$('#helpWindow').show().window('center').window('open')"><img src="themes/$!{themes}/images/icon-help.png"/></a></li>
                                 <li>
                                     <a href="javascript:;" title="最新通知" onclick="msgHistory()" class="topmenu-info">
                                         <div id="msgAlert" style="display:none;"><span class="wd" id="msgNum"></span></div>
@@ -354,23 +354,23 @@ function countSecond() {
             var onclick = "top.CC.addTab({title:'车辆申请审核',url:'$link.getContextURL()" + msgInfo.carPath + "'})";
             contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="车辆申请审核" class="font-titlecolor">您有<span style="color:red">' + msgInfo.carSum + '</span>条车辆申请审核</a><br/>';
         }
-        if (msgInfo.repairSum) {
-            var onclick = "top.CC.addTab({title:'故障审核',url:'$link.getContextURL()" + msgInfo.repairPath + "'})";
-            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="故障审核" class="font-titlecolor">您有<span style="color:red">' + msgInfo.repairSum + '</span>条故障报告审核</a><br/>';
+        if (msgInfo.purchaseSum) {
+            var onclick = "top.CC.addTab({title:'物品请购审核',url:'$link.getContextURL()" + msgInfo.purchasePath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="物品请购审核" class="font-titlecolor">您有<span style="color:red">' + msgInfo.purchaseSum + '</span>条物品请购审核</a><br/>';
         }
 		if (msgInfo.leaveSum) {
             var onclick = "top.CC.addTab({title:'休假审核',url:'$link.getContextURL()" + msgInfo.leavePath + "'})";
             contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="休假审核" class="font-titlecolor">您有<span style="color:red">' + msgInfo.leaveSum + '</span>条休假审核</a><br/>';
         }
-		if (msgInfo.mealSum) {
-            var onclick = "top.CC.addTab({title:'订餐审核',url:'$link.getContextURL()" + msgInfo.mealPath + "'})";
-            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="订餐审核" class="font-titlecolor">您有<span style="color:red">' + msgInfo.mealSum + '</span>条订餐审核</a><br/>';
+		if (msgInfo.tripSum) {
+            var onclick = "top.CC.addTab({title:'出差审核',url:'$link.getContextURL()" + msgInfo.tripPath + "'})";
+            contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();' + onclick + '" title="出差审核" class="font-titlecolor">您有<span style="color:red">' + msgInfo.tripSum + '</span>条出差审核</a><br/>';
         }
         if (msgInfo.otherSum) {
             contentText = contentText + '<a name="work" href="javascript:;" onclick="art.dialog.notice().close();msgHistory(5);" title="业务消息" class="font-titlecolor">您有<span style="color:red">' + msgInfo.otherSum + '</span>条业务消息</a><br/>';
         }
         contentText = contentText + '请注意查收！';
-        if (msgInfo.pendingFileSum || msgInfo.inteRequestFileSum || msgInfo.toReadMatterSum || msgInfo.mailSum || msgInfo.meetingSum || msgInfo.scheduleSum || msgInfo.imMessageSum || msgInfo.otherSum || msgInfo.carSum || msgInfo.repairSum || msgInfo.leaveSum || msgInfo.mealSum) {
+        if (msgInfo.pendingFileSum || msgInfo.inteRequestFileSum || msgInfo.toReadMatterSum || msgInfo.mailSum || msgInfo.meetingSum || msgInfo.scheduleSum || msgInfo.imMessageSum || msgInfo.otherSum || msgInfo.carSum || msgInfo.purchaseSum || msgInfo.leaveSum || msgInfo.tripSum) {
             contentText = '<iframe style="position: absolute; z-index: -1; width: 100%; height: 100%; top: 0;left:0;scrolling:no;" frameborder="0"></iframe>' + contentText;
             art.dialog.notice({
                 title: '温馨提示',//标题

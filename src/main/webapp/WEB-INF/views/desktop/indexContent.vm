@@ -58,7 +58,7 @@
 </div>
 <br><br>
 <div class="footer">
-<p> 南宁超创信息工程有限公司 &nbsp;&nbsp;&nbsp;&nbsp;技术支持：400-070-7770</p>
+<p> </p>
 </div>
 #@script()
 <link href="themes/$!{themes}/index.css" rel="stylesheet" type="text/css"/>

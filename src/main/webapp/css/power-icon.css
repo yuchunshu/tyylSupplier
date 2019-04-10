@@ -72,14 +72,7 @@ i.power-icon-system-log {background: url(../images/midsize/sub-log.png);}
 i.power-icon-system-personal {background: url(../images/midsize/sub-personal.png);}
 /* 系统管理模块（限时办结）*/
 i.power-icon-system-timelimitrun {background: url(../images/midsize/sub-timelimitrun.png);}
-/* 公共事务模块（车辆管理）*/
-i.power-icon-pubaffairs-car {background: url(../images/midsize/sub-car.png);}
-/* 公共事务模块（休假申请）*/
-i.power-icon-pubaffairs-leave {background: url(../images/midsize/sub-leave.png);}
-/* 公共事务模块（故障报告申请）*/
-i.power-icon-pubaffairs-repair {background: url(../images/midsize/sub-trip.png);}
-/* 公共事务模块（订餐管理）*/
-i.power-icon-pubaffairs-meal {background: url(../images/midsize/sub-purchase.png);}
+
 
 
 
@@ -396,46 +389,7 @@ i.power-icon-system-timelimitrun-78.large {background: url(../images/large/desk-
 /* 小图标 （限时办结要求）*/
 i.power-icon-system-timelimitrun-78.small {background: url(../images/small/oa-icon-list-78.png);}
 
-/* 大图标 （公务用车申请） */
-i.power-icon-pubaffairs-car-01.large {background: url(../images/large/pubaffairs-car-01.png);}
-/* 小图标 （公务用车申请）*/
-i.power-icon-pubaffairs-car-01.small {background: url(../images/small/pubaffairs-car-01.png);}
-/* 大图标 （车辆申请审核） */
-i.power-icon-pubaffairs-car-03.large {background: url(../images/large/pubaffairs-car-03.png);}
-/* 小图标 （车辆申请审核）*/
-i.power-icon-pubaffairs-car-03.small {background: url(../images/small/pubaffairs-car-03.png);}
-/* 大图标 （我的车辆申请） */
-i.power-icon-pubaffairs-car-04.large {background: url(../images/large/pubaffairs-car-04.png);}
-/* 小图标 （我的车辆申请）*/
-i.power-icon-pubaffairs-car-04.small {background: url(../images/small/pubaffairs-car-04.png);}
 
-
-/* 大图标 （填写休假申请） */
-i.power-icon-pubaffairs-leave-01.large {background: url(../images/large/pubaffairs-leave-01.png);}
-/* 小图标 （填写休假申请）*/
-i.power-icon-pubaffairs-leave-01.small {background: url(../images/small/pubaffairs-leave-01.png);}
-/* 大图标 （休假审核） */
-i.power-icon-pubaffairs-leave-02.large {background: url(../images/large/pubaffairs-leave-02.png);}
-/* 小图标 （休假审核）*/
-i.power-icon-pubaffairs-leave-02.small {background: url(../images/small/pubaffairs-leave-02.png);}
-/* 大图标 （我的休假申请） */
-i.power-icon-pubaffairs-leave-03.large {background: url(../images/large/pubaffairs-leave-03.png);}
-/* 小图标 （我的休假申请）*/
-i.power-icon-pubaffairs-leave-03.small {background: url(../images/small/pubaffairs-leave-03.png);}
-
-
-/* 大图标 （填写故障申请） */
-i.power-icon-pubaffairs-repair-01.large {background: url(../images/large/pubaffairs-trip-01.png);}
-/* 小图标 （填写故障申请）*/
-i.power-icon-pubaffairs-repair-01.small {background: url(../images/small/pubaffairs-trip-01.png);}
-/* 大图标 （故障审核） */
-i.power-icon-pubaffairs-repair-02.large {background: url(../images/large/pubaffairs-trip-02.png);}
-/* 小图标 （故障审核）*/
-i.power-icon-pubaffairs-repair-02.small {background: url(../images/small/pubaffairs-trip-02.png);}
-/* 大图标 （我的故障申请） */
-i.power-icon-pubaffairs-repair-03.large {background: url(../images/large/pubaffairs-trip-03.png);}
-/* 小图标 （我的故障申请）*/
-i.power-icon-pubaffairs-repair-03.small {background: url(../images/small/pubaffairs-trip-03.png);}
 
 
 

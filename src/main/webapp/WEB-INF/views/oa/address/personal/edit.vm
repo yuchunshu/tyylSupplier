@@ -39,9 +39,9 @@
                       <td class="bg-white">
                         <input style="width:100%;" name="phone" class="easyui-textbox" data-options="validType:'mobileAndTel'" value="$!{obj.phone}"/>
                       </td>
-                      <td class="bg-grey">手机</td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>手机</td>
                       <td class="bg-white">
-                        <input style="width:100%;" name="mobile" data-options="validType:'maxLength[20]'" class="easyui-textbox" value="$!{obj.mobile}"/>
+                        <input style="width:100%;" name="mobile" data-options="required:true,validType:'maxLength[20]'" class="easyui-textbox" value="$!{obj.mobile}"/>
                       </td>
                     </tr>
                     <tr>

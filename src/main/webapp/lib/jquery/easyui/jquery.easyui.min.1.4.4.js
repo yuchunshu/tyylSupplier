@@ -2971,7 +2971,6 @@ _237(_21e);
 }
 if(opts.closable){
 _227(tool,"panel-tool-close",function(){
-	showWebOffice('WebOffice2009');
 _239(_21e);
 });
 }

@@ -43,7 +43,7 @@
                     <tr >
                       <td class="bg-grey">附件</td>
                       <td attachId="$!obj.id" class="bg-white">
-                        #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", true, "#defaultUploadUrl('emAttach')",true,"","","", "cc") ## "cc"为可拖拽区域dom的id
+                        #formfilemultyemail("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", true, "#defaultUploadUrl('emAttach')",true,"","","", "cc") ## "cc"为可拖拽区域dom的id
                       </td>
                     </tr>
                   </tbody>

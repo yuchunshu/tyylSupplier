@@ -66,10 +66,7 @@
       
 		var length = $("#peopleSelectShow-list>li").length;
 		
-		if(length<=0){
-		    $.messager.alert('提示','请选择人员！','info');
-            return false;
-		}
+		
 		
 		var userIds ="";
 		//得到每个人的li标签，提取出每个人的id

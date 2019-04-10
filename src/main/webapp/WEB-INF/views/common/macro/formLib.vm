@@ -13,12 +13,16 @@
     #parse("/common/form/formfilemulti.vm")
 #end
 
-#macro(formemailfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
-    #parse("/common/form/formemailfilemulti.vm")
+#macro(formfilemultyemail $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
+    #parse("/common/form/formfilemultiemail.vm")
 #end
 
 #macro(formcamerafilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
     #parse("/common/form/formcamerafilemulti.vm")
+#end
+
+#macro(formimgfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)
+    #parse("/common/form/formimgfilemulti.vm")
 #end
 
 #macro(formremotedocswapfilemulti $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__maxfilesize $__dropareaid)

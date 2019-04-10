@@ -34,17 +34,12 @@
             ###############嵌套layout>>north end################
             ###############嵌套layout>>center start################
             <div data-options="region:'center'">
-                <div class="easyui-panel" fit="true" title=""  border="false">
+                <div class="easyui-panel" fit="true" title="关联权限"  border="false">
                         #parse("/system/role/parse/appPower.vm")
                 </div>
             </div>
             ###############嵌套layout>>center end################
             ###############嵌套layout>>west start################
-            <div data-options="region:'east'" style="width:70%">
-                 <div class="easyui-panel" fit="true" border="false" title="" >
-                        #parse("/system/role/parse/modulePower.vm")
-                </div>
-            </div>
 			
             ###############嵌套layout>>west end################
         </div>
@@ -114,9 +109,12 @@ function saveRole(){
         $("#powerIds").val(powerIds);
         //$("#userIds").val(getCheckUser);
         $.post("$link.getContextURL()/system/role/saveRole.json",$("#roleEdit").serialize(),function(data){
-			if(data.id){
+			$.easyui.loaded($('body'));
+            if(data.id){
                 $("#roleId").val(data.id);
-				saveModuleAjax();
+                top.CC.messager({title:"提示",msg:"保存成功"});
+                top.CC.refreshTab("角色列表");
+                top.CC.closeCurTab();
             }else{
                 top.CC.messager({
                     title:'提示',
@@ -128,53 +126,10 @@ function saveRole(){
     }
 }
 
-//保存模块与角色的关系
-function saveModuleAjax(){
-	$.ajax({
-        type :"post",
-        url : "$link.getContextURL()/system/power/saveModule.json",
-		contentType :"application/json;charset=utf-8", 
-    	data :JSON.stringify(saveModule()),
-		success: function(data){
-			$.easyui.loaded($('body'));
-			if(data.id){
-                top.CC.messager({title:"提示",msg:"保存成功"});
-                top.CC.refreshTab("角色列表");
-                //top.CC.closeCurTab();
-            }else{
-                top.CC.messager({
-                    title:'提示',
-                    msg:'服务器连接不上'
-                });
-            }
-		}
-    });
-}
 
 
 
-//整理勾选的数据
-function saveModule(){
-	var row = $("#moduletg").datagrid('getData').rows;
-	var total = $("#moduletg").datagrid('getData').total;
-	for(var i = 0;i < row.length;i++){
-		var strOperates = "";
-		var name = row[i].moduleName;
-		var inp = $("[name='"+name+"']");
-		for(var j=0;j<inp.length;j++){//将勾选框转换成字符串
-			var str = inp[j].value;
-			if(str || str != ""){
-				if(j != inp.length-1 && inp.length !=1){
-					str+=",";
-				}
-				strOperates+=str;
-			}
-		}
-		row[i].operates = strOperates;
-		row[i].roleId = $!{role.id};
-	}
-	return row;
-}
+
 
 // 关闭
 function back() {

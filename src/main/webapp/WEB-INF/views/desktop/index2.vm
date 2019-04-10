@@ -64,7 +64,7 @@
 </div>
 
 <div region="south" split="false" style="height:30px; background: #2489cf;">
-    <div class="footer" style="background: #2489cf;">技术支持：南宁超创信息工程有限公司 0771-5507769</div>
+    <div class="footer" style="background: #2489cf;"></div>
 </div>
 <div id="westHide" style="display:none">
 

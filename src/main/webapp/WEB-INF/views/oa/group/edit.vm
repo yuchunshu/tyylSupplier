@@ -85,8 +85,8 @@
         $(this).click(function(){
             var $this = $(this);
             var _callbackname = $this.attr("callback");
-            var groupMemberIds = $('#groupMemberIds').val();
-            var _url = "$link.getContextURL()/select/selectmansClassify?userIds="+groupMemberIds;
+            var groupMemberId = $('#groupMemberId').val();
+            var _url = "$link.getContextURL()/select/selectmansClassify?userIds="+groupMemberId;
             var _callback_fn = window[_callbackname];
             var dfn = top.window.openSelectDialogFrameDialog;
             if (typeof dfn === "function") {

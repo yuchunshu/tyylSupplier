@@ -1,8 +1,8 @@
 /*
  * FileName:    SysAttachService.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年1月26日 (HM) 1.0 Create
  */
 
@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.doc.event.domain.OaDocFile;
 import cn.com.chaochuang.common.attach.bean.AttachBean;
 import cn.com.chaochuang.common.attach.domain.SysAttach;
 
@@ -44,7 +43,6 @@ public interface SysAttachService extends CrudRestService<SysAttach, String> {
      */
     void deleteOwnerAttach(String ownerId, String ownerType);
 
-    public List<SysAttach> selectdocAttach();
 
     public void deleteAttach(List<SysAttach> attachs);
 
@@ -64,28 +62,5 @@ public interface SysAttachService extends CrudRestService<SysAttach, String> {
 
     public String batchDownload(HttpServletResponse response,List<AttachBean> attachList,String downLoadAttachName);
 
-    /**
-     * 保存公文正文附件(无用)
-     *
-     * @param attachId
-     * @param attachFileName
-     * @param doc
-     * @return
-     */
-    String saveFileDocAttach(String attachId, String attachFileName, OaDocFile doc);
 
-    /**
-     * 正文文件(word、excel、ppt)转pdf
-     */
-    SysAttach mainFileToPdf(SysAttach attach, OaDocFile doc);
-
-    /**
-     * 文件覆盖，新上传的文件覆盖原文件
-     * @param attachId 新附件id
-     * @param preAttachId 原附件id
-     * @return
-     */
-    boolean attachFileEdit(String attachId, String preAttachId);
-
-    Map<String,List<SysAttach>> copyAttachMap(String emailId);
 }

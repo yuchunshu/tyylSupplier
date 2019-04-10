@@ -10,20 +10,8 @@
     <jaxws:client
         id="SmsServiceClientFactory"
         serviceClass="cn.com.chaochuang.webservice.server.ISmsWebService"
-        address="${dmoa.smsservice.url}">
+        address="${tyylSupplier.smsservice.url}">
     </jaxws:client> -->
     
     
-    <jaxws:client
-        id="smsService"
-        serviceClass="cn.com.chaochuang.sms.webservice.ISmsExServicePortType"
-        address="${dmoa.smsservice.url}">
-    </jaxws:client>
-
-    <!--转pdf 服务-->
-    <jaxws:client
-        id="pdfClientService"
-        serviceClass="cn.com.chaochuang.webservice.client.PdfClientService"
-        address="${dmoa.pdf.service.url}">
-    </jaxws:client>
 </beans>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   <display-name>news_app11</display-name>
-  <description>dmoa application</description>
+  <description>tyylSupplier application</description>
   <context-param>
     <param-name>defaultHtmlEscape</param-name>
     <param-value>true</param-value>
@@ -25,27 +25,6 @@
       <param-value>true</param-value>
     </init-param>
   </filter>
-
-  <!--移动端加密解密，对*.mo的请求进行验证解密-->
-  <filter>
-    <filter-name>mobileParamsFilter</filter-name>
-    <filter-class>cn.com.chaochuang.mobile.util.MobileParamsFilter</filter-class>
-    <init-param>
-      <param-name>excludePath</param-name>
-      <!--不进行token校验的请求,用" ; " 分隔-->
-      <!--过滤的请求：手机登录，手机验证-->
-      <param-value>.*/mobile/sys/login.mo;.*/mobile/sys/checkregister.mo;.*/mobile/sys/saveregister.mo;.*/mobile/sys/sendcode.mo;.*/mobile/sys/checkuser.mo</param-value>
-    </init-param>
-    <init-param>
-      <!--是否进行加密解密和token验证-->
-      <param-name>encodeFlag</param-name>
-      <param-value>true</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>mobileParamsFilter</filter-name>
-    <url-pattern>*.mo</url-pattern>
-  </filter-mapping>
 
   <filter>
     <filter-name>HttpMethodFilter</filter-name>

@@ -84,12 +84,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="bg-grey">图标背景色</td>
-                    <td class="bg-white">
-                        <input style="width:100%;" class="easyui-textbox" data-options="" id="appcolor" name="appcolor" value="$!{obj.appcolor}"/>
-                    </td>
-                </tr>
-                <tr>
                     <td class="bg-grey"><span><font color=red>*</font></span>排序号</td>
                     <td class="bg-white">
                         <input style="width:100%;" class="easyui-numberbox" data-options="required:true" id="sort" name="sort" value="$!{obj.sort}"/>

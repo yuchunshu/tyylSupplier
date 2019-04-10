@@ -43,7 +43,7 @@
                     <tr align="center">
                       <td class="bg-grey" align="right">附件</td>
                       <td align="left" class="bg-white">
-                        #formemailfilemulty("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", false, "#defaultUploadUrl('emAttach')",false)
+                        #formfilemultyemail("attachIds", "", "", "", $!{attachMap.get("$obj.id")},"#defaultDownloadUrl('emAttach')", false, "#defaultUploadUrl('emAttach')",false)
                       </td>
                     </tr>
                   </tbody>

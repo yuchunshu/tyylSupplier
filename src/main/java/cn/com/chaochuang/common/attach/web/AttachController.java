@@ -1,8 +1,8 @@
 /*
  * FileName:    NoticeController.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年1月25日 (HM) 1.0 Create
  */
 
@@ -10,8 +10,6 @@ package cn.com.chaochuang.common.attach.web;
 
 import cn.com.chaochuang.common.attach.domain.SysAttach;
 import cn.com.chaochuang.common.bean.ReturnBean;
-import cn.com.chaochuang.doc.event.domain.OaDocFile;
-import cn.com.chaochuang.doc.event.repository.OaDocFileRepository;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +36,6 @@ public class AttachController {
 
     @Autowired
     protected ConversionService conversionService;
-
-    @Autowired
-    private OaDocFileRepository docFileRepository;
 
     @Value(value = "${upload.rootpath}")
     private String           rootPath;
@@ -82,33 +77,4 @@ public class AttachController {
         return dataMap;
     }
 
-    @RequestMapping("/getpdf.json")
-    @ResponseBody
-    public ReturnBean convertPdf(String oaDocFileId){
-        ReturnBean bean = new ReturnBean();
-        bean.setSuccess(false);
-        try {
-            OaDocFile doc = docFileRepository.findOne(oaDocFileId);
-            if(doc!=null&&doc.getDocId()!=null){
-                SysAttach attach = attachService.findOne(doc.getDocId());
-                if(attach!=null){
-                    String subfix =  attach.getSaveName().substring(attach.getSaveName().lastIndexOf("."));
-                    if(subfix.contains(".do")||subfix.contains(".xl")||subfix.contains(".pp")){
-                        SysAttach pdfAttach = attachService.mainFileToPdf(attach,doc);
-                        if(pdfAttach!=null) {
-                            bean.setSuccess(true);
-                            bean.setMessage("转换成功");
-                            bean.setObject(pdfAttach);
-                        }
-                    }else{
-                        bean.setMessage("只能转换Word、Excel和PPT文件");
-                    }
-                }
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return bean;
-    }
 }

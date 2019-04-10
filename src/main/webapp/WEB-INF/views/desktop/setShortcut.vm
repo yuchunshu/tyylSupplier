@@ -36,7 +36,7 @@
         } else {
             icon = "<img class='icon-item' src='"+shortcut.icon+"'/>";
         }
-        return "<li class='drag-item' title='"+shortcut.title+"' url='"+shortcut.url+"' icon='"+shortcut.icon+"' appurl='"+(shortcut.appurl||'')+"' appicon='"+(shortcut.appicon||'')+"' appcolor='"+(shortcut.appcolor||'')+"'>"+"<div class='img-item'><a href='javascript:;'>" + icon + "</a><div class='minus-item'><img src='images/shortcut/shortcut-minus.png' /></div></div><div class='handleDrg-item'>"+shortcut.title+"</div></li>"
+        return "<li class='drag-item' title='"+shortcut.title+"' url='"+shortcut.url+"' icon='"+shortcut.icon+"' appurl='"+(shortcut.appurl||'')+"' appicon='"+(shortcut.appicon||'')+"'>"+"<div class='img-item'><a href='javascript:;'>" + icon + "</a><div class='minus-item'><img src='images/shortcut/shortcut-minus.png' /></div></div><div class='handleDrg-item'>"+shortcut.title+"</div></li>"
     }
     $(function(){
         if(curShortcutsData.length){
@@ -48,9 +48,9 @@
 
         $("#drag-contain .minus-item").live("click",function(){
             var shortcutLi = $(this).parent().parent();
-            var shortcut = {title:shortcutLi.attr("title"),url:shortcutLi.attr("url"),appurl:shortcutLi.attr("appurl"),appicon:shortcutLi.attr("appicon"),appcolor:shortcutLi.attr("appcolor"),icon:shortcutLi.attr("icon")};
+            var shortcut = {title:shortcutLi.attr("title"),url:shortcutLi.attr("url"),appurl:shortcutLi.attr("appurl"),appicon:shortcutLi.attr("appicon"),icon:shortcutLi.attr("icon")};
             shortcutLi.remove();
-            $("#curAllMenus").datagrid("appendRow",{powerName:shortcut.title,url:shortcut.url,appurl:shortcut.appurl,appicon:shortcut.appicon,appcolor:shortcut.appcolor,icon:shortcut.icon});
+            $("#curAllMenus").datagrid("appendRow",{powerName:shortcut.title,url:shortcut.url,appurl:shortcut.appurl,appicon:shortcut.appicon,icon:shortcut.icon});
 
         });
         $("#drag-contain .icon-item").live("click",function(){
@@ -62,7 +62,13 @@
         $("#preIcon li").on("click",function(){
             var icon = $(this).find("img").attr("src");
             $("#drag-contain li[changeIcon=true]").attr("icon",icon);
-            $("#drag-contain li[changeIcon]").find(".icon-item").attr("src",icon)
+            var $item = $("#drag-contain li[changeIcon]").find(".icon-item");
+            if ($item.is('i')) {
+                var html = "<img class='icon-item' src='" + icon + "' />";
+                $item.parent().html(html);
+            } else {
+                $("#drag-contain li[changeIcon]").find(".icon-item").attr("src",icon);
+            }
             $("#iconDialog").window("close");
         });
 
@@ -171,7 +177,6 @@
             value.push({name:'shortcut['+i+'].icon',value:$(this).attr("icon")});
             value.push({name:'shortcut['+i+'].appurl',value:$(this).attr("appurl")});
             value.push({name:'shortcut['+i+'].appicon',value:$(this).attr("appicon")});
-            value.push({name:'shortcut['+i+'].appcolor',value:$(this).attr("appcolor")});
             value.push({name:'shortcut['+i+'].sort',value:i});
         });
 
@@ -198,7 +203,7 @@ function addShortcut(index){
     if (row.icon && row.icon.indexOf("power-icon") == 0) {
         powerIcon = row.icon;
     }
-    var data = {title:row.powerName,url:row.url,icon:powerIcon,appurl:row.appurl,appcolor:row.appcolor,appicon:row.appicon};
+    var data = {title:row.powerName,url:row.url,icon:powerIcon,appurl:row.appurl,appicon:row.appicon};
     $("#drag-contain").append(appendDrgLi(data));
     init();
     $("#curAllMenus").datagrid("deleteRow",index);

@@ -1,15 +1,14 @@
 /*
  * FileName:    SysAttachServiceImpl.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年1月26日 (HM) 1.0 Create
  */
 
 package cn.com.chaochuang.common.attach.service;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +21,6 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
-import cn.com.chaochuang.doc.event.repository.OaDocFileRepository;
-import cn.com.chaochuang.webservice.client.PdfClientService;
-import cn.com.chaochuang.webservice.utils.CxfFileWrapper;
-import cn.com.chaochuang.webservice.utils.WebserviceResult;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +37,6 @@ import cn.com.chaochuang.common.upload.support.UploadFileItem;
 import cn.com.chaochuang.common.util.AttachHelper;
 import cn.com.chaochuang.common.util.AttachUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.doc.event.domain.OaDocFile;
 import cn.com.chaochuang.common.attach.bean.AttachBean;
 import cn.com.chaochuang.common.attach.domain.SysAttach;
 import cn.com.chaochuang.common.attach.repository.SysAttachRepository;
@@ -70,12 +64,6 @@ public class SysAttachServiceImpl extends SimpleUuidCrudRestService<SysAttach> i
 
     @Autowired
     private EntityManager       em;
-
-    @Autowired
-    private PdfClientService    pdfClientService;
-
-    @Autowired
-    private OaDocFileRepository docFileRepository;
 
     @Override
     public SimpleDomainRepository<SysAttach, String> getRepository() {
@@ -167,52 +155,6 @@ public class SysAttachServiceImpl extends SimpleUuidCrudRestService<SysAttach> i
         return attach.getId().toString();
     }
 
-    @Override
-    public SysAttach linkAttachAndOwner(String attachId, String ownerId, String ownerType) {
-        if (attachId != null) {
-            SysAttach attach = this.findOne(attachId);
-            if (attach != null) {
-                attach.setOwnerId(ownerId);
-                if(!OaDocFile.DOC_ATTACH_OWNER_MAIN_PDF.equals(attach.getOwnerType())){
-                    //正文的pdf不处理
-                    attach.setOwnerType(ownerType);
-                }
-                this.repository.save(attach);
-                return attach;
-            }
-        }
-        return null;
-
-    }
-
-    @Override
-    public String saveFileDocAttach(String attachId, String attachFileName, OaDocFile doc) {
-        SysAttach attach = new SysAttach();
-        File file = new File(attachFileName);
-        if (!file.exists()) {
-            return attachId;
-        }
-        String docType = attachFileName.substring(attachFileName.lastIndexOf("."));
-        if (StringUtils.isBlank(attachId)) {
-            // 如果没有attachId则根据attachFileName分解正文的路径和文件名
-            attach.setOwnerType(OaDocFile.DOC_ATTACH_OWNER_MAIN);
-            attach.setTrueName(doc.getTitle() + docType);
-            attach.setSaveName(file.getName());
-            String savePath = file.getParent().replace('\\', '/');
-            attach.setSavePath(savePath.substring(this.rootPath.length()+1) + "/");
-            attach.setIsImage(IsImage.非图文公告);
-            attach.setFileSize(file.length());
-            attach.setOwnerId(doc.getId());
-        } else {
-            // 已经存在的正文附件 仅能修改文件大小和真实文件名
-            attach = repository.findOne(attachId);
-            attach.setTrueName(doc.getTitle() + docType);
-            attach.setFileSize(file.length());
-        }
-        repository.save(attach);
-
-        return attach.getId();
-    }
 
     @Override
     public List<SysAttach> findByOwnerIdAndOwnerType(String ownerId, String ownerType) {
@@ -240,17 +182,6 @@ public class SysAttachServiceImpl extends SimpleUuidCrudRestService<SysAttach> i
             }
             repository.delete(attachs);
         }
-    }
-
-    @Override
-    public List<SysAttach> selectdocAttach() {
-        StringBuilder sql = new StringBuilder(" from ");
-        sql.append(SysAttach.class.getName()).append(" as a where (a.ownerType ='").append(OaDocFile.class.getSimpleName()).append("' ");
-        sql.append("or a.ownerType ='").append(OaDocFile.DOC_ATTACH_OWNER_MAIN).append("') ");
-
-        // System.out.println("|||||||||||||||||-----" + sql.toString());
-
-        return em.createQuery(sql.toString()).getResultList();
     }
 
 
@@ -340,60 +271,6 @@ public class SysAttachServiceImpl extends SimpleUuidCrudRestService<SysAttach> i
 		return null;
 	}
 
-    @Override
-    public SysAttach mainFileToPdf(SysAttach attach, OaDocFile doc) {
-        if(attach!=null&&doc!=null){
-            SysAttach pdfAttach = null;
-            String path = this.rootPath+"/"+attach.getSavePath() +"/"+ attach.getSaveName();
-            if(attach.getSavePath().contains(this.rootPath)){
-                path = attach.getSavePath() +"/"+ attach.getSaveName();
-            }
-            File attachFile = new File(path);
-            if(attachFile.exists()) {
-                //查找对应的pdf是否存在，pdf文件名与正文相同
-                String pdfFileName = attach.getSaveName().substring(0,attach.getSaveName().lastIndexOf("."))+".pdf";
-                List<SysAttach> pdfFileList = repository.findByOwnerIdAndOwnerType(doc.getId(),OaDocFile.DOC_ATTACH_OWNER_MAIN_PDF);
-                if(Tools.isNotEmptyList(pdfFileList)){
-                    //pdf记录已存在
-                    pdfAttach = pdfFileList.get(0);
-                }
-                DataHandler handler = new DataHandler(new FileDataSource(attachFile));
-                CxfFileWrapper cxfFileWrapper = new CxfFileWrapper();
-                cxfFileWrapper.setFile(handler);
-                cxfFileWrapper.setFileName(attachFile.getName());
-                //1.上传文件，成功时返回文件路径
-                String resultStr = pdfClientService.uploadDocFile(cxfFileWrapper);
-                if(resultStr!=null){
-                    WebserviceResult result=JSON.parseObject(resultStr, WebserviceResult.class);
-                    if(result!=null&&WebserviceResult.STA_SUC.equals(result.getStatus())){
-                        //2.上传成功后，调用转换方法
-                        CxfFileWrapper fileWrapper = pdfClientService.transferAndDownload(result.getMessage());
-                        if(fileWrapper!=null&&fileWrapper.getFile()!=null){
-                            //3.保存pdf文件
-                            String filePath = attachFile.getParent()+File.separator+pdfFileName;
-                            File file = this.dataStreamToFile(fileWrapper.getFile(),filePath);
-                            if(file!=null){
-                                if(pdfAttach==null) {
-                                    pdfAttach = new SysAttach();
-                                }
-                                pdfAttach.setOwnerType(OaDocFile.DOC_ATTACH_OWNER_MAIN_PDF);
-                                pdfAttach.setTrueName(doc.getTitle() + ".pdf");
-                                pdfAttach.setSaveName(file.getName());
-                                String savePath = file.getParent();
-                                pdfAttach.setSavePath(savePath.substring(this.rootPath.length()+1) + File.separator);
-                                pdfAttach.setIsImage(IsImage.非图文公告);
-                                pdfAttach.setFileSize(file.length());
-                                pdfAttach.setOwnerId(doc.getId());
-                                repository.saveAndFlush(pdfAttach);
-                                return pdfAttach;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     private File dataStreamToFile(DataHandler dataHandler, String filePath) {
         FileOutputStream fileOutputStream = null;
@@ -438,56 +315,23 @@ public class SysAttachServiceImpl extends SimpleUuidCrudRestService<SysAttach> i
             }
         }
         return null;
+    
+
     }
-
+    
     @Override
-    public boolean attachFileEdit(String attachId, String preAttachId) {
-        if(attachId!=null&&preAttachId!=null){
-            SysAttach newAttach = this.repository.findOne(attachId);
-            SysAttach preAttach = this.repository.findOne(preAttachId);
-            if(newAttach!=null&&preAttach!=null){
-
-                String preFilePath = this.rootPath + File.separator + preAttach.getSavePath() + preAttach.getSaveName();
-                //设置新的文件路径及名称
-                preAttach.setSaveName(newAttach.getSaveName());
-                preAttach.setSavePath(newAttach.getSavePath());
-                this.repository.save(preAttach);
-                this.repository.delete(newAttach);
-
-                //删除原文件
-                AttachUtils.removeFile(preFilePath);
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public Map<String, List<SysAttach>> copyAttachMap(String ownerId) {
-        List<SysAttach> attachList = null;
-        if (StringUtils.isNotBlank(ownerId)) {
-            attachList = this.repository.findByOwnerId(ownerId);
-        }
-        List<SysAttach> copyAttachList = new ArrayList<SysAttach>();
-        if (attachList != null && attachList.size() > 0) {
-            for (SysAttach att : attachList) {
-                SysAttach attach = new SysAttach();
-                attach.setTrueName(att.getTrueName());
-                attach.setSaveName(att.getSaveName());
-                attach.setSavePath(att.getSavePath());
-                attach.setFileSize(att.getFileSize());
-                attach.setIsImage(att.getIsImage());
-                this.persist(attach);
-                copyAttachList.add(attach);
-            }
-            if (copyAttachList.size() > 0) {
-                Map<String, List<SysAttach>> map = new HashMap<String, List<SysAttach>>();
-                map.put(ownerId.toString(), copyAttachList);
-                return map;
+    public SysAttach linkAttachAndOwner(String attachId, String ownerId, String ownerType) {
+        if (attachId != null) {
+            SysAttach attach = this.findOne(attachId);
+            if (attach != null) {
+                attach.setOwnerId(ownerId);
+                attach.setOwnerType(ownerType);
+                this.repository.save(attach);
+                return attach;
             }
         }
         return null;
+
     }
+
 }

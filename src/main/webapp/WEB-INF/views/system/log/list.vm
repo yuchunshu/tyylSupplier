@@ -10,11 +10,12 @@
                 <thead>
                     <tr>
                         <th style="width:7%" data-options="field:'operatorName'">操作人</th>
+                        ##<th style="width:8%" data-options="field:'logType'">操作用户类型</th>
                         <th style="width:9%" data-options="field:'ip'">IP</th>
-						<th style="width:12%" data-options="field:'browser',formatter:formatBrowser">浏览器</th>
-                        <th style="width:20%" data-options="field:'url'">访问URL</th>
-                        <th style="width:32%" data-options="field:'content'">操作内容</th>
+                        <th style="width:30%" data-options="field:'url'">访问URL</th>
+                        <th style="width:35%" data-options="field:'content'">操作内容</th>
                         <th style="width:12%"  data-options="field:'operateDateStr'">操作时间</th>
+                        ##<th style="width:8%" data-options="field:'sjType'">操作类型</th>
                         <th style="width:6%" data-options="field:'status',formatter:statusShow">操作状态</th>
                     </tr>
                 </thead>
@@ -197,9 +198,5 @@
         $("#deptId").val(obj.id);
         $("#deptName").textbox('setText',obj.text);
 	}
-	
-	function formatBrowser(value,row) {
-        return '<div title="' + value + '">' + value + '</div>';
-    }
 </script>
 #end

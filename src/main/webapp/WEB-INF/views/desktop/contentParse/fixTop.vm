@@ -3,74 +3,41 @@
    <tr>
      <td style="vertical-align: top;">
         <div class="fix-top-todo backlog" style="float:left;">
-
             <div>
                 <div class="work-title">
-                    #if("$!{model.status}" == "block")
-                     #set($picture = "work-icon-up.png")
-                    #else
-                     #set($picture = "work-icon-down.png")
-                    #end
-                    #if($dict.userprofile.get($!{user.currentUserId}))
-                     <img src="$link.getContextURL()/themes/$!dict.userprofile.get($!{user.currentUserId})/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)"/>
-                   #else
-                    <img src="$link.getContextURL()/themes/default/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)">
-                   #end
-                    <h4>
-                   <a href="javascript:;">待办事项</a>
-                     ## <font color="red">(3)</font>
-                     </h4>
-                </div>
-
-                <ul class="block backlog-ul">
-                    #if($!{taskContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'待办公文',url:'$link.getContextURL()/doc/event/tasklist'})">待办公文</a><span >($!{taskContentList.total})</span></li>
-					#end
-					#if($!{passreadContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'内部请示',url:'$link.getContextURL()/doc/interequest/tasklist'})">内部请示</a><span >(${passreadContentList.total})</span></li>
-                    #end
-                    #if(${readContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'待阅公文',url:'$link.getContextURL()/doc/event/readlist'})">待阅公文</a><span >(${readContentList.total})</span></li>
-                    #end
-                    #if($!{meetContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'我的会议',url:'$link.getContextURL()/oa/meeting/attendee/list'})">我的会议</a><span >(${meetContentList.total})</span></li>
-                    #end
-                    #if($!{notReadMailContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'我的邮件',url:'$link.getContextURL()/oa/mail/inbox/list'})">我的邮件</a><span >(${notReadMailContentList.total})</span></li>
-                    #end
-                    #if($!{tripContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'个人行程',url:'$link.getContextURL()/oa/schedule/myschedule'})">个人行程</a><span >(${tripContentList.total})</span></li>
-					#end
-					
-					
-					#if($!{carContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'车辆申请审核',url:'$link.getContextURL()/pubaffairs/car/list'})">车辆申请审核</a><span >(${carContentList.total})</span></li>
-					#end
-					#if($!{leaveContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'休假审核',url:'$link.getContextURL()/pubaffairs/leave/query'})">休假审核</a><span >(${leaveContentList.total})</span></li>
-                    #end
-					#if($!{repairContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'故障审核',url:'$link.getContextURL()/pubaffairs/repair/list'})">故障审核</a><span >(${repairContentList.total})</span></li>
-					#end
-					#if($!{mealContentList.total} > 0)
-                    #set($hasPending = true)
-                    <li><a href="javascript:;" onclick="top.CC.addTab({title:'订餐审核',url:'$link.getContextURL()/pubaffairs/trip/query'})">订餐审核</a><span >(${mealContentList.total})</span></li>
-					#end
-					
-					
-                    #if(!$hasPending)
-                        <p class="backlog-p">当前无待办事项</p>
-                    #end
-                </ul>
+                #if("$!{model.status}" == "block")
+                #set($picture = "work-icon-up.png")
+                #else
+                #set($picture = "work-icon-down.png")
+                #end
+                #if($dict.userprofile.get($!{user.currentUserId}))
+                <img src="$link.getContextURL()/themes/$!dict.userprofile.get($!{user.currentUserId})/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)"/>
+                #else
+                <img src="$link.getContextURL()/themes/default/images/$picture" title="点击此处收缩/展开此模块" onclick="displayModelToggle(this)"/>
+                #end
+                <h4>
+                    <a href="javascript:;" onclick="top.CC.addTab({title:'收件箱',url:'$link.getContextURL()/oa/mail/inbox/list'})" title="点击进入收件箱">收件箱</a>
+                    #if($!{notReadMailContentList.total} > 0) <font color="red">($!{notReadMailContentList.total})</font> #end
+                </h4>
+                <div class="drag-handle-area"></div>
+                <a href="javascript:;" onclick="top.CC.addTab({title:'收件箱',url:'$link.getContextURL()/oa/mail/inbox/list'})" class="more" title="更多"></a>
+            </div>
+            <ul style="display:$!{model.status}">
+                #foreach($mail in $notReadMailContentList.rows)
+                <li>
+                    <a href="javascript:;" onclick="top.CC.addTab({title:'查看邮件',url:'$link.getContextURL()/oa/mail/inbox/detail?incId=$!mail.id'})" title="$!mail.title">
+        				#if($!mail.incepterStatus.key == '0')
+        	                <img src='images/notRead.png'/>
+        	            #else
+        	                <img src='images/read.png'/>
+        	            #end
+        				$!mail.title
+        			</a>
+                    <span>$!date.format('yyyy-MM-dd', $!mail.sendDate)</span>
+                </li>
+                #if($velocityCount == 5) #break #end
+                #end
+            </ul>
 
             </div>
         </div>
