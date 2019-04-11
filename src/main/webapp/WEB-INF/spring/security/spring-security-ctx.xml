@@ -133,10 +133,6 @@
             ref="CheckPasswordChangeTimeFilter"
             after="LAST" />
 
-        <custom-filter
-                ref="ssoActionFilter"
-                after="SECURITY_CONTEXT_FILTER" />
-
     </http>
 
     <beans:bean id="ValidateCodeFilter" class="cn.com.chaochuang.common.login.ValidateCodeFilter">
@@ -261,34 +257,4 @@
         <beans:property name="defaultTargetUrl" value="/login.html"></beans:property>
     </beans:bean>
 
-    <!--sso filter-->
-    <beans:bean
-            id="ssoActionFilter"
-            class="cn.com.chaochuang.common.sso.SsoActionFilter"
-    >
-        <beans:property name="defaultTargetUrl">
-            <beans:value>${after.login.mainpage.url}</beans:value>
-        </beans:property>
-        <beans:property name="ssoLoginPageUrl">
-            <beans:value>${sso.login.page.url}</beans:value>
-        </beans:property>
-        <beans:property name="ssoServerNavigateinUrl">
-            <beans:value>${sso.server.navigatein.url}</beans:value>
-        </beans:property>
-        <beans:property name="keySalt">
-            <beans:value>${security.keysalt}</beans:value>
-        </beans:property>
-        <beans:property name="passwordEncoder">
-            <beans:ref bean="PasswordEncoder" />
-        </beans:property>
-        <beans:property name="userDetailsService">
-            <beans:ref bean="SimpleUserDetailsProxyService" />
-        </beans:property>
-        <beans:property name="authenticationManager">
-            <beans:ref bean="authenticationManager" />
-        </beans:property>
-        <beans:property name="authenticationDetailsSource">
-            <beans:ref bean="TrueRemoteAddressWebAuthenticationDetailsSource" />
-        </beans:property>
-    </beans:bean>
 </beans:beans>

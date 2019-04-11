@@ -1,8 +1,8 @@
 /*
  * FileName:    SysDepartmentServiceImpl.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2014
+ * Company:     
+ * Copyright:    (c) 2014
  * History:     2014年7月18日 (LaoZhiYong) 1.0 Create
  */
 
@@ -396,26 +396,4 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
     
 	}
 
-    @Override
-    public List<SysDepartment> getAllChildrens(Long parentId) {
-        List<SysDepartment> dList = new ArrayList<SysDepartment>();
-        List<SysDepartment> childrens = null;
-
-        if (parentId == null) {
-            childrens = this.repository.findByRootDepartment(ValidAble.VALID);
-        } else {
-            childrens = this.repository.findByDeptParentAndValidOrderByOrderNumAsc(parentId, ValidAble.VALID);
-        }
-
-        if (childrens == null || childrens.isEmpty())
-            return null;
-        for (SysDepartment d : childrens) {
-            dList.add(d);
-            List<SysDepartment> grandChildrens = this.getAllChildrens(d.getId());
-            if (grandChildrens != null && !grandChildrens.isEmpty()) {
-                dList.addAll(grandChildrens);
-            }
-        }
-        return dList;
-    }
 }

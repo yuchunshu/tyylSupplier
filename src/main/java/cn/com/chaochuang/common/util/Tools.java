@@ -1,8 +1,8 @@
 /*
  * FileName:    Tools.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2015
+ * Company:     
+ * Copyright:    (c) 2015
  * History:     2015年3月28日 (LLM) 1.0 Create
  */
 
@@ -33,8 +33,6 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
 import cn.com.chaochuang.common.dictionary.DictionaryPool;
-import cn.com.chaochuang.doc.event.reference.DateFlag;
-import cn.com.chaochuang.oa.workingday.domain.WorkingDay;
 
 /**
  * @author LLM
@@ -502,43 +500,6 @@ public abstract class Tools {
         return restDay;
     }
 
-    /**
-     * 计算从startDate至endDate（含endDate）有工作日
-     *
-     * @param endDate
-     * @param startDate
-     * @return
-     */
-    public static Integer countWorkingDay(Date endDate, Date startDate) {
-        Integer lastDate = Tools.subtractDateNegative(endDate, startDate);
-        if (lastDate == null) {
-            return null;
-        }
-        if (lastDate.intValue() < 0) {
-            return new Integer(-1);
-        }
-        int day = 0;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        WorkingDay workingDay = null;
-        Map<String, WorkingDay> dict = DictionaryPool.getInstance().get(WorkingDay.class.getSimpleName());
-        for (int i = 0; i < lastDate.intValue(); i++) {
-            // 从明天开始计算有多少工作日
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-            if (dict != null)
-                workingDay = dict.get(Tools.DATE_FORMAT4.format(calendar.getTime()));
-            if (workingDay == null) {
-                if (!Tools.checkWeekend(calendar.getTime())) {
-                    day++;
-                }
-            } else {
-                if (DateFlag.工作日.equals(workingDay.getDateFlag())) {
-                    day++;
-                }
-            }
-        }
-        return new Integer(day);
-    }
 
     /**
      * 获取一个月的日期范围。如：2013-01-01至2013-02-01

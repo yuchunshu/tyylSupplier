@@ -37,7 +37,8 @@ public class UserProfileServiceImpl extends SimpleNotGenerateLongIdCrudRestServi
     private UserProfileRepository repository;
 
     /** 默认显示顺序 */
-    private final String          _DEFAULT_MODELS = "[{name:\"taskContent\",location:\"left\",status:\"block\"},{name:\"readContent\",location:\"left\",status:\"block\"},{name:\"noticeContent\",location:\"right\",status:\"block\"},{name:\"mailContent\",location:\"right\",status:\"block\"}]";
+//    private final String          _DEFAULT_MODELS = "[{name:\"noticeContent\",location:\"left\",status:\"block\"},{name:\"mailContent\",location:\"right\",status:\"block\"}]";
+    private final String          _DEFAULT_MODELS = "[]";
 
     @Override
     public SimpleDomainRepository<UserProfile, Long> getRepository() {

@@ -441,13 +441,6 @@
             <version>2.3.2</version>
         </dependency>
 
-        <!--sso client-->
-        <dependency>
-            <groupId>cn.com.chaochuang</groupId>
-            <artifactId>gxfda_sso_client</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
         <!--极光推送-->
         <dependency>
             <groupId>cn.jpush.api</groupId>

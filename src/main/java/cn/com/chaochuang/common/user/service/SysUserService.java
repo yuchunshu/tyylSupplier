@@ -48,8 +48,5 @@ public interface SysUserService extends CrudRestService<SysUser, Long> {
     public List<SysUser> findByValidOrderBySort(Integer valid);
 
     SysUser findByAccount(String account);
-    
-    boolean isOwnByRoleName(String roleName);
 
-    boolean updatePasswordMobile(String newpw, SysUser user);
 }

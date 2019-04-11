@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import cn.com.chaochuang.mobile.service.MobileRegisterService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,9 +34,6 @@ public class PasswordController {
 
     @Autowired
     private SysUserService   userService;
-
-    @Autowired
-    private MobileRegisterService mobileRegisterService;
 
     @Autowired
     private LogService       logService;
@@ -108,8 +104,6 @@ public class PasswordController {
             curUser.setPassword(HashUtil.md5Text(password));
             curUser.setLastPasswdDate(new Date());
             this.userService.persist(curUser);
-
-            this.mobileRegisterService.clearUserTokenId(curUser);
             return true;
         }
         return false;

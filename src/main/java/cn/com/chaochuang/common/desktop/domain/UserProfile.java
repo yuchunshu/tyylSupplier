@@ -28,7 +28,7 @@ import cn.com.chaochuang.oa.notice.reference.SmsFlagConverter;
 public class UserProfile extends NotGenerateLongIdEntity implements IDictionary {
 
     private static final long serialVersionUID = -4311211405715240885L;
-
+    
     /** 桌面背景图 */
     private String            background;
 

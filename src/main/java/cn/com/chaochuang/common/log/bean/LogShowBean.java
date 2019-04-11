@@ -1,8 +1,8 @@
 /*
  * FileName:    LogShowBean.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年4月15日 (LJX) 1.0 Create
  */
 
@@ -11,10 +11,12 @@ package cn.com.chaochuang.common.log.bean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.Convert;
 
 import org.dozer.Mapping;
 
 import cn.com.chaochuang.common.log.reference.LogStatus;
+import cn.com.chaochuang.common.log.reference.LogStatusConverter;
 import cn.com.chaochuang.common.log.reference.LogType;
 import cn.com.chaochuang.common.log.reference.SjType;
 
@@ -30,8 +32,6 @@ public class LogShowBean {
     private String           operatorName;
     /** 操作IP */
     private String           ip;
-    /** 浏览器环境信息 */
-    private String           browser;
     /** 操作对象 */
     private String           url;
     /** 操作类型 */
@@ -179,14 +179,6 @@ public class LogShowBean {
 
 	public void setStatus(LogStatus status) {
 		this.status = status;
-	}
-
-	public String getBrowser() {
-		return browser;
-	}
-
-	public void setBrowser(String browser) {
-		this.browser = browser;
 	}
 
 }

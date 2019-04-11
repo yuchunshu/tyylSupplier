@@ -36,8 +36,6 @@ public class DesktopShortcut extends LongIdEntity {
     private String            appurl;
     /** app图标 */
     private String            appicon;
-    /**app图标背景颜色*/
-    private String            appcolor;
 
     /** 排序号 */
     private Long              sort;
@@ -98,11 +96,5 @@ public class DesktopShortcut extends LongIdEntity {
         this.sort = sort;
     }
 
-    public String getAppcolor() {
-        return appcolor;
-    }
 
-    public void setAppcolor(String appcolor) {
-        this.appcolor = appcolor;
-    }
 }

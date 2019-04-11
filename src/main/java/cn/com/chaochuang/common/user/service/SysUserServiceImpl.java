@@ -16,7 +16,6 @@ import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
-import cn.com.chaochuang.mobile.service.MobileRegisterService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,9 +76,6 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser>
 
     @Autowired
     private DataChangeService       dataChangeService;
-
-    @Autowired
-    private MobileRegisterService mobileRegisterService;
 
     /** 树节点状态 ： 关闭 */
     private final String            TREE_STATUS_CLOSED = "closed";
@@ -519,32 +515,5 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser>
     @Override
     public Class<?> getDictionaryClass() {
         return SysUser.class;
-    }
-    
-    @Override
-	public boolean isOwnByRoleName(String roleName) {
-		SysUser user1 = this.findOne(Long.parseLong(UserTool.getInstance().getCurrentUserId()));
-        Set<SysRole> roles = user1.getRoles();
-        boolean flag = false;
-        for (SysRole role : roles) {
-			if (role.getRoleName().equals(roleName)) {
-				flag = true;
-			}
-		}
-		return flag;
-	}
-
-    @Override
-    public boolean updatePasswordMobile(String newPwd, SysUser user) {
-        if (user != null) {
-            user.setPassword(HashUtil.md5Text(newPwd));
-            user.setLastPasswdDate(new Date());
-            this.repository.save(user);
-
-            // 清空移动端tokenId
-            mobileRegisterService.clearUserTokenId(user);
-            return true;
-        }
-        return false;
     }
 }

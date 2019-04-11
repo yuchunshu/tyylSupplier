@@ -1,8 +1,8 @@
 /*
  * FileName:    LoginFailureHandler.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2015
+ * Company:     
+ * Copyright:    (c) 2015
  * History:     2015年9月17日 (LJX) 1.0 Create
  */
 
@@ -14,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.com.chaochuang.mobile.service.MobileRegisterService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,9 +65,6 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Autowired
     private LogService        logService;
 
-    @Autowired
-    private MobileRegisterService mobileRegisterService;
-
     @Value(value = "${super.admin.user}")
     private Long              superUserId;
 
@@ -99,8 +95,6 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
                     if (!user.getId().equals(this.superUserId) && user.getLoginFailCount() >= loginFailureLimitTimes) {
                         // 超级管理员不锁定
                         user.setAccountLocked(true);
-                        //删除移动端token
-                        this.mobileRegisterService.clearUserTokenId(user);
                         this.logService.saveUserLog(user, SjType.普通操作, "连续登录失败超过" + loginFailureLimitTimes + "次,用户被锁定",LogStatus.失败,
                                         request);
                     }
@@ -139,7 +133,6 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
         super.onAuthenticationFailure(request, response, exception);
     }
 
-    @Override
     public void setDefaultFailureUrl(String defaultFailureUrl) {
         this.defaultFailureUrl = defaultFailureUrl;
     }

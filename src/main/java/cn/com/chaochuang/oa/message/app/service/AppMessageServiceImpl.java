@@ -1,8 +1,8 @@
 /*
  * FileName:    AppMessageServiceImpl.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年1月25日 (HM) 1.0 Create
  */
 
@@ -40,35 +40,8 @@ import cn.com.chaochuang.oa.message.app.repository.AppMessageRepository;
 @Transactional
 public class AppMessageServiceImpl extends SimpleLongIdCrudRestService<OaAppMessage> implements AppMessageService {
 
-    @Value(value = "${messageUrl.pendingFilePath}")
-    private String              pendingFilePath;
-    
-    @Value(value = "${messageUrl.inteRequestFilePath}")
-    private String              inteRequestFilePath;
-
-    @Value(value = "${messageUrl.toReadMatterPath}")
-    private String              toReadMatterPath;
-
     @Value(value = "${messageUrl.mailPath}")
     private String              mailPath;
-
-    @Value(value = "${messageUrl.meetingPath}")
-    private String              meetingPath;
-
-    @Value(value = "${messageUrl.schedulePath}")
-    private String              schedulePath;
-    
-    @Value(value = "${messageUrl.carPath}")
-    private String              carPath;
-    
-    @Value(value = "${messageUrl.repairPath}")
-    private String              repairPath;
-    
-    @Value(value = "${messageUrl.mealPath}")
-    private String              mealPath;
-    
-    @Value(value = "${messageUrl.leavePath}")
-    private String              leavePath;
 
     @Autowired
     private AppMessageRepository repository;
@@ -116,42 +89,11 @@ public class AppMessageServiceImpl extends SimpleLongIdCrudRestService<OaAppMess
         OaAppMessage message = new OaAppMessage(incepterId, senderId, content, mesType, new Date(), MesStatus.未提示,
                         YesNo.否);
         switch (mesType) {
-        case 待办:
-            message.setUrl("appId=1&tabTitle=待办事项&tabUrl=" + pendingFilePath);
-            break;
-
-        case 待阅:
-            message.setUrl("appId=1&tabTitle=待阅事项&tabUrl=" + toReadMatterPath);
-            break;
-
-        case 会议:
-            message.setUrl("appId=1&tabTitle=我的会议&tabUrl=" + meetingPath);
-            break;
 
         case 邮件:
             message.setUrl("appId=1&tabTitle=收件箱&tabUrl=" + mailPath);
             break;
 
-        case 日程:
-            message.setUrl("appId=1&tabTitle=我的日程&tabUrl=" + schedulePath);
-            break;
-           
-        case 内部请示:
-            message.setUrl("appId=1&tabTitle=待办内部请示&tabUrl=" + inteRequestFilePath);
-            break;
-            
-        case 车辆申请:
-            message.setUrl("appId=1&tabTitle=车辆申请审核&tabUrl=" + carPath);
-            break;
-        
-        case 故障报告:
-            message.setUrl("appId=1&tabTitle=故障报告审核&tabUrl=" + repairPath);
-            break;
-            
-        case 休假:
-            message.setUrl("appId=1&tabTitle=休假审核&tabUrl=" + leavePath);
-            break;
-            
         default:
             break;
         }

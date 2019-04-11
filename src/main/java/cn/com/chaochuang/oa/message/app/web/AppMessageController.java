@@ -1,8 +1,8 @@
 /*
  * FileName:    AppMessageController.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年1月25日 (HM) 1.0 Create
  */
 
@@ -28,7 +28,6 @@ import cn.com.chaochuang.common.bean.Page;
 import cn.com.chaochuang.common.bean.ReturnInfo;
 import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
-import cn.com.chaochuang.common.log.service.LogService;
 import cn.com.chaochuang.common.security.util.UserTool;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.util.SearchListHelper;
@@ -52,40 +51,8 @@ public class AppMessageController {
     @Autowired
     protected ConversionService conversionService;
 
-    @Autowired
-    private LogService          logService;
-
-    @Value(value = "${messageUrl.pendingFilePath}")
-    private String              pendingFilePath;
-    
-    @Value(value = "${messageUrl.inteRequestFilePath}")
-    private String              inteRequestFilePath;
-
-    @Value(value = "${messageUrl.toReadMatterPath}")
-    private String              toReadMatterPath;
-
     @Value(value = "${messageUrl.mailPath}")
     private String              mailPath;
-
-    @Value(value = "${messageUrl.meetingPath}")
-    private String              meetingPath;
-
-    @Value(value = "${messageUrl.schedulePath}")
-    private String              schedulePath;
-    
-    
-    @Value(value = "${messageUrl.carPath}")
-    private String              carPath;
-    
-    @Value(value = "${messageUrl.repairPath}")
-    private String              repairPath;
-    
-    @Value(value = "${messageUrl.mealPath}")
-    private String              mealPath;
-    
-    @Value(value = "${messageUrl.leavePath}")
-    private String              leavePath;
-    
 
     /** 清除：所有 */
     private final String        _CLEAR_TYPE_ALL               = "1";
@@ -137,72 +104,15 @@ public class AppMessageController {
     public MessageInfoBean oaAppMsgQuery(HttpServletRequest request, HttpServletResponse response) {
         SysUser user = (SysUser) UserTool.getInstance().getCurrentUser();
         Long userId = user.getId();
-        Integer pendingFileSum = this.messageService.updateMsg(userId, MesType.待办);// 待办
-        Integer inteRequestFileSum = this.messageService.updateMsg(userId, MesType.内部请示);// 内部请示
-        Integer toReadMatterSum = this.messageService.updateMsg(userId, MesType.待阅); // 待阅
         Integer mailSum = this.messageService.updateMsg(userId, MesType.邮件); // 邮件
-        Integer meetingSum = this.messageService.updateMsg(userId, MesType.会议); // 会议
-        Integer scheduleSum = this.messageService.updateMsg(userId, MesType.日程); // 日程
         Integer imMessageSum = this.messageService.updateMsg(userId, MesType.消息); // 即时消息
         Integer otherSum = this.messageService.updateMsg(userId, MesType.其余业务); // 其余业务模块消息
-        Integer carSum = this.messageService.updateMsg(userId, MesType.车辆申请); // 车辆申请
-        Integer leaveSum = this.messageService.updateMsg(userId, MesType.休假); // 休假
-        Integer repairSum = this.messageService.updateMsg(userId, MesType.故障报告); // 故障
-        Integer mealSum = this.messageService.updateMsg(userId, MesType.订餐); // 订餐
 
         MessageInfoBean msgInfo = new MessageInfoBean();
-        if (pendingFileSum > 0) {
-            msgInfo.setPendingFilePath(pendingFilePath);
-            msgInfo.setPendingFileSum(pendingFileSum);
-        }
-        
-        if (inteRequestFileSum > 0) {
-            msgInfo.setInteRequestFilePath(inteRequestFilePath);
-            msgInfo.setInteRequestFileSum(inteRequestFileSum);
-        }
-
-        if (toReadMatterSum > 0) {
-            msgInfo.setToReadMatterPath(toReadMatterPath);
-            msgInfo.setToReadMatterSum(toReadMatterSum);
-
-        }
         if (mailSum > 0) {
             msgInfo.setMailPath(mailPath);
             msgInfo.setMailSum(mailSum);
         }
-        if (meetingSum > 0) {
-            msgInfo.setMeetingPath(meetingPath);
-            msgInfo.setMeetingSum(meetingSum);
-        }
-
-        if (scheduleSum > 0) {
-            msgInfo.setSchedulePath(schedulePath);
-            msgInfo.setScheduleSum(scheduleSum);
-        }
-        
-        
-        
-        if (carSum > 0) {
-            msgInfo.setCarPath(carPath);
-            msgInfo.setCarSum(carSum);
-        }
-        
-        if (repairSum > 0) {
-            msgInfo.setRepairPath(repairPath);
-            msgInfo.setRepairSum(repairSum);
-        }
-        
-        if (leaveSum > 0) {
-            msgInfo.setLeavePath(leavePath);
-            msgInfo.setLeaveSum(leaveSum);
-        }
-        
-        if (mealSum > 0) {
-            msgInfo.setMealPath(mealPath);
-            msgInfo.setMealSum(mealSum);
-        }
-        
-        
 
         if (imMessageSum > 0) {
             msgInfo.setImMessageSum(imMessageSum);
@@ -211,8 +121,6 @@ public class AppMessageController {
         if (otherSum > 0) {
             msgInfo.setOtherSum(otherSum);
         }
-        
-        
 
         msgInfo.setNotReadSum(messageService.countNotRead());
         return msgInfo;
@@ -248,11 +156,7 @@ public class AppMessageController {
     @ResponseBody
     public ModelAndView welcomeMsg(MesType mesType) {
         ModelAndView mav = new ModelAndView("/desktop/contentParse/msgContent");
-        mav.addObject("pendingFilePath", pendingFilePath);
-        mav.addObject("toReadMatterPath", toReadMatterPath);
         mav.addObject("mailPath", mailPath);
-        mav.addObject("meetingPath", meetingPath);
-        mav.addObject("schedulePath", schedulePath);
         if (mesType != null) {
             mav.addObject("mesType", mesType);
         }

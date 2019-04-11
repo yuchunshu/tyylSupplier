@@ -1,8 +1,8 @@
 /*
  * FileName:    AccessDeniedHandler.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2015
+ * Company:     
+ * Copyright:    (c) 2015
  * History:     2015年9月18日 (LJX) 1.0 Create
  */
 
