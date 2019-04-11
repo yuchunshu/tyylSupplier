@@ -1,8 +1,8 @@
 /*
  * FileName:    LongIdEntity.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2012
+ * Company:     
+ * Copyright:    (c) 2012
  * History:     2012-9-5 (Administrator) 1.0 Create
  */
 

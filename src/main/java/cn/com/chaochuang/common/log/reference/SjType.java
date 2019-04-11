@@ -5,7 +5,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
 
 public enum SjType implements IDictionary {
 
-    普通操作("1", "普通操作"), 部门用户("2", "部门用户"), 角色权限("3", "角色权限"), 违规访问("4", "违规访问"), 其他("5", "其他"), 移动端("8", "移动端");
+    普通操作("1", "普通操作"), 部门用户("2", "部门用户"), 角色权限("3", "角色权限"), 违规访问("4", "违规访问"), 其他("5", "其他");
 
     private String key;
     private String value;

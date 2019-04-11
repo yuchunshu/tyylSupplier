@@ -20,7 +20,7 @@ import cn.com.chaochuang.common.security.util.UserTool;
 public class UserProfileController {
 
     /** 默认显示顺序 */
-    private final String          _DEFAULT_MODELS = "[{name:\"taskContent\",location:\"left\",status:\"block\"},{name:\"readContent\",location:\"left\",status:\"block\"},{name:\"noticeContent\",location:\"right\",status:\"block\"},{name:\"mailContent\",location:\"right\",status:\"block\"}]";
+    private final String          _DEFAULT_MODELS = "[{name:\"mailContent\",location:\"left\",status:\"block\"}]";
 
     @Autowired
     private UserProfileService    profileService;

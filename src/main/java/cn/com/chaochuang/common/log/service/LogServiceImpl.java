@@ -1,8 +1,8 @@
 /*
  * FileName:    LogServiewceImpl.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2014
+ * Company:     
+ * Copyright:    (c) 2014
  * History:     2014年12月8日 (LaoZhiYong) 1.0 Create
  */
 
@@ -29,7 +29,6 @@ import cn.com.chaochuang.common.security.util.UserTool;
 import cn.com.chaochuang.common.syspower.domain.SysRole;
 import cn.com.chaochuang.common.syspower.repository.SysRoleRepository;
 import cn.com.chaochuang.common.user.domain.SysUser;
-import cn.com.chaochuang.common.velocity.HtmlTools;
 
 /**
  * @author LaoZhiYong
@@ -60,7 +59,6 @@ public class LogServiceImpl extends SimpleCrudRestService<SysLog, Long> implemen
         l.setSjType(sjType);
         l.setContent(content);
         l.setIp(request.getRemoteAddr());
-        l.setBrowser(HtmlTools.getOSVersion(request.getHeader("User-Agent")) + " " + HtmlTools.getBrowserVersion(request.getHeader("User-Agent")));
         l.setUrl(request.getRequestURI());
         l.setLogType(LogType.普通用户);
         l.setStatus(status);
@@ -124,10 +122,5 @@ public class LogServiceImpl extends SimpleCrudRestService<SysLog, Long> implemen
     @Override
     public void saveDefaultLog(String content, HttpServletRequest request) {
         saveLog(SjType.普通操作, content,LogStatus.成功, request);
-    }
-
-    @Override
-    public void saveMobileLog(SysUser u, String content, HttpServletRequest request) {
-        saveUserLog(u, SjType.移动端, content, LogStatus.成功, request);
     }
 }

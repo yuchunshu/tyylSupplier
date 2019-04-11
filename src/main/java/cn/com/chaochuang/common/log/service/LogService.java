@@ -29,6 +29,4 @@ public interface LogService extends CrudRestService<SysLog, Long> {
     /** 缺省的普通日志 */
     public void saveDefaultLog(String content, HttpServletRequest request);
 
-    /** 日志*/
-    void saveMobileLog(SysUser u, String content, HttpServletRequest request);
 }

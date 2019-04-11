@@ -1,8 +1,8 @@
 /*
  * FileName:    Log.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2014
+ * Company:     
+ * Copyright:    (c) 2014
  * History:     2014年12月8日 (LaoZhiYong) 1.0 Create
  */
 
@@ -38,8 +38,6 @@ public class SysLog extends LongIdEntity {
     private SysUser           operator;
     /** 操作IP */
     private String            ip;
-    /** 浏览器环境信息 */
-    private String            browser;
     /** 操作对象 */
     private String            url;
     /** 操作类型 */
@@ -167,14 +165,6 @@ public class SysLog extends LongIdEntity {
 
 	public void setStatus(LogStatus status) {
 		this.status = status;
-	}
-
-	public String getBrowser() {
-		return browser;
-	}
-
-	public void setBrowser(String browser) {
-		this.browser = browser;
 	}
 
 }
