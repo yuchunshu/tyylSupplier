@@ -30,7 +30,5 @@ public interface SysUserRepository extends SimpleDomainRepository<SysUser, Long>
     @Modifying()
     @Query("update SysUser u set u.dutyId = null where u.dutyId =:dutyId")
     public void deleteDutyId(@Param("dutyId")Long dutyId);
-    
-    @Query("select count(u.userName) from SysUser u where u.deptId != :deptId and u.valid = :valid")
-    public Integer findByDeptIdAndValid(@Param("deptId")Long deptId, @Param("valid")Integer valid);
+
 }

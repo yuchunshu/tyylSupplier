@@ -29,7 +29,6 @@ import cn.com.chaochuang.common.syspower.bean.PowerInfo;
 import cn.com.chaochuang.common.syspower.bean.PowerTreeBean;
 import cn.com.chaochuang.common.syspower.bean.PowerTreeGridBean;
 import cn.com.chaochuang.common.syspower.domain.SysPower;
-import cn.com.chaochuang.common.syspower.domain.SysPowerModule;
 import cn.com.chaochuang.common.syspower.domain.SysRole;
 import cn.com.chaochuang.common.syspower.reference.IsMenu;
 import cn.com.chaochuang.common.syspower.reference.PowerType;
@@ -51,9 +50,6 @@ public class SysPowerServiceImpl extends SimpleLongIdCrudRestService<SysPower> i
     @Autowired
     private SysRoleService        roleService;
     
-    @Autowired
-    private SysPowerModuleService powerModuleService;
-
     @PersistenceContext
     private EntityManager         em;
 
@@ -544,7 +540,6 @@ public class SysPowerServiceImpl extends SimpleLongIdCrudRestService<SysPower> i
 	public SysPower checkAndSaveSysPower(DetailPowerBean detailPower){
 		SysPower power = this.repository.findByUrl(detailPower.getUrl());
 		SysRole role = this.roleService.findOne(detailPower.getRoleId());
-		List<SysPowerModule> pmList = this.powerModuleService.getRepository().findAll();
 		Set<SysPower> powerSet = role.getPowers();
 		if(power == null){
 			power = new SysPower();
@@ -554,7 +549,6 @@ public class SysPowerServiceImpl extends SimpleLongIdCrudRestService<SysPower> i
 			power.setPowerTypeFlag(PowerType.自动增加);
 			power.setPowerName(AUTO_ADD_POWER_NAME_PREFIX + idStr);
 			power.setPowerCode(AUTO_ADD_POWER_CODE_PREFIX + idStr);
-			power.setModule(ModuleUtils.matchModuleName(pmList, power.getUrl()));
 			power.setOperate(ModuleUtils.matchOperate(power.getUrl()));
 			power = this.repository.save(power);
 		}

@@ -1,8 +1,8 @@
 /*
  * FileName:    EmIncepterRepository.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年1月25日 (HM) 1.0 Create
  */
 
@@ -35,12 +35,4 @@ public interface EmIncepterRepository extends SimpleDomainRepository<EmIncepter,
 
     @Query("select e from EmIncepter e where e.status in(0,3) and e.mail.id >:id")
     List<EmIncepter> selectEmIncepterById(@Param("id") String id);
-
-    /**
-     * 查询用户未处理的邮件数量
-     * @param userId
-     * @return
-     */
-    @Query("select count(*) from EmIncepter e where e.status = 0 and e.mail.status <> 3 and e.incepter.id = :userId")
-    Long countUnreadInboxNum(@Param("userId") Long userId);
 }

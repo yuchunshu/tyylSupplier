@@ -37,10 +37,6 @@ public class SysRole extends LongIdEntity {
     @JoinTable(name = "sys_user_role_rel", joinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "role_id") }, inverseJoinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "user_id") })
     private Set<SysUser>        users;
     
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "sys_role_module", joinColumns = { @JoinColumn(name = "roleId", referencedColumnName = "role_id") }, inverseJoinColumns = { @JoinColumn(name = "moduleId", referencedColumnName = "module_id") })
-    private Set<SysPowerModule> powerModule;
-    
     public Set<SysUser> getUsers() {
         return users;
     }
@@ -81,11 +77,4 @@ public class SysRole extends LongIdEntity {
         this.remark = remark;
     }
 
-	public Set<SysPowerModule> getPowerModule() {
-		return powerModule;
-	}
-
-	public void setPowerModule(Set<SysPowerModule> powerModule) {
-		this.powerModule = powerModule;
-	}
 }

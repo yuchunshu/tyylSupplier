@@ -47,8 +47,6 @@ public class SysPower extends LongIdEntity {
     private String            appurl;
     /** app图标 */
     private String            appicon;
-    /**app图标背景颜色*/
-    private String            appcolor;
 
     /** 菜单类型 */
     @Convert(converter = PowerTypeConverter.class)
@@ -190,13 +188,6 @@ public class SysPower extends LongIdEntity {
 		this.operate = operate;
 	}
 
-    public String getAppcolor() {
-        return appcolor;
-    }
-
-    public void setAppcolor(String appcolor) {
-        this.appcolor = appcolor;
-    }
 
     // public Set<SysRole> getRoles() {
     // return roles;

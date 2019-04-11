@@ -1,8 +1,8 @@
 /*
  * FileName:    ImMessageSqlBean.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年5月28日 (HM) 1.0 Create
  */
 

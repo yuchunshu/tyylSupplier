@@ -1,8 +1,8 @@
 /*
  * FileName:    EmDustbinServiceImpl.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年1月25日 (HM) 1.0 Create
  */
 
@@ -19,8 +19,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import cn.com.chaochuang.common.util.Tools;
-import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -303,10 +301,9 @@ public class EmDustbinServiceImpl extends SimpleUuidCrudRestService<EmDustbin> i
      */
     @Override
     public List<MailShowBean> seleceEmDustbin(Integer page, Integer rows) {
-        String uid = UserTool.getInstance().getCurrentUserId();
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append("select e.id,e.title,e.delDate,e.attachFlag ");
-        sqlBuilder.append(this.buildMyQuerySqlForEmDustbin(uid));
+        sqlBuilder.append(this.buildMyQuerySqlForEmDustbin());
         Query query = em.createQuery(sqlBuilder.toString());
         ArrayList<Object> list = (ArrayList<Object>) query.setMaxResults(rows).setFirstResult((page - 1) * rows)
                         .getResultList();
@@ -333,15 +330,9 @@ public class EmDustbinServiceImpl extends SimpleUuidCrudRestService<EmDustbin> i
 
     @Override
     public Long coutEmDustbin() {
-        String uid = UserTool.getInstance().getCurrentUserId();
-        return this.coutEmDustbin(uid);
-    }
-
-    @Override
-    public Long coutEmDustbin(String uid) {
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(" SELECT COUNT(DISTINCT e.id) ");
-        sqlBuilder.append(this.buildMyQuerySqlForEmDustbin(uid));
+        sqlBuilder.append(this.buildMyQuerySqlForEmDustbin());
         Query query = em.createQuery(sqlBuilder.toString());
         ArrayList<Object> list = (ArrayList<Object>) query.getResultList();
         if (list != null && list.size() == 1) {
@@ -351,12 +342,12 @@ public class EmDustbinServiceImpl extends SimpleUuidCrudRestService<EmDustbin> i
         }
     }
 
-    private String buildMyQuerySqlForEmDustbin(String uid) {
+    private String buildMyQuerySqlForEmDustbin() {
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(" FROM EmDustbin AS e  WHERE (e.incepter.id = '")
-                .append(uid).append("' AND e.sender.id IS NOT NULL )");
+                        .append(UserTool.getInstance().getCurrentUserId()).append("' AND e.sender.id IS NOT NULL )");
         sqlBuilder.append(" OR ( e.sender.id = '").append(UserTool.getInstance().getCurrentUserId())
-                .append("' AND e.incepter.id IS NULL )");
+                        .append("' AND e.incepter.id IS NULL )");
         sqlBuilder.append(" ORDER BY e.delDate DESC ");
         return sqlBuilder.toString();
     }
@@ -374,26 +365,4 @@ public class EmDustbinServiceImpl extends SimpleUuidCrudRestService<EmDustbin> i
         return map;
     }
 
-    @Override
-    public List<Map<String, Object>> seleceEmDustbinForMobile(String uid, Integer page, Integer rows) {
-        StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("select e.id,e.title,e.delDate,e.attachFlag,e.content,e.senderName ");
-        sqlBuilder.append(this.buildMyQuerySqlForEmDustbin(uid));
-        Query query = em.createQuery(sqlBuilder.toString());
-        ArrayList<Object> list = (ArrayList<Object>) query.setMaxResults(rows).setFirstResult((page - 1) * rows).getResultList();
-        List<Map<String, Object>> results = Lists.newArrayList();
-        String[] names = { "id", "title", "delDate", "attachFlag","content","senderName" };
-        if (list != null && list.size() > 0) {
-            for (Object o : list) {
-                Map<String, Object> map = toMap(names, (Object[]) o);
-                //时间转换
-                Object delDateObj = map.get("delDate");
-                if(delDateObj!=null && delDateObj instanceof Date){
-                    map.put("delDateShow", Tools.formatMobileDateTime((Date) delDateObj));
-                }
-                results.add(map);
-            }
-        }
-        return results;
-    }
 }

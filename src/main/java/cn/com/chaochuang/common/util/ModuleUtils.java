@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import cn.com.chaochuang.common.syspower.domain.SysPowerModule;
 import cn.com.chaochuang.common.syspower.domain.SysRoleModule;
 /**
  *
@@ -75,34 +74,6 @@ public class ModuleUtils {
 		return list;
 	}
 
-	/**
-	 * 根据moduleKey匹配url
-	 */
-	public static Long moduleKey(String url, Set<SysPowerModule> set){
-		if(StringUtils.isBlank(url.trim())){
-			return null;
-		}
-		for(SysPowerModule pm:set){
-			String moduleKey = "/" + pm.getModuleKey() + "/";
-			if(url.indexOf(moduleKey) >= 0){
-				return pm.getId();
-			}
-		}
-		return null;
-	}
-
-	public static Long moduleKey(String url, List<SysPowerModule> list){
-		if(StringUtils.isBlank(url)){
-			return null;
-		}
-		for(SysPowerModule pm:list){
-			String key = "/" + pm.getModuleKey() + "/";
-			if(StringUtils.isNotBlank(key) && url.indexOf(key) >= 0){
-				return pm.getId();
-			}
-		}
-		return null;
-	}
 
 	/**
 	 * 匹配url规则
@@ -122,19 +93,6 @@ public class ModuleUtils {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * 根据url匹配模块名
-	 */
-	public static String matchModuleName(List<SysPowerModule> list, String url){
-		for(SysPowerModule pm:list){
-			String moduleKey = "/" + pm.getModuleKey() + "/";
-			if(StringUtils.isNotBlank(moduleKey) && url.indexOf(moduleKey) >= 0){
-				return pm.getModuleName();
-			}
-		}
-		return null;
 	}
 
 	/**

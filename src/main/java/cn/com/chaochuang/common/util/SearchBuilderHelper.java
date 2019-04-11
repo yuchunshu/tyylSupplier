@@ -1,8 +1,8 @@
 /*
  * FileName:    SearchBuilderHelper.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2015
+ * Company:     
+ * Copyright:    (c) 2015
  * History:     2015年1月10日 (guig) 1.0 Create
  */
 

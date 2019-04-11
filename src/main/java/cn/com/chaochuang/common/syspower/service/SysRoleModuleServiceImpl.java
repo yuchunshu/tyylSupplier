@@ -25,7 +25,6 @@ import cn.com.chaochuang.common.data.service.SimpleUuidCrudRestService;
 import cn.com.chaochuang.common.reference.YesNo;
 import cn.com.chaochuang.common.syspower.bean.ModuleShowBean;
 import cn.com.chaochuang.common.syspower.domain.SysPower;
-import cn.com.chaochuang.common.syspower.domain.SysPowerModule;
 import cn.com.chaochuang.common.syspower.domain.SysRole;
 import cn.com.chaochuang.common.syspower.domain.SysRoleModule;
 import cn.com.chaochuang.common.syspower.repository.SysRoleModuleRepository;
@@ -111,7 +110,6 @@ public class SysRoleModuleServiceImpl extends SimpleUuidCrudRestService<SysRoleM
 			}
 		}
 		Set<SysPower> sysPowerSaveList = new HashSet<SysPower>();//要保存的权限
-		Set<SysPowerModule> powerModules = role.getPowerModule();//为了获取模块key
 		List<SysRoleModule> roleModules = this.repository.findByRoleId(roleId);
 
 		List<SysPower> powerList = this.sysPowerService.getRepository().findAll();
@@ -122,7 +120,7 @@ public class SysRoleModuleServiceImpl extends SimpleUuidCrudRestService<SysRoleM
 			String url = p.getUrl().toLowerCase();
 			Long moduleId = null;
 			//根据moduleKey匹配 && 根据url规则匹配
-			if((moduleId = ModuleUtils.moduleKey(url, powerModules)) != null && ModuleUtils.matchURL(url, roleModules, moduleId)){
+			if(ModuleUtils.matchURL(url, roleModules, moduleId)){
 				sysPowerSaveList.add(p);
 			}
 		}

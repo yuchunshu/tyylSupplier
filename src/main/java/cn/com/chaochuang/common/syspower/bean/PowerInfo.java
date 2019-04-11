@@ -1,8 +1,8 @@
 /*
  * FileName:    PowerInfo.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2016
+ * Company:     
+ * Copyright:    (c) 2016
  * History:     2016年4月6日 (LJX) 1.0 Create
  */
 
@@ -50,8 +50,6 @@ public class PowerInfo {
     private String    icon;
     /** app图标 */
     private String    appicon;
-    /**app图标背景颜色*/
-    private String    appcolor;
 
     /**
      * @return the id
@@ -227,11 +225,5 @@ public class PowerInfo {
 		this.appicon = appicon;
 	}
 
-    public String getAppcolor() {
-        return appcolor;
-    }
 
-    public void setAppcolor(String appcolor) {
-        this.appcolor = appcolor;
-    }
 }

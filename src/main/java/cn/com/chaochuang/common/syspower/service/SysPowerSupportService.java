@@ -1,8 +1,8 @@
 /*
  * FileName:    SysPowerSupportService.java
  * Description:
- * Company:     南宁超创信息工程有限公司
- * Copyright:   ChaoChuang (c) 2014
+ * Company:     
+ * Copyright:    (c) 2014
  * History:     2014年11月28日 (guig) 1.0 Create
  */
 
@@ -34,7 +34,6 @@ import cn.com.chaochuang.common.power.PowerUtil;
 import cn.com.chaochuang.common.power.url.PowerUrl;
 import cn.com.chaochuang.common.security.util.UserTool;
 import cn.com.chaochuang.common.syspower.domain.SysPower;
-import cn.com.chaochuang.common.syspower.domain.SysPowerModule;
 import cn.com.chaochuang.common.syspower.reference.PowerType;
 import cn.com.chaochuang.common.syspower.repository.SysPowerRepository;
 import cn.com.chaochuang.common.util.ModuleUtils;
@@ -69,9 +68,6 @@ public class SysPowerSupportService implements PowerSupport, ApplicationListener
     @Autowired
     private UserPowerService                    userPowerService;
 
-    @Autowired
-    private SysPowerModuleService               powerModuleService;
-
     /** 访问权限 */
     @Value(value = "${security.PowerUrlVoter.allPowerUrlGranted}")
     private boolean                             allPowerUrlGranted;
@@ -103,15 +99,9 @@ public class SysPowerSupportService implements PowerSupport, ApplicationListener
         power.setUrl(url);
 
         //根据规则匹配模块和属性
-        power.setModule(ModuleUtils.matchModuleName(this.getAllPowerModule(), url));
         power.setOperate(ModuleUtils.matchOperate(url));
 
         return power;
-    }
-
-    @Cacheable
-    private List<SysPowerModule> getAllPowerModule(){
-    	return this.powerModuleService.getRepository().findAll();
     }
 
     public void syncSystemUrlToSysPower() {
