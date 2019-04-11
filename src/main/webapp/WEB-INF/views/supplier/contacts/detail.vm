@@ -1,0 +1,80 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit">
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">姓名</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contacts.name})}
+                      </td>
+                      <td class="bg-grey">性别</td>
+                      <td class="bg-white">
+						$!{contacts.sex.value}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">所在部门</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contacts.dept})}
+                      </td>
+                      <td class="bg-grey">职务</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contacts.duty})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">QQ</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contacts.qq})}
+                      </td>
+                      <td class="bg-grey">电子邮箱</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{contacts.email})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">常用手机</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contacts.commonPhone})}
+                      </td>
+                      <td class="bg-grey">备用手机</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{contacts.sparePhone})}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{contacts.createTime})
+                      </td>
+                      <td class="bg-grey">单位名称</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!{esc.html($!{contacts.unit.unitName})}
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+
+    
+</script>
+#end

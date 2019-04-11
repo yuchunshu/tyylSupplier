@@ -1,0 +1,260 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input name="id" type="hidden" id="id" value="$!{unit.id}"/>
+                <input id="status" name="status" type="hidden" value="$!{unit.status}"/>
+                <table class="table-edit" title="单位信息编辑">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>单位名称</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="unitName" name="unitName" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{esc.html($!{unit.unitName})}"/>
+                      </td>
+					  <td class="bg-grey"><span><font color=red>*</font></span>供应商类型</td>
+                      <td class="bg-white">
+						#formradio("supType" "$!unit.supType" $dict.SupType "1")
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>企业性质</td>
+                      <td class="bg-white">
+						#formradio("unitNature" "$!unit.unitNature" $dict.UnitNature "1")
+                      </td>
+                      <td class="bg-grey"><span id="require_legalRepresentative"><font color=red>*</font></span>法人代表</td>
+                      <td class="bg-white">
+						<input style="width:99%;" id="legalRepresentative"  name="legalRepresentative" data-options="required:true"  class="easyui-textbox" value="$!{esc.html($!{unit.legalRepresentative})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>联系电话</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="contactPhone"  name="contactPhone" data-options="required:true"  class="easyui-textbox" value="$!{esc.html($!{unit.contactPhone})}" />
+                      </td>
+                      <td class="bg-grey">办公传真</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="fax"  name="fax"  class="easyui-textbox" value="$!{esc.html($!{unit.fax})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">所属行业</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="industry"  name="industry"  class="easyui-textbox" value="$!{esc.html($!{unit.industry})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>开户行</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="accountBank"  name="accountBank" data-options="required:true"  class="easyui-textbox" value="$!{esc.html($!{unit.accountBank})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>主要业务</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="mainBusiness"  name="mainBusiness" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{unit.mainBusiness})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>开户行账号</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="accountBankAccount"  name="accountBankAccount" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{unit.accountBankAccount})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">品牌名称</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="brand"  name="brand"  class="easyui-textbox" value="$!{esc.html($!{unit.brand})}" />
+                      </td>
+					  <td id="title_unitNature" class="bg-grey" ><span><font color=red>*</font></span>#if($!{unit.unitNature} == '' || $!{unit.unitNature} != '2') 单位税号  #else 身份证 #end</td>
+                      <td id="content_unitTaxNumber"  class="bg-white" >
+                        <input style="width:99%;" id="unitTaxNumber"  name="unitTaxNumber" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{unit.unitTaxNumber})}" />
+                      </td>
+					  ##<td id="title_idCard" style="display:none"  class="bg-grey" ><span><font color=red>*</font></span>身份证</td>
+                      <td id="content_idCard" style="display:none" class="bg-white" >
+                        <input style="width:300px;" id="idCard"  name="idCard" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{unit.idCard})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span id="require_registeredCapital"><font color=red>*</font></span>注册资金</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="registeredCapital"  name="registeredCapital" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{unit.registeredCapital})}" />
+                      </td>
+                      <td class="bg-grey">单位资质</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="qualification"  name="qualification"  class="easyui-textbox" value="$!{esc.html($!{unit.qualification})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>推荐级别</td>
+                      <td class="bg-white">
+						#formradio("recommendLevel" "$!unit.recommendLevel" $dict.RecommendLevel "1")
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>单位地址</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="unitAddress"  name="unitAddress" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{unit.unitAddress})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">网址</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="url"  name="url"  class="easyui-textbox" value="$!{esc.html($!{unit.url})}" />
+                      </td>
+                      <td class="bg-grey"><span id="require_unitEmail"><font color=red>*</font></span>公司邮箱</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="unitEmail"  name="unitEmail" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{unit.unitEmail})}" />
+                      </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-grey">说明</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="remark" name="remark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{unit.remark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						<input id = "createTime" name="createTime" class="easyui-datebox" data-options="editable:false" #if($!{unit.createTime}) value="$!{unit.createTime}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>隶属分组</td>
+                      <td class="bg-white"  class="bg-white" >
+						
+						
+						<input id="groupId" name="groupId" type="hidden" #if('' == "$!{unit.group.id}") value="$!{groupId}" #else value="$!{unit.group.id}" #end />
+                        <input id="groupName" name="groupName" data-options="required:true" style="width:300px;" class="easyui-textbox" readonly #if('' == "$!{unit.group.id}") value="$!{esc.html($!{supGroup.groupName})}" #else value="$!{esc.html($!{unit.group.groupName})}" #end />
+                        <a id="selectDepDialog" href="javascript:;" iconcls="icon-search" plain="true"
+                            callback=fnSelectGroupCallback class="easyui-linkbutton" select-dialog="$link.getContextURL()/supplier/group/groupTree"></a>
+						#*
+						#if ($unit)
+							<input name="groupId" type="hidden" id="groupId" value="$!{unit.groupId}"/>
+    						$!{unit.group.groupName}
+                        #else
+                            <input name="groupId" type="hidden" id="groupId" value="$!{groupId}"/>
+    						$!{supGroup.groupName}
+						#end
+						*#
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="save()" class="new-but">保存</a></li>
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+	
+		#if($!{unit.unitNature} == '' || $!{unit.unitNature} != '2')
+			unitNatureNotEqualPerson();
+		#else
+			unitNatureEqualPerson();
+		#end
+
+        // 绑定企业性质的选择
+        $(':radio[name="unitNature"]').on('change', function (e) {
+            var chkVal = $(':radio[name="unitNature"]:checked').val();
+            if (chkVal == "2") {// 个人，法人代表、注册资金、公司邮件不必填
+                unitNatureEqualPerson();
+            } else {//法人代表、注册资金、公司邮件必填
+				unitNatureNotEqualPerson();
+            }
+        });
+    })
+
+	//企业性质 选择 个人 
+	function unitNatureEqualPerson(){
+		$("#require_legalRepresentative").hide();
+        $("#require_registeredCapital").hide();
+        $("#require_unitEmail").hide();
+		
+        $('#legalRepresentative').textbox('disableValidation');
+        $('#registeredCapital').textbox('disableValidation');
+        $('#unitEmail').textbox('disableValidation');
+		
+		$("#title_unitNature").html('<span><font color=red>*</font></span>身份证');
+		$('#idCard').textbox('enableValidation');
+		$('#unitTaxNumber').textbox('disableValidation');
+		$("#content_unitTaxNumber").hide();
+		$("#content_idCard").show();
+	}
+	
+	//企业性质 不选择 个人 
+	function unitNatureNotEqualPerson(){
+		$("#require_legalRepresentative").show();
+        $("#require_registeredCapital").show();
+        $("#require_unitEmail").show();
+		
+		$('#legalRepresentative').textbox('enableValidation');
+        $('#registeredCapital').textbox('enableValidation');
+        $('#unitEmail').textbox('enableValidation');
+		
+		$("#title_unitNature").html('<span><font color=red>*</font></span>单位税号');
+		$('#idCard').textbox('disableValidation');
+		$('#unitTaxNumber').textbox('enableValidation');
+		$("#content_unitTaxNumber").show();
+		$("#content_idCard").hide();
+	}
+	
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+        top.CC.closeTab('单位信息编辑');
+    }
+
+    function save(){
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/supplier/unit/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                    top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+                    top.CC.closeTab('单位信息编辑');
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+	//选择对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+            var dfn = top.window.openSelectDialogFrameDialog;
+            if (typeof dfn === "function") {
+                dfn(_url, _callback_fn);
+            }
+            return false;
+        })
+    });
+	
+	// 分组回调方法
+    function fnSelectGroupCallback(obj){
+        $("#groupName").textbox('setValue',obj.text);
+        $("#groupId").val(obj.id);
+    }
+
+</script>
+#end

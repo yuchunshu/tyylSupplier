@@ -1,0 +1,93 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" data-options="fit:true,border:false" >
+		
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <div class="easyui-layout" fit="true">
+                <div id="tb" class="top-menu datagrid-toolbar toolbar-borderbottom">
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add"
+                            plain="true">添加</a>
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit"
+                            plain="true">修改</a>
+                    <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+                            plain="true">删除</a>
+                    <i></i>
+                    <a  onclick="$('#searchDialog').css('display','block');$('#searchDialog').window('center');$('#searchDialog').window('open');"
+                         class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+                </div>
+
+                <div class="cc-tableWrap" data-options="region:'center',border:false">
+                    <table id="dg" data-options="nowrap:false" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th field="ck" data-options="checkbox:true">序号</th>
+                            <th style="width:10%" data-options="field:'name',formatter:detailUrl">姓名</th>
+                            <th style="width:5%" data-options="field:'sex'">性别</th>
+                            <th style="width:10%" data-options="field:'dept'">所在部门</th>
+                            <th style="width:10%" data-options="field:'duty'">职务</th>
+                            <th style="width:10%" data-options="field:'commonPhone'">常用手机</th>
+                            <th style="width:10%" data-options="field:'qq'">QQ</th>
+                            <th style="width:15%" data-options="field:'email'">电子邮箱</th>
+							<th style="width:10%" data-options="field:'createTimeShow'">登记日期</th>
+                            <th style="width:15%" data-options="field:'unitName'">单位名称</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div  id="searchDialog" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts'"
+                     style="width:500px;height:260px;padding:20px 10px; background-color:#f4f4f4;display:none">
+                    <form id="queryForm">
+                        <input id="unitId" name="unitId" type="hidden" />
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="text-align: right">姓名：</td>
+                                <td><input id="fileName" style="width:348px;" name="$qc.like('name')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">登记日期：</td>
+                                <td>
+                                    <input name="$qc.greaterThanOrEqualTo('createTime')" class="easyui-datebox" value="$!{firstDay}" style="width:158px;" data-options="editable:false">
+                                    至
+                                    <input name="$qc.lessThanOrEqualTo('createTime')" class="easyui-datebox" value="$!{lastDay}" style="width:158px;" data-options="editable:false">
+                                </td>
+                            </tr>
+                        </table>
+                     </form>
+                    <div id="bnts" style="top:0px; height:25px; width:auto;">
+                        <a class="new-but" onclick="formSearch()">确定</a>
+                        <a class="new-but" onclick="reset()">重置</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+#parse("/supplier/contacts/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () {
+        
+    });
+
+    var _baseUrl = '$link.getContextURL()/supplier/contacts';
+	
+    var _listJsonUrl = '/list.json';
+
+    function formSearch() {
+        $('#searchDialog').window('close');
+        $('#dg').datagrid('reload');
+        $('#dg').datagrid('uncheckAll');
+    }
+
+    function reset(){
+        var _qf = $("#queryForm");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+	
+</script>
+#end

@@ -1,0 +1,284 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" data-options="fit:true,border:false" >
+        <div class="cc-tableWrap" data-options="region:'west',split:false,collapsible:false,border:false" style="width:250px;">
+            <div class="easyui-layout" fit="true">
+                <div  region="center" class="submodule-title-h mynoborder panel-body" style="padding:0 5px 0 0" >
+                    <div class="easyui-layout" fit="true" style=" border: 1px solid #e0e0e0;">
+                        <div class="cc-tableWrap" data-options="region:'north',border:false" style="padding:6px 10px 6px 10px; border-bottom:1px solid #e0e0e0;   background-color: #ededed;">
+                            <div>
+                                
+                                <a href="javascript:;" id="add" class="easyui-linkbutton" iconCls="icon-add" onclick="append()"
+                                        plain="true">新增</a>
+                                <a href="javascript:;" id="remove" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove" onclick="delNode()"
+                                        plain="true">删除</a>
+                            </div>
+                        </div>
+                        <div class="cc-tableWrap" data-options="region:'center',border:false">
+                           <ul style="height: 99%;" id="menutree"
+                            data-options="url:'$link.getContextURL()/supplier/group/lazyGroupTree.json',method:'post',fit:true,lines:true"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		
+		<div class="cc-tableWrap" data-options="region:'center',border:false">
+    		<div id="cc" class="easyui-layout" data-options="fit:true">
+                <div data-options="region:'center'" >
+					
+					<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+                        <div class="easyui-layout" data-options="fit:true,border:false" >
+                            <div class="cc-tableWrap" data-options="region:'north',split:false,collapsible:false,border:false" style="width:250px;height:50%;">
+                                <div class="easyui-layout" data-options="fit:true">
+                                    <div data-options="region:'center'" >
+                                        <div class="easyui-tabs tabs-trapezoid" fit="true" border="false">
+                                			<div title="单位信息">
+                                    			 #parse("supplier/unit/list.vm")
+                                        	</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    		
+                    		<div class="cc-tableWrap" data-options="region:'center',border:false">
+                        		<div id="cc" class="easyui-layout" data-options="fit:true">
+                                    <div data-options="region:'center'" >
+                                        <div class="easyui-tabs" id="tab_all"  tabs-trapezoid" style="" fit="true" border="false">
+                                            ##<div title="业务联系人" data-options="href:'$link.getContextURL()/supplier/contacts/list'">
+                                            <div title="业务联系人">
+                                				#parse("supplier/contacts/list.vm")
+                                            </div>
+                                            <div title="材料设备信息">
+                                				#parse("supplier/device/list.vm")
+                                            </div>
+											<div title="考核情况">
+                                				#parse("supplier/assess/list.vm")
+                                            </div>
+											<div title="合同订单">
+                                				#parse("supplier/contract/list.vm")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                    		</div>
+                    		
+                        </div>
+                    
+                    </div>
+					
+					
+					
+					
+                </div>
+            	
+            </div>
+		</div>
+		
+    </div>
+
+    <div id="mm" class="easyui-menu" style="width:150px;display:none;">
+        <div onclick="append()" data-options="iconCls:'icon-add'">新增</div>
+        <div onclick="$('#menutree').tree('beginEdit',$('#menutree').tree('getSelected').target)" data-options="iconCls:'icon-edit'">修改</div>
+        <div onclick="delNode()" data-options="iconCls:'icon-remove'">删除</div>
+        <div onclick="$('#menutree').tree('expandAll',$('#menutree').tree('getSelected').target)" data-options="iconCls:'icon-plus-sign'">展开所有下级节点</div>
+    </div>
+</div>
+
+#parse("/supplier/unit/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () { // 给查询dialog中的 标题input 绑定回车事件
+        $('#fileName').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSearch_unit();
+            }
+        });
+        $('#keyword').textbox('textbox').keydown(function (e) {
+            if (e.keyCode == 13) {
+               formSearch_unit();
+            }
+        });
+
+        ## easyui-tree 初始化
+        var _oneFlag = true;
+        $('#menutree').tree({
+            onClick:function(node){
+                reset();
+                $(this).tree("expand", node.target);
+                $("#groupCode").val(node.groupCode);
+                if (node) {
+                    $('#button').css('display','inline');
+                } else {
+                    $('#button').css('display','none');
+                }
+                formSearch_unit();
+            },
+            onLoadSuccess:function(node, data){
+                if (data) {
+                    if (_oneFlag) {  // 只在第一个根节点生效
+                        var rootNode = $(this).tree('find', data[0].id);
+                        _oneFlag = false;
+                        $(this).tree('expandAll', rootNode.target);
+						
+						$("#menutree li:eq(0)").find("div").addClass("tree-node-selected");   //设置第一个节点高亮  
+                       	var n = $("#menutree").tree("getSelected");  
+                       	if(n!=null){  
+                            $("#menutree").tree("select",n.target);    //相当于默认点击了一下第一个节点，执行onSelect方法  
+                       	} 
+                    }
+                }
+				
+            },
+            onDblClick:function(node){ // 双击改名
+                if (node) {
+                    $(this).tree("beginEdit", node.target);
+                }
+            },
+            onAfterEdit:updateNode,
+            onContextMenu: function(e, node){
+                $("#mm").css("display", "block");
+                e.preventDefault();
+                // 查找节点
+                $(this).tree('select', node.target);
+                // 显示快捷菜单
+                $('#mm').menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                });
+            }
+
+        });
+    })
+
+    var _baseUrl_unit = '$link.getContextURL()/supplier/unit';
+    var _listJsonUrl = '/list.json';
+
+    function formSearch_unit() {
+        $('#searchDialog_unit').window('close');
+        $('#dg_unit').datagrid('reload');
+        $('#dg_unit').datagrid('uncheckAll');
+    }
+
+    function uploadFiles() {
+        var params = "";
+        var node = $("#menutree").tree("getSelected");
+        if (node) {
+            params = "?folderId=" + node.id;
+        }
+        top.CC.addTab({title:"文件上传", url:"$link.getContextURL()/supplier/unit/dealUploadBatch" + params});
+    }
+
+
+    ## 以下是对树进行操作的方法
+    function append() {
+        var selectedNode = $("#menutree").tree("getSelected");
+        var param = {};
+        var parentId = "";
+        if (selectedNode) {
+            parentId = selectedNode.id
+        }
+
+        top.CC.loading("正在创建新的分组!");
+        $.ajax({
+               url         : "$link.getContextURL()/supplier/group/createNode.json",
+               async       : false, // 同步
+               cache       : false,
+               type        : 'post',
+               dataType    : 'json',
+               data        : {
+                               'parentId': parentId,
+                             },
+               success     : function(bean){
+                                if (bean) {
+                                    if (selectedNode) {
+                                        param = {parent:selectedNode.target,data:bean};
+                                    } else {
+                                        param = {data:bean};
+                                    }
+                                }
+                                $("#menutree").tree("append",param);
+                                var node = $("#menutree").tree("find",bean.id);
+                                $("#menutree").tree("select",node.target);
+                                $("#menutree").tree("beginEdit",node.target);
+                                top.CC.loaded();
+                             }
+        });
+    }
+
+    function delNode() {
+
+        $.messager.confirm('警告','确定删除该分组吗?',function(r){
+            if (r){
+                var selectedNode = $("#menutree").tree("getSelected");
+                if (selectedNode) {
+                    var childrenNode = $("#menutree").tree("getChildren", selectedNode.target);
+                    if (childrenNode && childrenNode.length>0) {
+                        top.CC.messager({
+                            title:'提示',
+                            msg:'该分组不为空，不能删除！'
+                        });
+                        return;
+                    }
+                    top.CC.loading("正在删除分组!");
+                    $.ajax({
+                           url         : "$link.getContextURL()/supplier/group/delNode.json",
+                           async       : false, // 同步
+                           cache       : false,
+                           type        : 'post',
+                           dataType    : 'json',
+                           data        : {
+                                           'id': selectedNode.id,
+                                         },
+                           success     : function(result){
+                                            top.CC.loaded();
+                                            if (result.error) {
+                                                top.CC.messager({
+                                                    title:'提示',
+                                                    msg:result.error
+                                                });
+                                                return;
+                                            } else {
+                                               $("#menutree").tree("remove", selectedNode.target);
+                                               top.CC.messager({
+                                                    title:'提示',
+                                                    msg:'分组删除成功！'
+                                               });
+                                               top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+                                            }
+                                         }
+                    });
+                }
+            }
+        });
+    }
+
+    function updateNode() {
+        var selectedNode = $("#menutree").tree("getSelected");
+        if (selectedNode) {
+            top.CC.loading("正在修改分组!");
+            $.ajax({
+                   url         : "$link.getContextURL()/supplier/group/updateNode.json",
+                   async       : false, // 同步
+                   cache       : false,
+                   type        : 'post',
+                   dataType    : 'json',
+                   data        : {
+                                   'id': selectedNode.id,
+                                   'folderName': selectedNode.text
+                                 },
+                   success     : function(result){
+                                    top.CC.loaded();
+                                    if (result.error) {
+                                        top.CC.messager({
+                                            title:'提示',
+                                            msg:result.error
+                                        });
+                                        return;
+                                    }
+                                 }
+            });
+        }
+    }
+</script>
+#end

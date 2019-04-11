@@ -1,0 +1,88 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit">
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">考核项目</td>
+                      <td class="bg-white" colspan="3">
+						$!{esc.html($!{assess.assessEvent})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{assess.assessDate})
+                      </td>
+                      <td class="bg-grey">项目发生金额</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!{esc.html($!{assess.eventAmount})}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">外在感受</td>
+                      <td class="bg-white">
+						$!{assess.feel.value}
+                      </td>
+                      <td class="bg-grey">技术实力</td>
+                      <td class="bg-white">
+						$!{assess.technology.value}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">做工质量</td>
+                      <td class="bg-white">
+						$!{assess.quality.value}
+                      </td>
+                      <td class="bg-grey">服务情况</td>
+                      <td class="bg-white">
+						$!{assess.service.value}
+                      </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-grey">评价意见</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="remark" readonly name="remark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{assess.remark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{assess.createTime})
+                      </td>
+                      <td class="bg-grey">所属单位</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!{esc.html($!{assess.unit.unitName})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">图片</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{assess.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$assess.id")},"#defaultDownloadUrl('assessattach')", false, "#defaultUploadUrl('assessattach')", false)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+
+    
+</script>
+#end

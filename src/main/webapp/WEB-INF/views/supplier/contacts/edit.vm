@@ -1,0 +1,120 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input name="id" type="hidden" id="id" value="$!{contacts.id}"/>
+                <input id="status" name="status" type="hidden" value="$!{contacts.status}"/>
+                <table class="table-edit" title="联系人编辑">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>姓名</td>
+                      <td class="bg-white">
+                        <input style="width:100%;" id="name" name="name" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{esc.html($!{contacts.name})}"/>
+                      </td>
+					  <td class="bg-grey"><span><font color=red>*</font></span>性别</td>
+                      <td class="bg-white">
+						#formradio("sex" "$!contacts.sex" $dict.Sex "1")
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>所在部门</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="dept"  name="dept" data-options="required:true"  class="easyui-textbox" value="$!{esc.html($!{contacts.dept})}" />
+                      </td>
+                      <td class="bg-grey">职务</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="duty"  name="duty"  class="easyui-textbox" value="$!{esc.html($!{contacts.duty})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">QQ</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="qq"  name="qq"  class="easyui-textbox" value="$!{esc.html($!{contacts.qq})}" />
+                      </td>
+                      <td class="bg-grey">电子邮箱</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="email"  name="email"  class="easyui-textbox" value="$!{esc.html($!{contacts.email})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>常用手机</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="commonPhone"  name="commonPhone" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contacts.commonPhone})}" />
+                      </td>
+                      <td class="bg-grey">备用手机</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="sparePhone"  name="sparePhone" class="easyui-textbox" value="$!{esc.html($!{contacts.sparePhone})}" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						<input id = "createTime" name="createTime" class="easyui-datebox" data-options="editable:false" #if($!{contacts.createTime}) value="$!{contacts.createTime}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>所属单位</td>
+                      <td class="bg-white"  class="bg-white" >
+						<input id="unitId" name="unitId" type="hidden" #if('' == "$!{contacts.unit.id}") value="$!{unitId}" #else value="$!{contacts.unit.id}" #end />
+                        <input id="unitName" name="unitName" data-options="required:true" style="width:300px;" class="easyui-textbox" readonly #if('' == "$!{contacts.unit.id}") value="$!{esc.html($!{supUnit.unitName})}" #else value="$!{esc.html($!{contacts.unit.unitName})}" #end />
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="save()" class="new-but">保存</a></li>
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+	
+		
+    })
+	
+	
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+        top.CC.closeTab('联系人编辑');
+    }
+
+    function save(){
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/supplier/contacts/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                    top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+                    top.CC.closeTab('联系人编辑');
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+
+</script>
+#end

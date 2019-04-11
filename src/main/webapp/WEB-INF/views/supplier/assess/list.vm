@@ -1,0 +1,93 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" data-options="fit:true,border:false" >
+		
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <div class="easyui-layout" fit="true">
+                <div id="tb_assess" class="top-menu datagrid-toolbar toolbar-borderbottom">
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add"
+                            plain="true">添加</a>
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit"
+                            plain="true">修改</a>
+                    <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+                            plain="true">删除</a>
+                    <i></i>
+                    <a  onclick="$('#searchDialog_assess').css('display','block');$('#searchDialog_assess').window('center');$('#searchDialog_assess').window('open');"
+                         class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+                </div>
+
+                <div class="cc-tableWrap" data-options="region:'center',border:false">
+                    <table id="dg_assess" data-options="nowrap:false" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th field="ck" data-options="checkbox:true">序号</th>
+                            <th style="width:10%" data-options="field:'assessDateShow'">考核时间</th>
+                            <th style="width:10%" data-options="field:'assessEvent',formatter:detailUrl_assess">考核项目</th>
+                            <th style="width:10%" data-options="field:'eventAmount'">项目发生金额</th>
+                            <th style="width:7%" data-options="field:'feel'">外在感受</th>
+                            <th style="width:7%" data-options="field:'quality'">做工质量</th>
+                            <th style="width:7%" data-options="field:'technology'">技术实力</th>
+                            <th style="width:7%" data-options="field:'service'">服务情况</th>
+							<th style="width:15%" data-options="field:'remark'">评论意见</th>
+                            <th style="width:15%" data-options="field:'unitName'">单位名称</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div  id="searchDialog_assess" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts_assess'"
+                     style="width:500px;height:260px;padding:20px 10px; background-color:#f4f4f4;display:none">
+                    <form id="queryForm_assess">
+						<input id="unitId_assess" name="unitId" type="hidden" />
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="text-align: right">考核项目：</td>
+                                <td><input id="fileName" style="width:348px;" name="$qc.like('assessEvent')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">考核时间：</td>
+                                <td>
+                                    <input name="$qc.greaterThanOrEqualTo('assessDate')" class="easyui-datebox" value="$!{firstDay}" style="width:158px;" data-options="editable:false">
+                                    至
+                                    <input name="$qc.lessThanOrEqualTo('assessDate')" class="easyui-datebox" value="$!{lastDay}" style="width:158px;" data-options="editable:false">
+                                </td>
+                            </tr>
+                        </table>
+                     </form>
+                    <div id="bnts_assess" style="top:0px; height:25px; width:auto;">
+                        <a class="new-but" onclick="formSearch_assess()">确定</a>
+                        <a class="new-but" onclick="reset_assess()">重置</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+#parse("/supplier/assess/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () {
+        
+    });
+
+    var _baseUrl_assess = '$link.getContextURL()/supplier/assess';
+	
+    var _listJsonUrl = '/list.json';
+
+    function formSearch_assess() {
+        $('#searchDialog_assess').window('close');
+        $('#dg_assess').datagrid('reload');
+        $('#dg_assess').datagrid('uncheckAll');
+    }
+
+    function reset_assess(){
+        var _qf = $("#queryForm_assess");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+	
+</script>
+#end

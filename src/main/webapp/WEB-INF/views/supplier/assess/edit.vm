@@ -1,0 +1,128 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input name="id" type="hidden" id="id" value="$!{assess.id}"/>
+                <input id="status" name="status" type="hidden" value="$!{assess.status}"/>
+                <table class="table-edit" title="考核情况编辑">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>考核项目</td>
+                      <td class="bg-white" colspan="3">
+                        <input style="width:100%;" id="assessEvent" name="assessEvent" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{esc.html($!{assess.assessEvent})}"/>
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>考核时间</td>
+                      <td class="bg-white">
+						<input id="assessDate" name="assessDate" class="easyui-datebox" data-options="editable:false" value="$!{assess.assessDate}"  />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>项目发生金额</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="eventAmount"  name="eventAmount" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{assess.eventAmount})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>外在感受</td>
+                      <td class="bg-white">
+						#formradio("feel" "$!assess.feel" $dict.Evaluation "1")
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>技术实力</td>
+                      <td class="bg-white" >
+						#formradio("technology" "$!assess.technology" $dict.Evaluation "1")
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>做工质量</td>
+                      <td class="bg-white">
+						#formradio("quality" "$!assess.quality" $dict.Evaluation "1")
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>服务情况</td>
+                      <td class="bg-white" >
+						#formradio("service" "$!assess.service" $dict.Evaluation "1")
+                      </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey">评价意见</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="remark" name="remark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{assess.remark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						<input id = "createTime" name="createTime" class="easyui-datebox" data-options="editable:false" #if($!{assess.createTime}) value="$!{assess.createTime}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>所属单位</td>
+                      <td class="bg-white"  class="bg-white" >
+						<input id="unitId" name="unitId" type="hidden" #if('' == "$!{assess.unit.id}") value="$!{unitId}" #else value="$!{assess.unit.id}" #end />
+                        <input id="unitName" name="unitName" data-options="required:true" style="width:300px;" class="easyui-textbox" readonly #if('' == "$!{assess.unit.id}") value="$!{esc.html($!{supUnit.unitName})}" #else value="$!{esc.html($!{assess.unit.unitName})}" #end />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">图片</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{assess.id}">
+                        #formimgfilemulty("attach", "", "", "", $!{attachMap.get("$assess.id")},"#defaultDownloadUrl('assessattach')", true, "#defaultUploadUrl('assessattach')",true)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="save()" class="new-but">保存</a></li>
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+	
+		
+    })
+	
+	
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+        top.CC.closeTab('考核情况编辑');
+    }
+
+    function save(){
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/supplier/assess/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                    top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+                    top.CC.closeTab('考核情况编辑');
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+
+</script>
+#end

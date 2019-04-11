@@ -1,0 +1,237 @@
+#@script()
+<script>
+    //全局变量覆盖：_baseUrl_unit，_delJsonUrl,_newJsonUrl,_editJsonUrl,_listJsonUrl
+
+    //对页面的条件查询/查询的function()方法
+    $(document).ready(function(){
+        var _datagrid_unit = $("#dg_unit");
+        var _querForm = $("#queryForm_unit");
+        var _toolbar = $("#tb_unit");
+
+        //查询相关方法
+        var _btnSearch = $("[iconCls='icon-search']",_querForm);
+        var _btnClear = $("[iconCls='icon-undo']",_querForm);
+        if(_btnSearch){
+            _btnSearch.on('click',formSearch_unit);
+        }
+        if(_btnClear){
+            _btnClear.on('click',reset_unit);
+        }
+        function addPageCondition(param){
+            $.extend(param,getConditions());
+        }
+        function getConditions(){
+            var f = _querForm.serializeArray();
+            var searchConditions = {};
+            for(var i = 0;i< f.length;i++){
+                searchConditions[f[i].name] = f[i].value;
+            }
+            return searchConditions;
+        }
+        function formSearch_unit() {
+            _datagrid_unit.datagrid('reload');
+        }
+        function reset_unit(){
+            var _qf = $("#queryForm_unit");
+            _qf.form("clear");
+            $(".easyui-combobox",_qf).each(function(){
+                $(this).combobox("select"," ");
+            });
+        }
+
+        //工具条操作
+        var _btnAdd = $("[iconCls='icon-add']",_toolbar);
+        var _btnDelete = $("[iconCls='icon-remove']",_toolbar);
+        var _btnEdit = $("[iconCls='icon-edit']",_toolbar);
+        if(_btnAdd){
+            _btnAdd.on("click",add);
+        }
+        if(_btnDelete){
+            _btnDelete.on("click",del);
+        }
+        if(_btnEdit){
+            _btnEdit.on("click",edit);
+        }
+
+        function edit(){
+            var rows = $("#dg_unit").datagrid("getChecked");
+            if(rows){
+                if (rows.length < 1) {
+                    top.CC.messager({
+                        title: '错误',
+                        msg: '请选择至少一条数据进行修改!'
+                    });
+                } else if (rows.length > 1) {
+                    top.CC.messager({
+                        title: '错误',
+                        msg: '只能对一条数据进行修改!'
+                    });
+                } else {
+                    var noticeId = "";
+                    for(var i=0;i<rows.length;i++){
+                        if(i==rows.length-1){
+                            noticeId += rows[i].id;
+                        }
+                    }
+                    var url = _baseUrl_unit + (_editJsonUrl || '/edit?id=' + noticeId);
+                    top.CC.addTab({title:'单位信息编辑',url:url});
+                }
+
+            } else {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '服务器连接不上!'
+                });
+            }
+
+        }
+        function del(){
+            var rows = $("#dg_unit").datagrid("getChecked");
+            if(rows && rows.length > 0){
+                $.messager.confirm('警告','确定删除选择的单位吗?',function(r){
+                    if (r){
+                        var ids = "";
+                        for(var i=0;i<rows.length;i++){
+                            if(i==rows.length-1){
+                                ids += rows[i].id;
+                            }else{
+                                ids += rows[i].id + ",";
+                            }
+                        }
+                        top.CC.loading("删除中，请稍后...");
+                        $.post(_baseUrl_unit + (_delJsonUrl || '/delete.json'),{ids:ids},function(result){
+                            top.CC.loaded();
+                            if (result.success){
+                                $('#dg_unit').datagrid('reload'); // reload the user data
+                                $('#dg_unit').datagrid('uncheckAll');
+                                top.CC.messager({ // show error message
+                                    title: '成功',
+                                    msg: '删除成功!'
+                                });
+                            } else {
+                                top.CC.messager({ // show error message
+                                    title: '错误',
+                                    msg: result.error
+                                });
+                            }
+                        },'json');
+                    }
+                });
+            } else {
+                top.CC.messager({
+                    title: '错误',
+                    msg: '请选择至少一条数据进行删除!'
+                });
+            }
+
+        }
+
+        function add(){
+            var params = "";
+            var node = $("#menutree").tree("getSelected");
+            if (node) {
+                params = "?groupId=" + node.id;
+            }
+            var url = _baseUrl_unit + (_newJsonUrl || "/new") + params;
+            top.CC.addTab({title:"单位信息编辑",url:url});
+        }
+
+        //初始化datagrid
+        _datagrid_unit.datagrid({
+            loadFilter: datagridHtmlEncode,
+            fitColumns:true,//列宽自适应
+            fit:true,//自适应
+            nowrap:false, //不可换行
+            rownumbers:true,//行号
+            singleSelect:true,//单选
+            idField:'id',
+            pagination:true,//显示分页工具条
+            toolbar:'#tb_unit',//工具条
+            pageSize:20,//每页记录数
+            pageList:[20,30],//可选每页记录数
+            url:_baseUrl_unit + (_listJsonUrl || '/list.json'),//获取数据的url
+            onBeforeLoad:addPageCondition//提交查询时追加翻页条件
+        });
+    });
+    var _baseUrl_unit, _delJsonUrl, _newJsonUrl, _editJsonUrl, _listJsonUrl, _detailJsonUrl;
+
+    //行内操作的方法，编辑、详情
+    var _datagrid_unit = $("#dg_unit");
+    var _toolbar = $("#tb_unit");
+    function operaterFormatter(value,row,index){
+        return $(".cc-operateColum",_datagrid_unit.parents(".cc-tableWrap")).html();
+    }
+    function getRowIdByDom(dom){
+        var tr =$(dom).parent().parent().parent();
+        return tr.attr("datagrid-row-index");
+    }
+    function detailUnitRow(index){
+        $('#dg_unit').datagrid('clearSelections');
+        _datagrid_unit.datagrid("selectRow",index);
+        var row = _datagrid_unit.datagrid("getSelected");
+        var url;
+        url = "$link.getContextURL()/supplier/unit/detail?id="+row.id;
+        top.CC.addTab({title:'单位信息详情',url:url});
+
+    }
+    function detailUnitUrl(value,row) {
+           return "<a href='javascript:;' class='font-titlecolor'  onclick='detailUnitRow(getRowIdByDom(this))'>"+value+"</a>";
+    }
+
+	
+	//迁移对话框
+    $("a[select-dialog]").each(function() {
+        $(this).click(function(){
+            var $this = $(this);
+            var _callbackname = $this.attr("callback");
+            var _url = $this.attr("select-dialog");
+            var _callback_fn = window[_callbackname];
+
+            var checkedRow = $("#dg_unit").datagrid("getChecked");
+
+            if (checkedRow && checkedRow.length > 0) {
+                var dfn = top.window.openSelectDialogFrameDialog;
+                if (typeof dfn === "function") {
+                    dfn(_url, _callback_fn);
+                }
+            } else {
+                top.CC.messager({
+                    title:'提示',
+                    msg:'请选择要迁移的数据！'
+                });
+            }
+            return false;
+        })
+    });
+	
+	// 迁移回调方法
+    function fnSelectGroupCallback(obj){
+        var checkedRow = $("#dg_unit").datagrid("getChecked");
+        var ids = "";
+        for(var i = 0; i < checkedRow.length; i++) {
+            ids += checkedRow[i].id;
+            if (i < (checkedRow.length - 1)) {
+                ids += ",";
+            }
+        }
+        top.CC.loading("正在迁移数据!");
+        $.post("$link.getContextURL()/supplier/unit/dealExchange.json",{ids:ids, groupId:obj.id},function(result){
+            top.CC.loaded();
+            if(result.id){
+                top.CC.messager({
+                    title:'提示',
+                    msg:'迁移成功！'
+                });
+				top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+            }else{
+                top.CC.messager({
+                    title:'提示',
+                    msg:'服务器连接不上'
+                });
+            }
+        });
+    }
+	
+	
+</script>
+#end

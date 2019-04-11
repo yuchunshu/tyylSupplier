@@ -1,0 +1,143 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit">
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">单位名称</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.unitName})}
+                      </td>
+					  <td class="bg-grey">供应商类型</td>
+                      <td class="bg-white">
+						$!{unit.supType.value}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">企业性质</td>
+                      <td class="bg-white">
+						$!{unit.unitNature.value}
+                      </td>
+                      <td class="bg-grey">法人代表</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.legalRepresentative})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">联系电话</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.contactPhone})}
+                      </td>
+                      <td class="bg-grey">办公传真</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{unit.fax})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">所属行业</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.industry})}
+                      </td>
+                      <td class="bg-grey">开户行</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{unit.accountBank})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">主要业务</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.mainBusiness})}
+                      </td>
+                      <td class="bg-grey">开户行账号</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{unit.accountBankAccount})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">品牌名称</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.brand})}
+                      </td>
+						#if($!{unit.unitNature} != '2') 
+						<td class="bg-grey">单位税号</td>
+						<td class="bg-white" >
+							$!{esc.html($!{unit.unitTaxNumber})}
+						</td>
+						#else 
+						<td class="bg-grey">身份证</td>
+						<td class="bg-white" >
+							$!{esc.html($!{unit.idCard})}
+						</td>
+						#end
+                    </tr>
+					<tr>
+                      <td class="bg-grey">注册资金</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.registeredCapital})}
+                      </td>
+                      <td class="bg-grey">单位资质</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{unit.qualification})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">推荐级别</td>
+                      <td class="bg-white">
+						$!{unit.recommendLevel.value}
+                      </td>
+                      <td class="bg-grey">单位地址</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{unit.unitAddress})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">网址</td>
+                      <td class="bg-white">
+						$!{esc.html($!{unit.url})}
+                      </td>
+                      <td class="bg-grey">公司邮箱</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{unit.unitEmail})}
+                      </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-grey">说明</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="remark" readonly name="remark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{unit.remark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{unit.createTime})
+                      </td>
+                      <td class="bg-grey">隶属分组</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!{esc.html($!{unit.group.groupName})}
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+
+    
+</script>
+#end

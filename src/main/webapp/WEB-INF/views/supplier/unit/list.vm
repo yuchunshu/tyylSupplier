@@ -1,0 +1,129 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" data-options="fit:true,border:false" >
+		
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <div class="easyui-layout" fit="true">
+                <div id="tb_unit" class="top-menu datagrid-toolbar toolbar-borderbottom">
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add"
+                            plain="true">添加</a>
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit"
+                            plain="true">修改</a>
+                    <a id="selectFolderDialog" href="javascript:;" iconcls="icon-exchange" plain="true"
+                                callback=fnSelectGroupCallback class="easyui-linkbutton" select-dialog="$link.getContextURL()/supplier/group/groupTree">迁移</a>
+                    <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+                            plain="true">删除</a>
+                    <i></i>
+                    <a  onclick="$('#searchDialog_unit').css('display','block');$('#searchDialog_unit').window('center');$('#searchDialog_unit').window('open');"
+                         class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+                </div>
+
+                <div class="cc-tableWrap" data-options="region:'center',border:false">
+                    <table id="dg_unit" data-options="nowrap:false" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th style="width:25%" data-options="field:'unitName',formatter:detailUnitUrl">单位名称</th>
+                            <th style="width:10%" data-options="field:'createTimeShow'">登记日期</th>
+                            <th style="width:10%" data-options="field:'legalRepresentative'">法人代表</th>
+                            <th style="width:10%" data-options="field:'contactPhone'">联系电话</th>
+                            <th style="width:10%" data-options="field:'mainBusiness'">主要业务</th>
+                            <th style="width:10%" data-options="field:'fax'">办公传真</th>
+                            <th style="width:10%" data-options="field:'brand'">品牌名称</th>
+                            <th style="width:10%" data-options="field:'groupName'">所属分组</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div  id="searchDialog_unit" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts_unit'"
+                     style="width:500px;height:320px;padding:20px 10px; background-color:#f4f4f4;display:none">
+                    <form id="queryForm_unit">
+                        <input id="groupCode" name="groupCode" type="hidden" />
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="text-align: right">单位名称：</td>
+                                <td><input id="fileName" style="width:348px;" name="$qc.like('unitName')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">法人代表：</td>
+                                <td><input id="keyword" style="width:348px;" name="$qc.like('legalRepresentative')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">主要业务：</td>
+                                <td><input id="keyword" style="width:348px;" name="$qc.like('mainBusiness')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">登记日期：</td>
+                                <td>
+                                    <input name="$qc.greaterThanOrEqualTo('createTime')" class="easyui-datebox" value="$!{firstDay}" style="width:158px;" data-options="editable:false">
+                                    至
+                                    <input name="$qc.lessThanOrEqualTo('createTime')" class="easyui-datebox" value="$!{lastDay}" style="width:158px;" data-options="editable:false">
+                                </td>
+                            </tr>
+                        </table>
+                     </form>
+                    <div id="bnts_unit" style="top:0px; height:25px; width:auto;">
+                        <a class="new-but" onclick="formSearch_unit()">确定</a>
+                        <a class="new-but" onclick="reset_unit()">重置</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+#parse("/supplier/unit/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () {
+        $('#dg_unit').datagrid({
+            //单击事件   
+			onClickRow:function(rowIndex,rowData){
+			  	
+				var tab = $('#tab_all').tabs('getSelected'); 
+				var index = $('#tab_all').tabs('getTabIndex',tab);
+				
+				$("#unitId").val(rowData.id);
+				$("#unitId_assess").val(rowData.id);
+				$("#unitId_device").val(rowData.id);
+				$("#unitId_contract").val(rowData.id);
+				formSearch();
+				formSearch_assess();
+				formSearch_device();
+				formSearch_contract();
+				if('0' == index){
+					
+					
+				}else if('1' == index){
+					
+					
+				}
+			  
+			}
+		});
+    });
+
+	
+
+	
+	
+    var _baseUrl_unit = '$link.getContextURL()/supplier/unit';
+    var _listJsonUrl = '/list.json';
+
+    function formSearch_unit() {
+        $('#searchDialog_unit').window('close');
+        $('#dg_unit').datagrid('reload');
+        $('#dg_unit').datagrid('uncheckAll');
+    }
+
+    function reset_unit(){
+        var _qf = $("#queryForm_unit");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+	
+	
+</script>
+#end

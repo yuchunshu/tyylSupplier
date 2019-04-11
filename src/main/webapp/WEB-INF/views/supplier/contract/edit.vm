@@ -1,0 +1,187 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input name="id" type="hidden" id="id" value="$!{contract.id}"/>
+                <input id="status" name="status" type="hidden" value="$!{contract.status}"/>
+                <table class="table-edit" title="合同编辑">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>合同编号</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="contractCode" name="contractCode" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.contractCode})}"/>
+                      </td>
+					  <td class="bg-grey"><span><font color=red>*</font></span>签订日期</td>
+                      <td class="bg-white" >
+						<input id = "signedDate" name="signedDate" class="easyui-datebox" data-options="editable:false" #if($!{contract.signedDate}) value="$!{contract.signedDate}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>合同名称</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="contractName"  name="contractName" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{esc.html($!{contract.contractName})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>合同总价</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="contractTotalPrice"  name="contractTotalPrice" data-options="required:true" class="easyui-numberbox" value="$!{esc.html($!{contract.contractTotalPrice})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>合同甲方</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="contractPartytA"  name="contractPartytA" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.contractPartytA})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>甲方责任人</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="responsiblePersonA"  name="responsiblePersonA" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.responsiblePersonA})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>合同乙方</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="contractPartytB"  name="contractPartytB" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.contractPartytB})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>乙方责任人</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="responsiblePersonB"  name="responsiblePersonB" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.responsiblePersonB})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>合同状态</td>
+                      <td class="bg-white">
+						#formradio("contractStatus" "$!contract.contractStatus" $dict.ContractStatus "1")
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>收付类型</td>
+                      <td class="bg-white" >
+						#formradio("paymentType" "$!contract.paymentType" $dict.PaymentType "1")
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>币种</td>
+                      <td class="bg-white">
+						#formradio("currency" "$!contract.currency" $dict.Currency "1")
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>支付方式</td>
+                      <td class="bg-white" >
+						#formradio("paymentMethod" "$!contract.paymentMethod" $dict.PaymentMethod "1")
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">开始日期</td>
+                      <td class="bg-white">
+						<input id = "beginDate" name="beginDate" class="easyui-datebox" data-options="editable:false" #if($!{contract.beginDate}) value="$!{contract.beginDate}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                      <td class="bg-grey">截止日期</td>
+                      <td class="bg-white">
+						<input id = "endDate" name="endDate" class="easyui-datebox" data-options="editable:false" #if($!{contract.endDate}) value="$!{contract.endDate}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>所属项目</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="contractEvent"  name="contractEvent" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.contractEvent})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>责任部门</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="responsibleDept"  name="responsibleDept" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.responsibleDept})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>业务员</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="salesman"  name="salesman" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{contract.salesman})}" />
+                      </td>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						<input id = "createTime" name="createTime" class="easyui-datebox" data-options="editable:false" #if($!{contract.createTime}) value="$!{contract.createTime}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey">合同内容</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="contractContent" name="contractContent" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{contract.contractContent}</textarea>
+                        </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey">合同备注</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="contractRemark" name="contractRemark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{contract.contractRemark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">操作人员</td>
+                      <td class="bg-white">
+						<input id = "creatorName" name="creatorName" class="easyui-textbox" data-options="editable:false" #if($!{contract.creatorName}) value="$!{contract.creatorName}" #else value="$!{currUser.userName}" #end  />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>所属单位</td>
+                      <td class="bg-white"  class="bg-white" >
+						<input id="unitId" name="unitId" type="hidden" #if('' == "$!{contract.unit.id}") value="$!{unitId}" #else value="$!{contract.unit.id}" #end />
+                        <input id="unitName" name="unitName" data-options="required:true" style="width:300px;" class="easyui-textbox" readonly #if('' == "$!{contract.unit.id}") value="$!{esc.html($!{supUnit.unitName})}" #else value="$!{esc.html($!{contract.unit.unitName})}" #end />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">附件</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{contract.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$contract.id")},"#defaultDownloadUrl('contractattach')", true, "#defaultUploadUrl('contractattach')",true)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="save()" class="new-but">保存</a></li>
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+	
+		
+    })
+	
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+        top.CC.closeTab('合同编辑');
+    }
+
+    function save(){
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/supplier/contract/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                    top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+                    top.CC.closeTab('合同编辑');
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+
+</script>
+#end

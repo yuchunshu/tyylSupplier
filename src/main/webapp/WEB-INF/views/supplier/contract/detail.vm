@@ -1,0 +1,148 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit">
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">合同编号</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contract.contractCode})}
+                      </td>
+					  <td class="bg-grey">签订日期</td>
+                      <td class="bg-white" >
+						$!date.format('yyyy-MM-dd',$!{contract.signedDate})
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">合同名称</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contract.contractName})}
+                      </td>
+                      <td class="bg-grey">合同总价</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{contract.contractTotalPrice})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">合同甲方</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contract.contractPartytA})}
+                      </td>
+                      <td class="bg-grey">甲方责任人</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{contract.responsiblePersonA})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">合同乙方</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contract.contractPartytB})}
+                      </td>
+                      <td class="bg-grey">乙方责任人</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{contract.responsiblePersonB})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">合同状态</td>
+                      <td class="bg-white">
+						$!{contract.contractStatus.value}
+                      </td>
+                      <td class="bg-grey">收付类型</td>
+                      <td class="bg-white" >
+						$!{contract.paymentType.value}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">币种</td>
+                      <td class="bg-white">
+						$!{contract.currency.value}
+                      </td>
+                      <td class="bg-grey">支付方式</td>
+                      <td class="bg-white" >
+						$!{contract.paymentMethod.value}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">开始日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{contract.beginDate})
+                      </td>
+                      <td class="bg-grey">截止日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{contract.endDate})
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">所属项目</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contract.contractEvent})}
+                      </td>
+                      <td class="bg-grey">责任部门</td>
+                      <td class="bg-white" >
+						$!{esc.html($!{contract.responsibleDept})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">业务员</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contract.salesman})}
+                      </td>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{contract.createTime})
+                      </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey">合同内容</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="contractContent" readonly name="contractContent" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{contract.contractContent}</textarea>
+                        </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey">合同备注</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="contractRemark" readonly name="contractRemark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{contract.contractRemark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">操作人员</td>
+                      <td class="bg-white">
+						$!{esc.html($!{contract.creatorName})}
+                      </td>
+                      <td class="bg-grey">所属单位</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!{esc.html($!{contract.unit.unitName})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">附件</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{contract.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$contract.id")},"#defaultDownloadUrl('assessattach')", false, "#defaultUploadUrl('assessattach')", false)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+
+    
+</script>
+#end

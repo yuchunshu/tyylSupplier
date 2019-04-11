@@ -1,0 +1,104 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div class="easyui-layout" data-options="fit:true,border:false" >
+		
+        <div class="cc-tableWrap" data-options="region:'center',border:false">
+            <div class="easyui-layout" fit="true">
+                <div id="tb_contract" class="top-menu datagrid-toolbar toolbar-borderbottom">
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add"
+                            plain="true">添加</a>
+                    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-edit"
+                            plain="true">修改</a>
+                    <a href="javascript:;" class="easyui-linkbutton l-btn-plain-remove" iconCls="icon-remove"
+                            plain="true">删除</a>
+                    <i></i>
+                    <a  onclick="$('#searchDialog_contract').css('display','block');$('#searchDialog_contract').window('center');$('#searchDialog_contract').window('open');"
+                         class="easyui-linkbutton l-btn-plain-search" data-options="iconCls:'icon-search',plain:true">查询</a>
+                </div>
+
+                <div class="cc-tableWrap" data-options="region:'center',border:false">
+                    <table id="dg_contract" data-options="nowrap:false" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th field="ck" data-options="checkbox:true">序号</th>
+                            <th style="width:15%" data-options="field:'contractName',formatter:detailUrl_contract">合同名称</th>
+                            <th style="width:10%" data-options="field:'contractCode'">合同编号</th>
+                            <th style="width:7%" data-options="field:'creatorName'">操作员</th>
+                            <th style="width:7%" data-options="field:'contractPartytA'">合同甲方</th>
+                            <th style="width:7%" data-options="field:'contractPartytB'">合同乙方</th>
+                            <th style="width:7%" data-options="field:'responsiblePersonA'">甲方责任人</th>
+							<th style="width:7%" data-options="field:'responsiblePersonB'">乙方责任人</th>
+							<th style="width:7%" data-options="field:'contractEvent'">所属项目</th>
+							<th style="width:7%" data-options="field:'paymentType'">收付类型</th>
+							<th style="width:7%" data-options="field:'paymentMethod'">支付方式</th>
+							<th style="width:7%" data-options="field:'currency'">币种</th>
+							<th style="width:7%" data-options="field:'salesman'">业务员</th>
+							<th style="width:7%" data-options="field:'responsibleDept'">责任部门</th>
+							<th style="width:7%" data-options="field:'contractTotalPrice'">合同总价</th>
+							<th style="width:7%" data-options="field:'createTimeShow'">登记日期</th>
+							<th style="width:7%" data-options="field:'signedDateShow'">签订日期</th>
+							<th style="width:7%" data-options="field:'beginDateShow'">开始日期</th>
+							<th style="width:7%" data-options="field:'endDateShow'">截止日期</th>
+							<th style="width:7%" data-options="field:'contractStatus'">合同状态</th>
+                            <th style="width:15%" data-options="field:'unitName'">单位名称</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div  id="searchDialog_contract" class="easyui-dialog  dialog-tc" title="查询条件" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,buttons:'#bnts_contract'"
+                     style="width:500px;height:260px;padding:20px 10px; background-color:#f4f4f4;display:none">
+                    <form id="queryForm_contract">
+						<input id="unitId_contract" name="unitId" type="hidden" />
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="text-align: right">合同编号：</td>
+                                <td><input id="fileName" style="width:348px;" name="$qc.like('contractCode')" class="easyui-textbox" /></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right">登记时间：</td>
+                                <td>
+                                    <input name="$qc.greaterThanOrEqualTo('createTime')" class="easyui-datebox" value="$!{firstDay}" style="width:158px;" data-options="editable:false">
+                                    至
+                                    <input name="$qc.lessThanOrEqualTo('createTime')" class="easyui-datebox" value="$!{lastDay}" style="width:158px;" data-options="editable:false">
+                                </td>
+                            </tr>
+                        </table>
+                     </form>
+                    <div id="bnts_contract" style="top:0px; height:25px; width:auto;">
+                        <a class="new-but" onclick="formSearch_contract()">确定</a>
+                        <a class="new-but" onclick="reset_contract()">重置</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+#parse("/supplier/contract/crud.js.vm")
+#@script()
+<script type="text/javascript">
+
+    $(function () {
+        
+    });
+
+    var _baseUrl_contract = '$link.getContextURL()/supplier/contract';
+	
+    var _listJsonUrl = '/list.json';
+
+    function formSearch_contract() {
+        $('#searchDialog_contract').window('close');
+        $('#dg_contract').datagrid('reload');
+        $('#dg_contract').datagrid('uncheckAll');
+    }
+
+    function reset_contract(){
+        var _qf = $("#queryForm_contract");
+        _qf.form("clear");
+        $(".easyui-combobox",_qf).each(function(){
+            $(this).combobox("select"," ");
+        });
+    }
+	
+</script>
+#end

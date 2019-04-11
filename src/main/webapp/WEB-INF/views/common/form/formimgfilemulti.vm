@@ -1,0 +1,288 @@
+<div title="">
+    <label for="$!__id" class="form-fill-label">$!__title</label>
+    #if($!__uploadable == "true")
+    <a id="$!__id"  type="plupload$!{__name}" class="easyui-linkbutton" icon="icon-add" plain=true href="javascript:;" #if($__uploadurl)uploadurl="$!__uploadurl"#end #if($__maxfilesize)maxfilesize="$!__maxfilesize" #end>
+    添加图片
+    <input class="easyui-validatebox" id="pluploadFinish$!{__name}" value="不上传" data-options="required:true,missingMessage:'图片未上传完成'" style="width:0px;padding:0px;margin:0px;border:0px"/>
+    </a>
+    #if($__dropareaid)<div id="dropareaInfo" style="color: #C7C5C5;display:inline;">可将文件拖入指定区域进行上传</div>#end
+    <br/>
+    #end
+
+    <div class="$!__class filelistmulti">
+        #foreach($attach in $__attachList)
+        #set($url = "$!__downloadurl" + "?id=$attach.id")
+        #set($attachIds = "$!attachIds" + ",$!attach.id")
+        #set($isImage = $strTool.isImgStr("$attach.trueName"))
+        <div class="uploadFile" id="$!attach.id">
+            <div class="uploadImg">
+                <span style="width:50px;height:50px;overflow:hidden;">
+                #if($isImage)
+                <img name="$!{__name}" src="$url" onclick="picPreview$!{__name}(this)" width="50" height="50"/>
+                #else
+                <img name="$!{__name}" src="$link.getContextURL()/images/attach/icon-file.png"/> ## 默认图片
+                #end
+                </span>
+            </div>
+            <div class="uploadContent">
+                <span><a target="_blank" href="$url" title="点击下载:$!{esc.html($attach.trueName)}">$!{esc.html($attach.trueName)}</a></span>
+                #set($fileSize = $!{attach.fileSize}/1024)
+                <span>$!fileSize k</span>
+            </div>
+            <div class="uploadButton">
+                <span>
+                    #if($!__deleteable == "true")
+                    <img attachId="$attach.id" src="$link.getContextURL()/images/attach/uoload-shut.png" onclick="removeAttach$!{__name}(this)" title="点击移除图片"/>
+                    #end
+                </span>
+                <span>
+                    #if($isImage)
+                    <img src="$link.getContextURL()/images/attach/upload-enlarge.png" title="点击预览图片" onclick="picPreview$!{__name}(this)"/>
+                    #elseif($!{attach.trueName.toLowerCase().endsWith(".pdf")})
+                    <img src="$link.getContextURL()/images/attach/upload-enlarge.png" title="点击预览PDF" onclick="pdfPreview$!{__name}('$!{attach.id}')"/>
+                    #elseif($!{attach.trueName.toLowerCase().endsWith(".doc")} || $!{attach.trueName.toLowerCase().endsWith(".docx")})
+                    <img src="$link.getContextURL()/images/attach/upload-enlarge.png" title="点击预览文档" onclick="docPreview$!{__name}('$!{attach.id}')"/>
+                    #elseif($!{attach.trueName.toLowerCase().endsWith(".xls")} || $!{attach.trueName.toLowerCase().endsWith(".xlsx")})
+                    <img src="$link.getContextURL()/images/attach/upload-enlarge.png" title="点击预览文档" onclick="xlsPreview$!{__name}('$!{attach.id}')"/>
+                    #end
+                </span>
+            </div>
+        </div>
+        #end
+    </div>
+    #if("$!attachIds" != "")
+    #set($attachIds = $attachIds.substring(1,$attachIds.length()))
+    <input type="hidden"  name="$!__name" value="$!{esc.html($attachIds)}"/>
+    #else
+    <input type="hidden"  name="$!__name" value="$!{esc.html($!__value)}"/>
+    #end
+</div>
+<div id="picPreviewWindow$!{__name}" class="easyui-dialog" title="图片预览" style="width:70%;height:80%;padding:5px;text-align:center;margin:0 auto;background-color:#fff;display:none;"
+        data-options="closed:true,modal:true,minimizable:false,resizable:true,maximizable:true,collapsible:false,closable:true,buttons:'#picPreviewBnts$!{__name}'">
+    <img id="previewImg$!{__name}" src="" style="vertical-align: middle;border:1px dashed #e0e0e0;"/>
+    <span style="width:0;height:100%; margin:0 auto; vertical-align:middle;overflow:hidden;display:inline-block;"></span>
+    <div id="picPreviewBnts$!{__name}" style="top:0px; height:25px; width:auto;display:none;">
+        <a class="new-but" onclick="$('#picPreviewWindow$!{__name}').dialog('close')">关闭</a>
+    </div>
+</div>
+#@script()
+
+<script type="text/javascript">
+String.prototype.startWith=function(str){
+    if(str==null||str==""||this.length==0||str.length>this.length)
+      return false;
+    if(this.substr(0,str.length)==str)
+      return true;
+    else
+      return false;
+    return true;
+}
+
+$(function(){
+    if (!window.applicationCache) { //判断浏览器是否支持html5
+        $('#dropareaInfo').css("display","none");
+    }
+})
+
+$(document).ready(function() {
+
+    $('a[type="plupload$!{__name}"]').each(function(){
+        var _this=$(this);
+        var _thisdom = _this.get(0);
+        var _thisurl = _this.attr("uploadurl") || "$!{link.getContextPath()}/plupload/upload.json";
+        var _max_file_size = _this.attr("maxfilesize") || '100mb';
+        var _mime_types = _this.attr("mimetypes") || '[{"title":"所有文件", "extensions":"jpg,gif,png,bmp"}]';
+        _mime_types = eval(_mime_types);
+
+        var _filelistdom = $(".filelistmulti", _thisdom.parentNode).get(0);
+
+        var _targetinput = $("input[type='hidden']", _thisdom.parentNode);
+
+        var uploader = new plupload.Uploader({
+                runtimes : 'html5,flash',
+
+                browse_button : _thisdom,
+                container : _thisdom.parentNode,
+
+                url : _thisurl,
+
+                multi_selection:true,
+                chunk_size : "1mb",
+
+                #if($__dropareaid) drop_element : '$!__dropareaid', #end ##拖拽区域dom
+
+                filters : {
+                    max_file_size : _max_file_size,
+                    mime_types : _mime_types
+                },
+
+                // Flash settings
+                flash_swf_url : '$!{link.getContextPath()}/lib/plupload/Moxie.swf',
+
+                preinit : {
+                    UploadFile: function(up, file) {
+                        up.setOption('multipart_params', {fileid: file.id})
+                    }
+                },
+
+                init : {
+                    PostInit : function() {
+                        //_filelistdom.innerHTML = '';
+                    },
+                    FilesAdded : function(up, files) {
+                        plupload.each(files, function(file) {
+                            top.CC.loading("正在上传图片,请稍后...");
+                            if (up.state == plupload.STOPPED) {
+                                up.refresh();
+                                up.start();
+                            }
+                        });
+                    },
+                    UploadProgress : function(up, file) {
+                        $("#pluploadFinish$!{__name}").val("");
+                        if (document.getElementById(file.id)){
+                            var d = $('div.uploadafter',$('#' + file.id)).get(0);
+                            var b = $('b',d).get(0);
+                            $(b).html('<span>' + file.percent + '%</span>');
+                        }
+                    },
+                    FileUploaded: function(up, file, info) {
+                        top.CC.loaded();
+                        $("#pluploadFinish$!{__name}").val("完成");
+                        if (info && (info.status == "200")) {
+                            var message='<span>上传完毕</span>';
+                            if (info.response) {
+                                var data = JSON.parse(info.response);
+                                if (data.error) {
+                                    message=null;
+                                    // _filelistdom.innerHTML = '上传失败！' + data.error;
+                                    alert('上传失败！' + data.error);
+                                } else {
+                                    if (data.id) {
+
+                                        var srcUrl = "";
+                                        var picFlag = false;
+                                        var onclickPreview = '';
+                                        var preViewButton = '';
+                                        if (file.type.startWith("image/")) { // 图片格式
+                                            srcUrl = "$!__downloadurl?id=" + data.id;
+                                            picFlag = true;
+                                            onclickPreview = ' onclick="picPreview$!{__name}(this)" ';
+                                            preViewButton = '<img src="$link.getContextURL()/images/attach/upload-enlarge.png" title="点击预览图片" onclick="picPreview$!{__name}(this)"/>';
+                                        } else {
+                                            srcUrl = "$link.getContextURL()/images/attach/icon-file.png";
+                                        }
+                                        var div = '<div class="upload uploadFile" id="' + data.id + '" fileidobj><div class="uploadImg"><span><img name="$!{__name}" src="' + srcUrl + '" ' + onclickPreview + '/></div></span>';
+                                        div += '<div class="uploadContent"><span><a href="$!__downloadurl?id=' + data.id + '" title="点击下载:' + file.name + '">' + file.name + '</a></span><span>' + parseInt(file.size/1024) + ' k</span></div>';
+                                        div += '<div class="uploadButton"><span><img attachId="' + data.id + '" src="$link.getContextURL()/images/attach/uoload-shut.png" onclick="removeAttach$!{__name}(this)" title="点击移除图片"/></span><span>' + preViewButton + '</span></div></div>';
+
+                                        $(_filelistdom).append(div);
+
+                                        var _value = _targetinput.attr('value');
+                                        if(_value !== ""){
+                                            _value += "," + data.id;
+                                        }else{
+                                            _value = data.id;
+                                        }
+                                        _targetinput.attr('value', _value);
+                                    }
+                                }
+                            }
+
+                            if (message && document.getElementById(file.id)){
+                                var d = $('div.uploadafter',$('#' + file.id)).get(0);
+                                var b = $('b',d).get(0);
+                                $(b).html(message);
+                            }
+                        } else {
+                        }
+                    },
+                    Error : function(up, err) {
+                        if (plupload.FILE_SIZE_ERROR == err.code) {
+                            alert("选择的文件大小为 " + plupload.formatSize(err.file.size) + " ，超过了最大上传文件大小 " + _max_file_size + " 的限制。");
+                        }else if(plupload.FILE_DUPLICATE_ERROR == err.code){
+							alert("不能重复上传文件：" +  err.file.name);
+						}else {
+							alert('请上传图片文件。');
+                            _filelistdom.innerHTML = '只能上传（jpg,gif,png,bmp）格式的图片。';
+                        }
+                    }
+                }
+            });
+
+            uploader.init();
+
+           _filelistdom.removeFile = function (id) {
+                var file = uploader.getFile(id);
+                if (file) {
+                    uploader.removeFile(file);
+                }
+            }
+    });
+});
+
+
+function removeAttach$!{__name}(obj){
+   var _obj = $(obj);
+   var id = _obj.attr("attachId");
+
+   if (!id) {
+     var fileid = _obj.parents("[fileidobj]").attr("id");
+     var filelistdom = _obj.parents(".filelistmulti").get(0);
+     filelistdom.removeFile(fileid);
+   }
+
+   var _span = _obj.parent().parent();
+
+   if (id) {
+     var _input = $("input[name='$!__name']", _span.parent().parent().parent());
+     var _vlaueSet = _input.val().split(",");
+     if(_vlaueSet.length > 1){
+         for(var i in _vlaueSet){
+              if(id == _vlaueSet[i]){_vlaueSet.splice(i,1);}
+         }
+         _input.val(_vlaueSet);
+     }else{
+         _input.val("");
+     }
+   }
+   $("#" + id).remove();
+
+   return false;
+}
+
+function picPreview$!{__name}(dom) {
+     var pictureImg = $("img[name='$!__name']", $(dom).parent().parent().parent());
+     var imgSrc = $(pictureImg).attr("src");
+     $("#previewImg$!{__name}").attr("src", imgSrc);
+     $('#picPreviewWindow$!{__name}').css("display","block");
+     $("#picPreviewWindow$!{__name}").window("open");
+     $("#picPreviewWindow$!{__name}").window("restore");
+     $("#picPreviewWindow$!{__name}").window("center");
+     $("#picPreviewWindow$!{__name}").window("refresh");
+}
+function pdfPreview$!{__name}(id) {
+    var url = '$link.getContextURL()/sysattach/previewPdf?id=' + id;
+    window.open(url);
+}
+function docPreview$!{__name}(id) {
+    var url = '$link.getContextURL()/sysattach/previewWord?id=' + id;
+    window.open(url);
+}
+function xlsPreview$!{__name}(id) {
+    var url = '$link.getContextURL()/sysattach/previewExcel?id=' + id;
+    window.open(url);
+}
+</script>
+<style>
+.uploadFile{ width:260px; height:50px; border:1px solid #E0E0E0; background-color: #eaeaea; display:inline-block;overflow:hidden;margin:5px 5px 0 0 ;}
+.uploadImg img{width:50px; height:50px;vertical-align: middle;}
+.uploadImg{display:inline-block;width:50px; height:50px; }
+.uploadContent{display:inline-block; height:50px;width:165px;vertical-align: middle; margin-left:6px;}
+.uploadContent span{ display:block; width:165px; font-size:14px; color:#666; margin-top:2px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+.uploadButton{ display:inline-block;width:30px; vertical-align: middle; float:right;}
+.uploadButton img:hover{ background-color:#dadddf; cursor:pointer;}
+.uploadButton span{display:block; width:30px; height:25px; text-align:center;}
+</style>
+#end
+#set( $attachIds = "" )
