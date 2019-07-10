@@ -1,0 +1,182 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <input name="id" type="hidden" id="id" value="$!{device.id}"/>
+                <input id="status" name="status" type="hidden" value="$!{device.status}"/>
+                <table class="table-edit" title="材料设备编辑">
+                    ## 隐藏行  用于控制表格样式
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>材料名称</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="deviceName" name="deviceName" data-options="required:true,validType:'maxLength[200]'" class="easyui-textbox" value="$!{esc.html($!{device.deviceName})}"/>
+                      </td>
+					  <td class="bg-grey"><span><font color=red>*</font></span>项目名称</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="eventName"  name="eventName" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.eventName})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>同档次产品</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="sameProduct"  name="sameProduct" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.sameProduct})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>数量</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="quantity"  name="quantity" data-options="required:true" class="easyui-numberbox" value="$!{esc.html($!{device.quantity})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>单位</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="deviceUnit"  name="deviceUnit" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.deviceUnit})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>不含税单价</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="taxFreeUnitPrice"  name="taxFreeUnitPrice" data-options="required:true" class="easyui-numberbox" value="$!{esc.html($!{device.taxFreeUnitPrice})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>规格</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="specification"  name="specification" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.specification})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>含税单价</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="taxInclusiveUnitPrice"  name="taxInclusiveUnitPrice" data-options="required:true" class="easyui-numberbox" value="$!{esc.html($!{device.taxInclusiveUnitPrice})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>材料性能</td>
+                      <td class="bg-white">
+						#formradio("materialProperty" "$!device.materialProperty" $dict.Evaluation "1")
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>金额</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="amount"  name="amount" data-options="required:true" class="easyui-numberbox" value="$!{esc.html($!{device.amount})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">更新日期</td>
+                      <td class="bg-white">
+						<input id = "updateTime" name="updateTime" class="easyui-datebox" data-options="editable:false" #if($!{device.updateTime}) value="$!{device.updateTime}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                      <td class="bg-grey">报价日期</td>
+                      <td class="bg-white">
+						<input id = "quotesTime" name="quotesTime" class="easyui-datebox" data-options="editable:false" #if($!{device.quotesTime}) value="$!{device.quotesTime}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						<input id = "createTime" name="createTime" class="easyui-datebox" data-options="editable:false" #if($!{device.createTime}) value="$!{device.createTime}" #else value="$date.get('yyyy-MM-dd')" #end  />
+                      </td>
+                      <td class="bg-grey">商品类别</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="goodsCategory"  name="goodsCategory" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.goodsCategory})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>品牌</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="brand"  name="brand" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.brand})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>到货地址</td>
+                      <td class="bg-white" >
+                        <input style="width:99%;" id="arrivalAddress"  name="arrivalAddress" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.arrivalAddress})}" />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey"><span><font color=red>*</font></span>价格类别</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="priceCategory"  name="priceCategory" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.priceCategory})}" />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>厂家面价</td>
+                      <td class="bg-white">
+                        <input style="width:99%;" id="factoryPrice"  name="factoryPrice" data-options="required:true" class="easyui-textbox" value="$!{esc.html($!{device.factoryPrice})}" />
+                      </td>
+                    </tr>
+					<tr>
+                        <td class="bg-grey">备注</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="remark" name="remark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{device.remark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">操作人员</td>
+                      <td class="bg-white">
+						<input id = "creatorName" name="creatorName" class="easyui-textbox" data-options="editable:false" #if($!{device.creatorName}) value="$!{device.creatorName}" #else value="$!{currUser.userName}" #end  />
+                      </td>
+                      <td class="bg-grey"><span><font color=red>*</font></span>所属单位</td>
+                      <td class="bg-white"  class="bg-white" >
+						<input id="unitId" name="unitId" type="hidden" #if('' == "$!{device.unit.id}") value="$!{unitId}" #else value="$!{device.unit.id}" #end />
+                        <input id="unitName" name="unitName" data-options="required:true" style="width:300px;" class="easyui-textbox" readonly #if('' == "$!{device.unit.id}") value="$!{esc.html($!{supUnit.unitName})}" #else value="$!{esc.html($!{device.unit.unitName})}" #end />
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">附件</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{device.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$device.id")},"#defaultDownloadUrl('deviceattach')", true, "#defaultUploadUrl('deviceattach')",true)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="save()" class="new-but">保存</a></li>
+                    <li><a onclick="back()" class="new-but">返回</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    $(function(){
+	
+		
+    })
+	
+	
+    var _baseUrl = '$link.getContextURL()';
+
+    //返回
+    function back() {
+        top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+        top.CC.closeTab('材料设备编辑');
+    }
+
+    function save(){
+        if($("#editForm").form('validate')) {
+            top.CC.loading("正在保存数据!");
+            $.post("$link.getContextURL()/supplier/device/save.json",$("#editForm").serialize(),function(result){
+                top.CC.loaded();
+                if(result.id){
+                    $('#id').val(result.id);
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'保存成功！'
+                    });
+                    top.CC.addTab({title:'供应商管理',url:'$link.getContextURL()/supplier/group/list'});
+                    top.CC.closeTab('材料设备编辑');
+                }else{
+                    top.CC.messager({
+                        title:'提示',
+                        msg:'服务器连接不上'
+                    });
+                }
+            });
+        }
+    }
+
+
+</script>
+#end

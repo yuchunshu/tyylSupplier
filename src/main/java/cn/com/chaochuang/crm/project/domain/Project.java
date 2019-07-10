@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.user.reference.SexConverter;
 
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "cus_id")) })
-public class Customer extends LongIdEntity {
+public class Project extends LongIdEntity {
 
 	private static final long serialVersionUID = 2137845822962483790L;
 	

@@ -1,0 +1,142 @@
+<div class="easyui-panel mainborder-Padding" data-options="fit:true,border:false">
+    <div id="cc" class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" class="mynoborder">
+            <form id="editForm" method="post">
+                <table class="table-edit">
+                    <tr>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                        <td class="fix_td_title">&nbsp;</td>
+                        <td class="fix_td_data">&nbsp;</td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">材料名称</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.deviceName})}
+                      </td>
+                      <td class="bg-grey">项目名称</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.eventName})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">同档次产品</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.sameProduct})}
+                      </td>
+                      <td class="bg-grey">数量</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.quantity})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">单位</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.deviceUnit})}
+                      </td>
+                      <td class="bg-grey">不含税单价</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.taxFreeUnitPrice})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">规格</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.specification})}
+                      </td>
+                      <td class="bg-grey">含税单价</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.taxInclusiveUnitPrice})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">材料性能</td>
+                      <td class="bg-white">
+						$!{device.materialProperty.value}
+                      </td>
+                      <td class="bg-grey">金额</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.amount})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">更新日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{device.updateTime})
+                      </td>
+                      <td class="bg-grey">报价日期</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!date.format('yyyy-MM-dd',$!{device.quotesTime})
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">登记日期</td>
+                      <td class="bg-white">
+						$!date.format('yyyy-MM-dd',$!{device.createTime})
+                      </td>
+                      <td class="bg-grey">商品类别</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!{esc.html($!{device.goodsCategory})}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">品牌</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.brand})}
+                      </td>
+                      <td class="bg-grey">到货地址</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.arrivalAddress})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">价格类别</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.priceCategory})}
+                      </td>
+                      <td class="bg-grey">厂家面价</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.factoryPrice})}
+                      </td>
+                    </tr>
+                    <tr>
+                        <td class="bg-grey">备注</td>
+                        <td colSpan="3" class="bg-white"  valign="top">
+							<textarea class="textareaborder" id="remark" readonly name="remark" maxLength="240" cols="" style="resize:none;width:99%;height:60px;">$!{device.remark}</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                      <td class="bg-grey">操作人员</td>
+                      <td class="bg-white">
+						$!{esc.html($!{device.creatorName})}
+                      </td>
+                      <td class="bg-grey">所属单位</td>
+                      <td class="bg-white"  class="bg-white" >
+						$!{esc.html($!{device.unit.unitName})}
+                      </td>
+                    </tr>
+					<tr>
+                      <td class="bg-grey">附件</td>
+                      <td colSpan="3" class="bg-white" attachId="$!{device.id}">
+                        #formfilemulty("attach", "", "", "", $!{attachMap.get("$device.id")},"#defaultDownloadUrl('assessattach')", false, "#defaultUploadUrl('assessattach')", false)
+                      </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div data-options="region:'south'" class="bottom-h">
+            <div class="bottom-but">
+                <ul>
+                    <li><a onclick="top.CC.closeCurTab()" class="new-but">关闭</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+#@script()
+<script type="text/javascript">
+    var _baseUrl = '$link.getContextURL()';
+
+    
+</script>
+#end

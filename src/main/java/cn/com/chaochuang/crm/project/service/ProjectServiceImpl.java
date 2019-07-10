@@ -22,7 +22,7 @@ import cn.com.chaochuang.supplier.repository.SupDeviceRepository;
 
 @Service
 @Transactional
-public class SupDeviceServiceImpl extends SimpleLongIdCrudRestService<SupDevice> implements SupDeviceService{
+public class ProjectServiceImpl extends SimpleLongIdCrudRestService<SupDevice> implements ProjectService{
 
     @Autowired
     private SupDeviceRepository   repository;

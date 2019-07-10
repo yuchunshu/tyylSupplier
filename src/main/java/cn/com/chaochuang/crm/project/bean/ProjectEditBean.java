@@ -3,22 +3,13 @@ package cn.com.chaochuang.crm.project.bean;
 import java.util.Date;
 
 
-import org.dozer.Mapping;
-
-import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.supplier.reference.Evaluation;
 
-public class SupDeviceShowBean {
+public class ProjectEditBean {
 
-
+    // Fields
     private Long     		id;
     
-    @Mapping("unit.unitName")
-    private String   		unitName;
-    
-    /** 所属单位ID */
-    private Long     		unitId;
-
     /** 材料名称 */
     private String   		deviceName;
     
@@ -48,15 +39,12 @@ public class SupDeviceShowBean {
     
     /** 更新时间 */
     private Date   			updateTime;
-    private String   		updateTimeShow;
     
     /** 报价时间 */
     private Date   			quotesTime;
-    private String   		quotesTimeShow;
     
     /** 登记日期 */
     private Date   	 		createTime;
-    private String   		createTimeShow;
     
     /** 操作人员 */
     private String   	 	creatorName;
@@ -81,40 +69,12 @@ public class SupDeviceShowBean {
     
     /** 备注 */
     private String   		remark;
+
+    /** 所属单位ID */
+    private Long     		unitId;
     
-    
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-        if (this.createTime != null) {
-            this.createTimeShow = Tools.DATE_FORMAT.format(this.createTime);
-        }
-	}
-
-	public Date getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
-		if (this.updateTime != null) {
-            this.updateTimeShow = Tools.DATE_FORMAT.format(this.updateTime);
-        }
-	}
-
-	public Date getQuotesTime() {
-		return quotesTime;
-	}
-
-	public void setQuotesTime(Date quotesTime) {
-		this.quotesTime = quotesTime;
-		if (this.quotesTime != null) {
-            this.quotesTimeShow = Tools.DATE_FORMAT.format(this.quotesTime);
-        }
-	}
+    /** 附件IDs 通过','分割 */
+    private String      	attach;
 
 	public Long getId() {
 		return id;
@@ -122,22 +82,6 @@ public class SupDeviceShowBean {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getUnitName() {
-		return unitName;
-	}
-
-	public void setUnitName(String unitName) {
-		this.unitName = unitName;
-	}
-
-	public Long getUnitId() {
-		return unitId;
-	}
-
-	public void setUnitId(Long unitId) {
-		this.unitId = unitId;
 	}
 
 	public String getDeviceName() {
@@ -212,28 +156,28 @@ public class SupDeviceShowBean {
 		this.amount = amount;
 	}
 
-	public String getUpdateTimeShow() {
-		return updateTimeShow;
+	public Date getUpdateTime() {
+		return updateTime;
 	}
 
-	public void setUpdateTimeShow(String updateTimeShow) {
-		this.updateTimeShow = updateTimeShow;
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
 	}
 
-	public String getQuotesTimeShow() {
-		return quotesTimeShow;
+	public Date getQuotesTime() {
+		return quotesTime;
 	}
 
-	public void setQuotesTimeShow(String quotesTimeShow) {
-		this.quotesTimeShow = quotesTimeShow;
+	public void setQuotesTime(Date quotesTime) {
+		this.quotesTime = quotesTime;
 	}
 
-	public String getCreateTimeShow() {
-		return createTimeShow;
+	public Date getCreateTime() {
+		return createTime;
 	}
 
-	public void setCreateTimeShow(String createTimeShow) {
-		this.createTimeShow = createTimeShow;
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 
 	public String getCreatorName() {
@@ -298,6 +242,22 @@ public class SupDeviceShowBean {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Long getUnitId() {
+		return unitId;
+	}
+
+	public void setUnitId(Long unitId) {
+		this.unitId = unitId;
+	}
+
+	public String getAttach() {
+		return attach;
+	}
+
+	public void setAttach(String attach) {
+		this.attach = attach;
 	}
 
 }

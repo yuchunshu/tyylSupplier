@@ -1,4 +1,4 @@
-package cn.com.chaochuang.crm.customer.bean;
+package cn.com.chaochuang.crm.project.bean;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import org.dozer.Mapping;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.supplier.reference.Evaluation;
 
-public class SupDeviceShowBean {
+public class ProjectShowBean {
 
 
     private Long     		id;

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Component;
 import cn.com.chaochuang.common.dictionary.EnumDictionaryBuilder;
 
 @Component
-public class ContractStatusEnumDictionaryBuilder extends EnumDictionaryBuilder<ContractStatus> {
+public class CusCategoryEnumDictionaryBuilder extends EnumDictionaryBuilder<CusCategory> {
 }

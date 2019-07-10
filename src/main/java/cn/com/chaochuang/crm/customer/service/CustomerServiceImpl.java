@@ -16,27 +16,27 @@ import cn.com.chaochuang.common.attach.service.SysAttachService;
 import cn.com.chaochuang.common.beancopy.BeanCopyUtil;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
-import cn.com.chaochuang.supplier.bean.SupDeviceEditBean;
-import cn.com.chaochuang.supplier.domain.SupDevice;
-import cn.com.chaochuang.supplier.repository.SupDeviceRepository;
+import cn.com.chaochuang.crm.customer.bean.CustomerEditBean;
+import cn.com.chaochuang.crm.customer.domain.Customer;
+import cn.com.chaochuang.crm.customer.repository.CustomerRepository;
 
 @Service
 @Transactional
-public class SupDeviceServiceImpl extends SimpleLongIdCrudRestService<SupDevice> implements SupDeviceService{
+public class CustomerServiceImpl extends SimpleLongIdCrudRestService<Customer> implements CustomerService{
 
     @Autowired
-    private SupDeviceRepository   repository;
+    private CustomerRepository   repository;
     
     @Autowired
     private SysAttachService      attachService;
 
     @Override
-    public SimpleDomainRepository<SupDevice, Long> getRepository() {
+    public SimpleDomainRepository<Customer, Long> getRepository() {
         return this.repository;
     }
 
 	@Override
-	public boolean delDevice(String id) {
+	public boolean delCustomer(String id) {
 		if (StringUtils.isNotBlank(id)) {
 			repository.delete(Long.parseLong(id));
             return true;
@@ -45,16 +45,16 @@ public class SupDeviceServiceImpl extends SimpleLongIdCrudRestService<SupDevice>
 	}
 
 	@Override
-	public String saveSupDevice(SupDeviceEditBean bean) {
-		SupDevice device = null;
+	public String saveCustomer(CustomerEditBean bean) {
+		Customer customer = null;
         if (bean != null && bean.getId() != null) {
-        	device = this.repository.findOne(bean.getId());
+        	customer = this.repository.findOne(bean.getId());
         } else {
-        	device = new SupDevice();
+        	customer = new Customer();
         }
-        device = BeanCopyUtil.copyBean(bean, SupDevice.class);
+        customer = BeanCopyUtil.copyBean(bean, Customer.class);
         // 保证取到自动生成的ID
-        device = this.repository.save(device);
+        customer = this.repository.save(customer);
 
         String attachIds = bean.getAttach();
 
@@ -63,7 +63,7 @@ public class SupDeviceServiceImpl extends SimpleLongIdCrudRestService<SupDevice>
         if (null != bean.getId()) {
             // 旧的附件id
             List<SysAttach> oldAttachs = this.attachService.findByOwnerIdAndOwnerType(bean.getId().toString(),
-            		SupDevice.class.getSimpleName());
+            		Customer.class.getSimpleName());
             if (oldAttachs != null) {
                 for (SysAttach a : oldAttachs) {
                     oldIdsForDel.add(a.getId().toString());
@@ -73,10 +73,10 @@ public class SupDeviceServiceImpl extends SimpleLongIdCrudRestService<SupDevice>
         
         if (StringUtils.isNotBlank(attachIds)) {
             String[] idArray = StringUtils.split(attachIds, ",");
-            Long ownerId = device.getId();
+            Long ownerId = customer.getId();
             for (String aIdStr : idArray) {
                 // Long aId = Long.valueOf(aIdStr);
-                this.attachService.linkAttachAndOwner(aIdStr, ownerId.toString(), SupDevice.class.getSimpleName());
+                this.attachService.linkAttachAndOwner(aIdStr, ownerId.toString(), Customer.class.getSimpleName());
                 if (oldIdsForDel.contains(aIdStr)) {
                     oldIdsForDel.remove(aIdStr);
                 }
@@ -89,7 +89,7 @@ public class SupDeviceServiceImpl extends SimpleLongIdCrudRestService<SupDevice>
             }
         }
         
-        return device.getId().toString();
+        return customer.getId().toString();
     }
 
 }

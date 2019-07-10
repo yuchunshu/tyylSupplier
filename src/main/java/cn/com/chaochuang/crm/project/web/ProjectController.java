@@ -1,4 +1,4 @@
-package cn.com.chaochuang.crm.customer.web;
+package cn.com.chaochuang.crm.project.web;
 
 import java.util.Date;
 
@@ -31,7 +31,7 @@ import cn.com.chaochuang.supplier.service.SupUnitService;
 
 @Controller
 @RequestMapping("supplier/device")
-public class SupDeviceController{
+public class ProjectController{
 
     @Autowired
     private SupDeviceService    	supDeviceService;
