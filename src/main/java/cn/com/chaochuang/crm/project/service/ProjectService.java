@@ -3,13 +3,13 @@ package cn.com.chaochuang.crm.project.service;
 
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.supplier.bean.SupDeviceEditBean;
-import cn.com.chaochuang.supplier.domain.SupDevice;
+import cn.com.chaochuang.crm.project.bean.ProjectEditBean;
+import cn.com.chaochuang.crm.project.domain.Project;
 
-public interface ProjectService extends CrudRestService<SupDevice, Long> {
+public interface ProjectService extends CrudRestService<Project, Long> {
 
-	public boolean delDevice(String id);
+	public boolean delProject(String id);
 	
-	public String saveSupDevice(SupDeviceEditBean bean);
+	public String saveProject(ProjectEditBean bean);
 	
 }

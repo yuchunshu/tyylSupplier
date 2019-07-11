@@ -2,87 +2,179 @@ package cn.com.chaochuang.crm.project.bean;
 
 import java.util.Date;
 
+import javax.persistence.Convert;
 
-import org.dozer.Mapping;
 
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.supplier.reference.Evaluation;
+import cn.com.chaochuang.crm.project.reference.ProjectCategory;
+import cn.com.chaochuang.crm.project.reference.ProjectCategoryConverter;
+import cn.com.chaochuang.crm.project.reference.ProjectStatus;
+import cn.com.chaochuang.crm.project.reference.ProjectStatusConverter;
 
 public class ProjectShowBean {
 
 
     private Long     		id;
     
-    @Mapping("unit.unitName")
-    private String   		unitName;
-    
-    /** 所属单位ID */
-    private Long     		unitId;
+    /** 项目名称	 */
+    private String   			projectName;
 
-    /** 材料名称 */
-    private String   		deviceName;
-    
-    /** 同档次产品 */
-    private String   		sameProduct;
-    
-    /** 数量 */
-    private String   		quantity;
-    
-    /** 单位 */
-    private String   		deviceUnit;
-    
-    /** 不含税单价 */
-    private String   		taxFreeUnitPrice;
-    
-    /** 规格 */
-    private String   		specification;
-    
-    /** 含税单价 */
-    private String   		taxInclusiveUnitPrice;
-    
-    /** 材质性能 */
-    private Evaluation      materialProperty;
-    
-    /** 金额 */
-    private String   		amount;
-    
-    /** 更新时间 */
-    private Date   			updateTime;
-    private String   		updateTimeShow;
-    
-    /** 报价时间 */
-    private Date   			quotesTime;
-    private String   		quotesTimeShow;
-    
-    /** 登记日期 */
-    private Date   	 		createTime;
-    private String   		createTimeShow;
-    
-    /** 操作人员 */
-    private String   	 	creatorName;
-    
-    /** 商品类别 */
-    private String   		goodsCategory;
-    
-    /** 品牌 */
-    private String   		brand;
-    
-    /** 到货地址 */
-    private String   		arrivalAddress;
-    
-    /** 价格类别 */
-    private String   		priceCategory;
-    
-    /** 项目名称 */
-    private String   		eventName;
-    
-    /** 厂家面价 */
-    private String   		factoryPrice;
+    /** 项目类别	 */
+    @Convert(converter = ProjectCategoryConverter.class)
+    private ProjectCategory   	projectCategory;
+
+    /** 项目具体内容	 */
+    private String   			content;
+
+    /** 项目状态	 */
+    @Convert(converter = ProjectStatusConverter.class)
+    private ProjectStatus   	status;	
+
+//    /** 项目进度	 */
+//    private String   			progress;	
+
+    /** 合同签订时间 */
+    private Date   				contractTime;
+
+    /** 项目金额	 */
+    private String   			amount;	
+
+    /** 项目回款	 */
+    private String   			payment;
+
+    /** 项目欠款	 */
+    private String   			arrears;
+
+    /** 业务主办	 */
+    private String   			businessHosting;	
+
+    /** 归属子公司	 */
+    private String   			subsidiary;
+
+    /** 项目负责人 */
+    private String   			manager;
     
     /** 备注 */
-    private String   		remark;
+    private String   			remark;
     
+    /** 录入日期 */
+    private Date   	 			createTime;
+    private String   			createTimeShow;
     
+    /** 修改日期 */
+    private Date   	 			updateTime;
+    private String   			updateTimeShow;
+    
+    /** 创建人员*/
+    private String   			creatorName;
+    
+    /** 更新人员*/
+    private String   			updateName;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public ProjectCategory getProjectCategory() {
+		return projectCategory;
+	}
+
+	public void setProjectCategory(ProjectCategory projectCategory) {
+		this.projectCategory = projectCategory;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public ProjectStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ProjectStatus status) {
+		this.status = status;
+	}
+
+	public Date getContractTime() {
+		return contractTime;
+	}
+
+	public void setContractTime(Date contractTime) {
+		this.contractTime = contractTime;
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	public String getPayment() {
+		return payment;
+	}
+
+	public void setPayment(String payment) {
+		this.payment = payment;
+	}
+
+	public String getArrears() {
+		return arrears;
+	}
+
+	public void setArrears(String arrears) {
+		this.arrears = arrears;
+	}
+
+	public String getBusinessHosting() {
+		return businessHosting;
+	}
+
+	public void setBusinessHosting(String businessHosting) {
+		this.businessHosting = businessHosting;
+	}
+
+	public String getSubsidiary() {
+		return subsidiary;
+	}
+
+	public void setSubsidiary(String subsidiary) {
+		this.subsidiary = subsidiary;
+	}
+
+	public String getManager() {
+		return manager;
+	}
+
+	public void setManager(String manager) {
+		this.manager = manager;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
 	public Date getCreateTime() {
 		return createTime;
 	}
@@ -94,122 +186,23 @@ public class ProjectShowBean {
         }
 	}
 
+	public String getCreateTimeShow() {
+		return createTimeShow;
+	}
+
+	public void setCreateTimeShow(String createTimeShow) {
+		this.createTimeShow = createTimeShow;
+	}
+
 	public Date getUpdateTime() {
 		return updateTime;
 	}
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
-		if (this.updateTime != null) {
+        if (this.updateTime != null) {
             this.updateTimeShow = Tools.DATE_FORMAT.format(this.updateTime);
         }
-	}
-
-	public Date getQuotesTime() {
-		return quotesTime;
-	}
-
-	public void setQuotesTime(Date quotesTime) {
-		this.quotesTime = quotesTime;
-		if (this.quotesTime != null) {
-            this.quotesTimeShow = Tools.DATE_FORMAT.format(this.quotesTime);
-        }
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getUnitName() {
-		return unitName;
-	}
-
-	public void setUnitName(String unitName) {
-		this.unitName = unitName;
-	}
-
-	public Long getUnitId() {
-		return unitId;
-	}
-
-	public void setUnitId(Long unitId) {
-		this.unitId = unitId;
-	}
-
-	public String getDeviceName() {
-		return deviceName;
-	}
-
-	public void setDeviceName(String deviceName) {
-		this.deviceName = deviceName;
-	}
-
-	public String getSameProduct() {
-		return sameProduct;
-	}
-
-	public void setSameProduct(String sameProduct) {
-		this.sameProduct = sameProduct;
-	}
-
-	public String getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(String quantity) {
-		this.quantity = quantity;
-	}
-
-	public String getDeviceUnit() {
-		return deviceUnit;
-	}
-
-	public void setDeviceUnit(String deviceUnit) {
-		this.deviceUnit = deviceUnit;
-	}
-
-	public String getTaxFreeUnitPrice() {
-		return taxFreeUnitPrice;
-	}
-
-	public void setTaxFreeUnitPrice(String taxFreeUnitPrice) {
-		this.taxFreeUnitPrice = taxFreeUnitPrice;
-	}
-
-	public String getSpecification() {
-		return specification;
-	}
-
-	public void setSpecification(String specification) {
-		this.specification = specification;
-	}
-
-	public String getTaxInclusiveUnitPrice() {
-		return taxInclusiveUnitPrice;
-	}
-
-	public void setTaxInclusiveUnitPrice(String taxInclusiveUnitPrice) {
-		this.taxInclusiveUnitPrice = taxInclusiveUnitPrice;
-	}
-
-	public Evaluation getMaterialProperty() {
-		return materialProperty;
-	}
-
-	public void setMaterialProperty(Evaluation materialProperty) {
-		this.materialProperty = materialProperty;
-	}
-
-	public String getAmount() {
-		return amount;
-	}
-
-	public void setAmount(String amount) {
-		this.amount = amount;
 	}
 
 	public String getUpdateTimeShow() {
@@ -220,22 +213,6 @@ public class ProjectShowBean {
 		this.updateTimeShow = updateTimeShow;
 	}
 
-	public String getQuotesTimeShow() {
-		return quotesTimeShow;
-	}
-
-	public void setQuotesTimeShow(String quotesTimeShow) {
-		this.quotesTimeShow = quotesTimeShow;
-	}
-
-	public String getCreateTimeShow() {
-		return createTimeShow;
-	}
-
-	public void setCreateTimeShow(String createTimeShow) {
-		this.createTimeShow = createTimeShow;
-	}
-
 	public String getCreatorName() {
 		return creatorName;
 	}
@@ -244,60 +221,12 @@ public class ProjectShowBean {
 		this.creatorName = creatorName;
 	}
 
-	public String getGoodsCategory() {
-		return goodsCategory;
+	public String getUpdateName() {
+		return updateName;
 	}
 
-	public void setGoodsCategory(String goodsCategory) {
-		this.goodsCategory = goodsCategory;
+	public void setUpdateName(String updateName) {
+		this.updateName = updateName;
 	}
-
-	public String getBrand() {
-		return brand;
-	}
-
-	public void setBrand(String brand) {
-		this.brand = brand;
-	}
-
-	public String getArrivalAddress() {
-		return arrivalAddress;
-	}
-
-	public void setArrivalAddress(String arrivalAddress) {
-		this.arrivalAddress = arrivalAddress;
-	}
-
-	public String getPriceCategory() {
-		return priceCategory;
-	}
-
-	public void setPriceCategory(String priceCategory) {
-		this.priceCategory = priceCategory;
-	}
-
-	public String getEventName() {
-		return eventName;
-	}
-
-	public void setEventName(String eventName) {
-		this.eventName = eventName;
-	}
-
-	public String getFactoryPrice() {
-		return factoryPrice;
-	}
-
-	public void setFactoryPrice(String factoryPrice) {
-		this.factoryPrice = factoryPrice;
-	}
-
-	public String getRemark() {
-		return remark;
-	}
-
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-
+    
 }

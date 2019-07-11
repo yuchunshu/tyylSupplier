@@ -22,23 +22,18 @@ import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.security.util.UserTool;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.util.SearchListHelper;
-import cn.com.chaochuang.supplier.bean.SupDeviceEditBean;
-import cn.com.chaochuang.supplier.bean.SupDeviceShowBean;
-import cn.com.chaochuang.supplier.domain.SupDevice;
-import cn.com.chaochuang.supplier.domain.SupUnit;
-import cn.com.chaochuang.supplier.service.SupDeviceService;
-import cn.com.chaochuang.supplier.service.SupUnitService;
+import cn.com.chaochuang.crm.project.bean.ProjectEditBean;
+import cn.com.chaochuang.crm.project.bean.ProjectShowBean;
+import cn.com.chaochuang.crm.project.domain.Project;
+import cn.com.chaochuang.crm.project.service.ProjectService;
 
 @Controller
-@RequestMapping("supplier/device")
+@RequestMapping("crm/project")
 public class ProjectController{
 
     @Autowired
-    private SupDeviceService    	supDeviceService;
+    private ProjectService    	projectService;
 
-    @Autowired
-    private SupUnitService   	  	supUnitService;
-    
     @Autowired
     private SysAttachService        attachService;
 
@@ -47,24 +42,24 @@ public class ProjectController{
 
     @RequestMapping("/list")
     public ModelAndView list() {
-        ModelAndView mav = new ModelAndView("/supplier/device/list");
+        ModelAndView mav = new ModelAndView("/crm/project/list");
         return mav;
     }
 
     @RequestMapping("/list.json")
     @ResponseBody
     public Page listjson(Integer page, Integer rows, String unitId, HttpServletRequest request) {
-        SearchBuilder<SupDevice, Long> searchBuilder = new SearchBuilder<SupDevice, Long>(conversionService);
+        SearchBuilder<Project, Long> searchBuilder = new SearchBuilder<Project, Long>(conversionService);
         searchBuilder.clearSearchBuilder().findSearchParam(request);
         if (StringUtils.isNotBlank(unitId)) {
             searchBuilder.getFilterBuilder().equal("unitId", unitId);
         }
         searchBuilder.appendSort(Direction.DESC, "createTime");
         searchBuilder.appendSort(Direction.DESC, "id");
-        SearchListHelper<SupDevice> listhelper = new SearchListHelper<SupDevice>();
-        listhelper.execute(searchBuilder, supDeviceService.getRepository(), page, rows);
+        SearchListHelper<Project> listhelper = new SearchListHelper<Project>();
+        listhelper.execute(searchBuilder, projectService.getRepository(), page, rows);
         Page p = new Page();
-        p.setRows(BeanCopyBuilder.buildList(listhelper.getList(), SupDeviceShowBean.class));
+        p.setRows(BeanCopyBuilder.buildList(listhelper.getList(), ProjectShowBean.class));
         p.setTotal(listhelper.getCount());
         return p;
     }
@@ -72,23 +67,19 @@ public class ProjectController{
     @RequestMapping("/new")
     public ModelAndView newPage(Long unitId) {
         SysUser user = (SysUser) UserTool.getInstance().getCurrentUser();
-        ModelAndView mav = new ModelAndView("/supplier/device/edit");
+        ModelAndView mav = new ModelAndView("/crm/project/edit");
         mav.addObject("currUser", user);
         mav.addObject("createTime", new Date());
         mav.addObject("unitId", unitId);
-        SupUnit supUnit = supUnitService.findOne(unitId);
-        if (supUnit != null) {
-            mav.addObject("supUnit", supUnit);
-        }
         return mav;
     }
 
     @RequestMapping("/edit")
     public ModelAndView editPage(Long id) {
-        ModelAndView mav = new ModelAndView("/supplier/device/edit");
-        SupDevice device = this.supDeviceService.findOne(id);
-        mav.addObject("device", device);
-        mav.addObject("attachMap", this.attachService.getAttachMap(device.getId().toString(), SupDevice.class.getSimpleName()));
+        ModelAndView mav = new ModelAndView("/crm/project/edit");
+        Project project = this.projectService.findOne(id);
+        mav.addObject("project", project);
+        mav.addObject("attachMap", this.attachService.getAttachMap(project.getId().toString(), Project.class.getSimpleName()));
 
         return mav;
     }
@@ -96,10 +87,10 @@ public class ProjectController{
     // 保存
     @RequestMapping("/save.json")
     @ResponseBody
-    public ReturnInfo save(SupDeviceEditBean bean, HttpServletRequest request, HttpServletResponse response) {
+    public ReturnInfo save(ProjectEditBean bean, HttpServletRequest request, HttpServletResponse response) {
 
         try {
-            String id = this.supDeviceService.saveSupDevice(bean);
+            String id = this.projectService.saveProject(bean);
             
             return new ReturnInfo(id, null, "保存成功!");
         } catch (Exception e) {
@@ -112,13 +103,13 @@ public class ProjectController{
     @RequestMapping("/detail")
     @ResponseBody
     public ModelAndView detail(Long id) {
-        ModelAndView mav = new ModelAndView("/supplier/device/detail");
-        SupDevice device = null;
+        ModelAndView mav = new ModelAndView("/crm/project/detail");
+        Project project = null;
         if (id != null) {
-        	device = this.supDeviceService.findOne(id);
-            if (device != null) {
-                mav.addObject("device", device);
-                mav.addObject("attachMap", this.attachService.getAttachMap(device.getId().toString(), SupDevice.class.getSimpleName()));
+        	project = this.projectService.findOne(id);
+            if (project != null) {
+                mav.addObject("project", project);
+                mav.addObject("attachMap", this.attachService.getAttachMap(project.getId().toString(), Project.class.getSimpleName()));
 
             }
         }
@@ -131,7 +122,7 @@ public class ProjectController{
         try {
             if (ids != null && ids.length > 0) {
                 for (String id : ids) {
-                    this.supDeviceService.delDevice(id);
+                    this.projectService.delProject(id);
                 }
             }
 
