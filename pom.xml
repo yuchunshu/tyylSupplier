@@ -13,7 +13,7 @@
         <spring.security.version>3.2.5.RELEASE</spring.security.version>
         <hibernate.version>4.3.8.Final</hibernate.version>
         <jackson.version>2.5.0</jackson.version>
-        <poi.version>3.11</poi.version>
+        <poi.version>4.1.2</poi.version>
     </properties>
 
    <repositories>
